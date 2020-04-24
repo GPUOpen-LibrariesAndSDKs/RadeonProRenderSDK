@@ -1,0 +1,991 @@
+-------------------------------------------
+- Release Notes of Radeon Pro Render SDK
+-------------------------------------------
+
+################################################################################################################
+RPR SDK 1.35.0 - 03 April 2020
+
+-- RPR API CHANGE :
+https://github.com/Radeon-Pro/RadeonProRenderSDK/wiki/1.34.9-1.35.0-transition-for-RPR-developers
+
+-- RESOLVED TICKETS :
+FIR-1614 - Opacity > 1 on refractive materials
+FIR-1637 - RPRSRender.exe without gamma call in json renders black
+FIR-1652 - Add input look up object index set by user
+FIR-1639 - Implement RGB to HSV, HSV to RGB shader nodes.
+FIR-1647 - [Linda] Fur crashs
+FIR-1657 - Align light override implementation to rpr2
+FIR-1648 - [z-emotion] Wiggled texture
+
+
+################################################################################################################
+RPR SDK 1.34.9 - 10 March 2020
+
+Fix a compatibility issue between RPR API and Hybrid
+
+################################################################################################################
+RPR SDK 1.34.8 - 03 March 2020
+
+FIR-1498 - uber displacement - fail when test is alone
+FIR-1623 - Add Metal interop support
+FIR-1625 - Tahoe render error after applying additional math for MATERIAL_NODE_BUMP_MAP node
+FIR-1634 - Linux RPR mat lib unit test - increase tolerance
+FIR-1638 - TIFF image load from memory
+FIR-1610 - Unbalance variance at multiple GPUs
+FIR-1629 - Crash while trying to subdivide mesh
+
+################################################################################################################
+RPR SDK 1.34.7 - 03 Febrary 2020
+
+FIR-1607 - RPRS - lossless geometry compression
+FIR-1595 - visibility flags not working on Curves
+FIR-1564 - Backplate yflip not working on CPU
+FIR-1588 - rprContextAbortRender aborts next rprContextRender
+FIR-1581 - Uber Refraction Absorption have different results on CPU and GPU
+FIR-1618 - RPR API - tasks
+FIR-1608 - EXSWMAXON-138 Cache path longer than 131 characters trashes memory and triggers crash in RPR core
+FIR-1614 - Opacity > 1 on refractive materials
+FIR-1622 - Connecting buffer node to displacement producing crash in ContextRender()
+FIR-1579 - DirectionalLightSetShadowSoftness should not take a coeff but an angle
+
+################################################################################################################
+RPR SDK 1.34.6 - 08 January 2020
+
+FIR-1554 - RPRMAYA-329 [CORE] Artifacts when using Displacement
+FIR-1597 - regression - adaptive sampler
+FIR-1599 - Vertex colors are not extrapolated when subdivision is used
+FIR-1600 - Artefacts on tapered curves render in GPU mode
+FIR-1592 - INPUT_SHAPE_RANDOM is not working at CPU
+FIR-1617 - Volume emission is wrong
+FIR-1604 - Hair_Test.rpr fails on MacOs
+
+################################################################################################################
+RPR SDK 1.34.5 - 10 December 2019
+
+FIR-1415 - EXSWMAXON-107 DOF and mipmapping
+FIR-1576 - Mipmap for texture whose size is not multiple of 4 shows artifacts with texture compression
+FIR-1582 - RPR API - per face for instances
+FIR-1571 - Absorption distance stops working when less than 0.159
+FIR-1575 - Add API function to manage curve visibility ---  known issue : curve visibility flag doesn't work on GPU (FIR-1595)
+FIR-1580 - RPR API - finalize UTF-8 support
+FIR-1590 - RPRS - faster export
+
+################################################################################################################
+RPR SDK 1.34.4 - 07 November 2019
+
+-- RPR API CHANGE :
+
+rprTools\RadeonProRender_v2.h :  New beta pure-C header, with better encapsulation. we encourage developers to try it. It may replace inc\RadeonProRender.h in the future.
+
+rprTools\RadeonProRenderCpp.cpp & rprTools\RadeonProRender.hpp : New C++ wrapper. if you have any requests, feel free to send your PR to https://github.com/Radeon-Pro/RadeonProRenderAPI
+
+All our strings representing paths are now managing UTF-8 encoding (on Windows & Unix). RPR API is now ready for Unicode.
+
+rprContextCreateCurve has a new argument: creationFlag_tapered. Set it to 0 by default.
+
+RPRS > 3 years old ( version 6 and 7 ) no longer supported
+
+old API (FR functions) moved to rprDeprecatedApi.h
+
+key : RPR_MATERIAL_INPUT_UBER_FRESNEL_SCHLICK_APPROXIMATION = 0x93e
+has the new value : RPR_MATERIAL_INPUT_UBER_FRESNEL_SCHLICK_APPROXIMATION = RPR_MATERIAL_INPUT_SCHLICK_APPROXIMATION = 0x2c
+
+remove of rprMeshPolygonGetInfo , rpr_mesh_polygon_info , RPR_MESH_POLYGON_VERTEX_COUNT , rpr_mesh_polygon_vertex_info , 
+          RPR_MESH_POLYGON_VERTEX_POSITION , RPR_MESH_POLYGON_VERTEX_NORMAL , RPR_MESH_POLYGON_VERTEX_TEXCOORD. 
+         Those are not used by RPR, Tahoe and Hybrid.
+
+
+-- RESOLVED TICKETS :
+
+FIR-1406 - Multi GPU support for adaptive sampling and variance aov
+FIR-1511 - EXSWMAXON-131 RPR produces artifacts when bump is used
+FIR-1552 - RPRS - export option to use file directly
+FIR-1561 - make rprsRender work with Hybrid
+FIR-1548 - expose new taper feature in Curve in RPR API
+FIR-1558 - RPR API - improve C header
+FIR-1510 - Implement Local Shading Normal Adaption
+FIR-1544 - RPRMAYA-1138 [Core]Maya crashes if Displacement and texture compression is enabled
+FIR-1569 - Projection UV types are broken in core
+FIR-1578 - Object ID isn't consistent for animation
+FIR-1539 - Different render results on CPU and GPU when rendering IBL and texture gamma set to zero
+FIR-1577 - API - manage UTF-8 encoded
+
+################################################################################################################
+RPR SDK 1.34.3 - 02 October 2019
+
+-- RPR API CHANGE :
+
+CentOS 6.9 release removed - replaced by CentOS 7
+
+-- RESOLVED TICKETS :
+
+FIR-1497  -  [z-e] Mipmap for texture (non multiple of 4) producing artifact on edges
+FIR-1534  -  Fireflies when using emissive material with HDR map
+FIR-1524  -  [Morgenrot] Taper support for curves
+FIR-1525  -  [Morgenrot] Passthrough doesn't show up in emission AOV
+FIR-1513  -  Double row of pixels when rendering some resolutions
+FIR-1546  -  clear framebuffer with custom color
+
+
+################################################################################################################
+RPR SDK 1.34.2 - 06 September 2019
+
+-- RPR API CHANGE :
+
+New Context and Material Node setters. using key integers, instead of strings :
+rprContextSetParameterByKey*
+rprMaterialNodeSetInput*ByKey
+
+RPR_MATERIAL_NODE_INPUT_NAME_STRING and RPR_PARAMETER_NAME_STRING have been removed. Because string parameters no longer exist in RPR Core API.
+
+New header file: rprDeprecatedApi.h to include deprecated functions that are not supported by latest RPR API anymore but that can still be emulated by RPR for backward compatibility purpose.
+IMPORTANT: All setters using string parameters ( rprMaterialNodeSetInput* and rprContextSetParameter* ) have been moved into rprDeprecatedApi.h.
+           Content of RprSupport.h has been moved inside rprDeprecatedApi.h.
+
+-- RESOLVED TICKETS :
+
+FIR-1490 - Incorrect MATERIAL_NODE_BUMP_MAP calculations for bump map normal
+FIR-1454 - fix "iteration" bug for AOV_VARIANCE on CPU
+FIR-1506 - Remove NORMAL_NODE from new Uber implementation
+FIR-1514 - Input look up object id random color
+FIR-1457 - EXSWMAXON-125 OOC does not work with AOVs
+FIR-1515 - RPR - bad management of PNG with SRGB ?
+FIR-1518 - RPRS - use map instead of vector
+FIR-1530 - RPR - management of DDS for image data getter
+FIR-1522 - [z-e] RprsImportW unicode support
+FIR-1532 - cleaning lots of shape is slow because of RPR 
+FIR-1534 - Fireflies when using emissive material with HDR map
+FIR-1533 - EXSWACCA-17 Incorrect normal map calculations
+FIR-1519 - RPRMAYA-1329 - Shading artifacts inside the shadow of the physical light
+FIR-1508 - EXSWMAXON-130 RPR not working for navi cards
+FIR-1516 - RPR - new feature : rprContextCreateImageFromFileMemory
+FIR-1484 - C4D crash on Material icon render on CPU (macPro 2010)
+FIR-1507 - Crash when dealing with BlendMaterial
+FIR-1492 - Curves broken on MacOs (Metal)
+
+-- SDK CHANGES :
+
+"Hybrid" for Ubuntu18 and Windows has been added (Centos should be added in next release). This new plugin can be loaded with RPR API ( instead of loading Tahoe64 plugin )
+
+################################################################################################################
+RPR SDK 1.34.1 - 22 July 2019
+
+RprSupport library has been integrated inside RPR API Core.
+This means that there is no longer need to create a RPRX context in order to use UBER material.
+UBER material is now part of the classic materials : RPR_MATERIAL_NODE_UBERV2.
+In the SDK you can find simple examples of RPR_MATERIAL_NODE_UBERV2 usage.
+In order to help backward compatibility with our ecosystem, we are still providing a RprSupport.h. Internally those rprx functions are doing nothing more than calling the corresponding RPR API call.
+So there is no difference using rprx from RprSupport.h or RPR_MATERIAL_NODE_UBERV2 from RadeonProRender.h, however we advice RPR developers to no longer use RprSupport.h.
+
+wiki page listing the minor backward compatibility breaks between 1.34.0 and 1.34.1
+https://github.com/Radeon-Pro/RadeonProRenderSDK/wiki/1.34.0-1.34.1---transition-for-RPR-developers
+
+
+FIR-1436 - EXSWMAXON-119 Incorrect caustic reflections between multiple objects
+FIR-1489 - Moving Uber material to Tahoe
+FIR-1499 - [InstaLOD] Transform node to support object space normal map
+FIR-1501 - RPRS - crash with compression activated ?
+FIR-1503 - RprsRender crashes on LV2
+
+
+################################################################################################################
+RPR SDK 1.34.0 - 27 June 2019
+
+There are some minor backward compatibility breaks between 1.33 and 1.34, you can find all the details here :
+https://github.com/Radeon-Pro/RadeonProRenderSDK/wiki/1.33-1.34-transition-for-RPR-developers
+
+Ubuntu 16.4 is no longer supported: we switched to build&test on Ubuntu 18.4
+
+in RadeonProRender.h , there are several references to Uber :
+RPR_MATERIAL_NODE_UBERV2
+RPR_UBER_MATERIAL_INPUT_*
+Those ones are NOT supported by Tahoe64.DLL in 1.34.0 release (will be in 1.34.1)
+in 1.34.1, we are planning to remove rprSupport library and move the UBER material inside RPR Core API.
+
+
+FIR-1209 - EXSWMAXON-70 Vertex map
+FIR-1477 - Add API to query active pixel counts
+FIR-1363 - Reflection Catcher Feature request
+FIR-1424 - Fringe between object and shadow catcher visible 
+FIR-1494 - CPU GPU refraction difference
+FIR-1486 - Expose InputLookup local position to RPR API
+
+
+################################################################################################################
+RPR SDK 1.33.6 - 20 June 2019
+
+FIR-1480 - Bloom not implemented on CPU
+FIR-1481 - AOV_LIGHT_GROUP not implemented on CPU
+FIR-1482 - UV of curves not implemented on CPU
+FIR-1483 - Aomap not implemented on CPU
+
+
+################################################################################################################
+RPR SDK 1.33.5 - 22 May 2019
+
+FIR-1395 - Phase function for heterogeneous volume
+FIR-1262 - Double sided emission is not working in uber
+FIR-1464 - Crash with adaptive subdivision
+FIR-1469 - fisheye camera fails on CPU
+FIR-1473 - RTX 2070 - curve fail
+FIR-1385 - Shadows from shadow catcher are not visible behind transparent surfaces.
+FIR-1474 - DLL are versioned
+- new versioning system : RPR_VERSION_MAJOR.RPR_VERSION_MINOR.RPR_VERSION_REVISION.RPR_VERSION_BUILD - RPR_API_VERSION_MINOR = 0x00103305
+- to reproduce the old behavior of rprCameraSetSensorSize ( before 1.333 ) set the 'width' argument to -1
+
+################################################################################################################
+RPR SDK 1.334 - 26 April 2019
+
+FIR-1435 - InputLookup local position
+FIR-1465 - Crash after detaching emissive shader
+
+################################################################################################################
+RPR SDK 1.333 - 4 April 2019
+
+FIR-1447 - Adaptive sampling doesn't work with "samples per update"
+FIR-1448 - ( partially solved ) - Uber regression since 1.331
+FIR-1453 - Variance aov has artifact
+FIR-1430 - Camera sensor size is not used -- API change : the new default of RPR_CAMERA_SENSOR_SIZE is (-1,-1) meaning auto-sized sensor
+
+Note: Uber differences are still under investigation.
+
+################################################################################################################
+RPR SDK 1.332 - 28 March 2019
+
+FIR-1422 - Maxon [RPR21] Metalness blending produces unexpected results
+FIR-1444 - Reflection [Anisotropy & Roughness] issue
+FIR-1445 - Faced anisotropic material (alminium directional)
+fix on Macos - better exception management in case of fail in rprCreateContext
+
+Note: Uber differences are still under investigation.
+
+################################################################################################################
+RPR SDK 1.331 - 21 March 2019
+
+FIR-1354 - EXSWMAXON-89 Anisotropic reflections show facets
+FIR-1421 - EXSWMAXON-115 Diffuse Render Mode: Lights are rendered as geometry
+FIR-1168 - EXSWMAXON-52 Homogenous Volume / SSS: Wrong when camera is in AABB
+FIR-1411 - Emission grid only emit when another light source is present
+FIR-1422 - Maxon [RPR21] Metalness blending produces unexpected results
+
+Note: Some differences of rendering may be noticed in the Uber material: 
+      some minor rendering issues are still under investigation.
+
+################################################################################################################
+RPR SDK 1.330 - 27 February 2019
+
+FIR-366 - Adaptive Sampling
+FIR-1393 - Gradients for heterogeneous volume
+FIR-1319 - Variance AOV
+FIR-1409 - Expose heterogeneous volume scalings
+FIR-1413 - EXSWMAXON-103 Severe Issue(s) with per face materials
+FIR-1412 - Heterogenous volumes do not work on Nvidia
+FIR-1410 - Separate setter for grid and remap function for heterogeneous volume
+FIR-1402 - RPR Curves are not rendered by GPU
+
+1.330 is breaking retrocompatibility on 2 points of the RPR API.
+Check https://github.com/Radeon-Pro/RadeonProRenderSDK/wiki/1.325-1.330-transition-for-RPR-developers  for more details. 
+Feel free to slack me (richard.geslot) if you need help.
+
+################################################################################################################
+RPR SDK 1.325 - 01 February 2019
+
+FIR-1357 - Issue in switching shape from diffuse to emissive
+FIR-1388 - [Modo] Add Schlick mode for NODE_FRESNEL
+FIR-1396 - [Maxon] Add a parameter to set number of AO ray casts for AO node
+FIR-1399 - GLinterop demo doesn't start rendering on NV
+FIR-1400 - EXSWMAXON-100 AOV Albedo does not work for more complex materials
+
+AFAIK, nobody is using the python binding of the SDK. ( Luxoft is using its own binding )
+I'm not sure it's working correctly because untested, so I'm removing the python binding for now.
+
+################################################################################################################
+RPR SDK 1.324 - 05 January 2019
+
+FIR-1369 - RPRS image separation
+FIR-1346 - Transparency environment override changes colors of scene background and transparent objects
+FIR-1377 - ProRender crashes with volume objects on CPU when enabling opacity AOV
+FIR-1204 - Refraction + Volume Material - issue on CPU only
+FIR-1373 - Mesh creation was doing redundant calculation
+FIR-1375 - Uber Refraction Weight Change
+FIR-1378 - [MAXON] Add emission grid for heterogeneous volume
+
+################################################################################################################
+RPR SDK 1.323 - 11 December 2018
+
+FIR-1328 - Light Motion blur doesn't work on CPU
+FIR-1294 - Textures with .jpeg extension fail with ContextCreateImageFromFile but .jpg is ok.
+FIR-1347 - Error at rprContextCreateImageFromFile with *.tiff file
+FIR-1326 - Setting rpr_buffer to emissive color or displacement map for Uber produces crash
+FIR-1352 - Adaptive subdivision runs CPU at 100% load before render begins
+FIR-1359 - Post effect bloom results in a black frame buffer
+FIR-1350 - Curve - random bug - loose material
+
+################################################################################################################
+RPR SDK 1.322.1 - 22 November 2018
+
+- fix for trace : making crash when setting "tracing" in the context
+- fix regression of 1.322 : corruption at the edge of a frame buffer
+- for Centos 6.9 : embree is now embeded inside the build. so this dependency is no longer needed.
+
+################################################################################################################
+RPR SDK 1.322 - 20 November 2018
+
+FIR-1324 - CPU memory leak (rprContextRender fail with error -27 on correct data)
+FIR-1329 - Microfacet Serialization backward compatibility is broken
+FIR-1335 - ADLASSERT overhead is too high. Change this to not to throw exceptions. 
+FIR-1336 - Tiling logic change (NV C4D perf regression), Remove unnecessary GPU flush
+FIR-1337 - Albedo AOV has blocky artifact
+FIR-1333 - Curves - issues when dynamic changes
+FIR-1315 - Crash while rendering when bump node is connected to another bump
+FIR-1301 - Blending Uber material doesn't blend Volume
+FIR-1178 - Shading normal is sometimes wrong with adaptive subdivision
+FIR-1338 - RPR Uber API - add support for curves
+FIR-1341 - RPRS - support AOV save
+FIR-1340 - API - add transform to curve
+
+
+################################################################################################################
+RPR SDK 1.321.1 - 02 November 2018
+
+FIR-1187 - EXSWMAXON-58 Issues with emissive BRDF and motion blur
+FIR-1325 - Triplanar texture mapping is broken on negative faces
+FIR-1327 - The getRenderMesh func modifies original shape data
+FIR-1323 - W component isn't filled for a curve hit
+FIR-1322 - CPU curve implementation is missing
+FIR-1307 - Core 1.313.2: crash with delete context with multiple GPU
+FIR-1330 - RPR API for batch curve addition
+
+minor retro-compatibility break, for Composite, see :
+https://github.com/Radeon-Pro/RadeonProRenderSDK/wiki/1.320-1.321-transition-for-RPR-developers
+
+################################################################################################################
+RPR SDK 1.320 - 17 October 2018
+
+FIR-4    - Curve are now supported - known issue : not implemented on CPU
+FIR-1305 - RPRX_UBER_MATERIAL_REFRACTION_NORMAL for uber
+FIR-1302 - Conditional operators for arithmetic node
+FIR-1280 - AO node doesn't work on multi GPU config.
+FIR-1306 - IBL_Portal_AnotherIBL test failed on RPR1.313
+FIR-1296 - MPS intersector for Mojave
+FIR-1278 - RPRMAYA-587 strange gradient lines at times when using radius of AO value of 0
+FIR-1241 - EXSWMAXON-77 Explicit kernel compilation
+FIR-1273 - [Regression] Heterovolume RPR unit test fail on CPU
+FIR-1293 - IBL flipped to 180 degrets by X with core 1.310
+FIR-1279 - RPRMAYA-541 coat roughness not working correctly
+FIR-1208 - [MAXON] Out of core for IBL
+FIR-1270 - Crash with sun & sky system in Blender
+FIR-1292 - Area light cast shadow under environment light
+FIR-1275 - RPRMAX-394 artifact line when activeshade starts rendering
+FIR-1274 - Emissive mesh does not get detached first time
+FIR-1289 - RPR API - new visibility flags expose
+RPRMAX-432 - Crash when connecting 2 uber materials to a blend node 
+
+GLTF doesn't use FreeImage dependency anymore.
+
+This release is breaking retro-compatibility with previous versions.
+some minor changes need to me made, see here for more info :
+https://github.com/Radeon-Pro/RadeonProRenderSDK/wiki/1.313-1.320-transition-for-RPR-developers
+
+Known issues :
+There is no Albedo AOV in this release - Should be released soon in 1.321
+No Curve on CPU and on MacOS
+No UV procedural on MacOS ?
+Material Per Face doesn't work correctly on CPU
+Material Per Face doesn't work correctly when used with subdivisions (FIR-1321)
+Instances doesn't work correctly when used with subdivisions (FIR-1320)
+The new debug function : rprShapeSetLightGroupID  doesn't work on CPU
+
+
+################################################################################################################
+RPR SDK 1.313.2 - 21 September 2018
+
+FIR-1221 - Crashes in rprObjectDelete
+FIR-1241 - EXSWMAXON-77 Explicit kernel compilation
+FIR-1259 - Bloom post effect
+FIR-1280 - AO node doesn't work on multi GPU config.
+FIR-1278 - RPRMAYA-587 strange gradient lines at times when using radius of AO value of 0
+FIR-1273 - [Regression] Heterovolume RPR unit test fail on CPU
+FIR-1279 - RPRMAYA-541 coat roughness not working correctly
+FIR-1208 - [MAXON] Out of core for IBL
+FIR-1270 - Crash with sun & sky system in Blender
+FIR-1275 - RPRMAX-394 artifact line when activeshade starts rendering
+RPRMAX-432 - Crash when connecting 2 uber materials to a blend node
+FIR-1274 - Emissive mesh does not get detached first time
+FIR-1292 - Area light cast shadow under environment light
+FIR-1293 - IBL flipped to 180 degrets by X with core 1.310
+FIR-1296 - MPS intersector for Mojave
+FIR-1295 - Tracing is now working on multithreaded processes. Keep in mind that enable tracing slows down performance.
+
+################################################################################################################
+RPR SDK 1.312 - 9 August 2018
+
+FIR-1263 - Normalize IBL direction vectors
+FIR-1264 - Revert Microfacet roughness^2
+FIR-1265 - Introduce RPR_API_VERSION_MINOR
+FIR-1266 - Microface roughness^2 reverts to roughness
+FIR-1267 - Fix node connections of Uber
+RPRMAYA-530 - Fix an compile error of PostKernel
+
+################################################################################################################
+RPR SDK 1.311 - 1 August 2018
+
+FIR-1253 - Anisotropy of Uber microfacet isn't working
+FIR-1257 - Crash when use AONode as input to emissive color of Uber
+FIR-1258 - IBL image looks strange
+FIR-1256 - Enable HBCC
+FIR-1246 - Implement sheen in Uber
+FIR-1259 - Implement bloom post effect
+
+################################################################################################################
+RPR SDK 1.304 - 31 July 2018
+
+FIR-1135    EXSWMAXON-46 Nvidia rendering performance improvement when fat node is used
+FIR-1189    EXSWMAXON-56 Visibility flags broken with specular refractions
+FIR-1221    Crashes in rprObjectDelete
+FIR-1225    EXSWMAXON-66 Crash with OOC when R8 texture is used
+FIR-1227    EXSWMAXON-71 Heap Corruption with OOC disk mode
+FIR-1228    EXSWMAXON-72 Fixed depth AOV floating point over flow
+FIR-1236    Create threads more than the CPU's concurrency when there are more GPUs
+FIR-1237    Support 16 GPUs
+FIR-1239    When 1 CPU thread is specified to use, it was ignored
+FIR-1240    Multi GPU is broken on 1.303
+FIR-1249    When a volume material is reset, hetero volume grid was also reset
+
+################################################################################################################
+RPR SDK 1.310 - 24 July 2018
+
+FIR-1110 - Remove aaCellSize
+FIR-1207 - EXSWMAXON-67 implement rprAbort()
+FIR-1189 - EXSWMAXON-56 Visibility flags broken with specular refractions
+FIR-1218 - Uber material overhaul
+FIR-1244 - Clear coat transmission
+FIR-1242 - Expose Caustics off for refraction
+FIR-1240 - Multi GPU is broken on 1.303
+FIR-1239 - CPU thread limit interpreted a bit incorrrect
+FIR-1238 - Remove RPR_IMAGE_WRAP_TYPE_CLAMP_TO_BORDER
+FIR-1235 - Caustics Off for Specular Refraction
+FIR-1217 - Remove RPR_CONTEXT_AA_SAMPLES
+FIR-1225 - EXSWMAXON-66 Crash with OOC
+FIR-1236 - Create threads more than the CPU's concurrency when there are more GPUs
+FIR-1237 - Create a max GPU count of 10.
+
+1.310 is not completely retrocompatible with 1.30x 
+here is the list of change, to help migration :
+https://github.com/Radeon-Pro/RadeonProRenderSDK/wiki/1.30x----1.31x-transition-for-RPR-developers
+
+the Uber material of 1.310 also has some change, here are illustration of the parameters :
+https://github.com/Radeon-Pro/RadeonProRenderSDK/wiki/RPRX-Uber-parameters
+
+################################################################################################################
+RPR SDK 1.303 - 10 July 2018
+
+FIR-1203 - EXSWMAXON-73 Water in glass is wrong
+FIR-1222 - Performance regression at 1.300
+FIR-1230 - Volume blending isn't working
+FIR-1232 - Tiling logic fix
+FIR-1233 - Not utilizing more than 32 threads
+TIFF should now support float channels
+GLTF bin included : build on commit b4200e270271dccaee3208589de5207df35cd764
+known regression : UV procedural material on MacOS is disabled for the moment.
+
+################################################################################################################
+RPR SDK 1.302 - 22 June 2018
+
+FIR-1191 - OOC doesn't work with Volume material
+FIR-1184 - ContextCreateImageFromFile flips .tif textures
+FIR-1155 - Empty scene crashes RPR when rendering in CPU+GPU mode (core 1.296)
+FIR-1212 - EXSWMAXON-60 Scatter Direction causes Not a Number
+FIR-1186 - Memory usage by RPR
+FIR-1195 - EXSWMAXON-59 AOV and Multi GPU broken
+FA-145   - RPR should not save image data
+FIR-1013 - [EXSWMAXON-14] Updating IBL after rendering doesn't use new IBL in next render
+FIR-1198 - Limiting number of threads doesn't work for multi GPU
+FIR-1220 - Motion blur AABB isn't enclosing the shape
+FIR-1188 - EXSWMAXON-57 Setting framecount makes convergence worse
+FIR-1181 - EXSWMAXON-55 Issue with Motion Blur and SSS
+FIR-951  - AO shader node
+Python binding for Windows & Ubuntu16 are now joined to the releases.
+
+################################################################################################################
+RPR SDK 1.301 - 22 May 2018
+
+FIR-1156 - Emissive mesh can be observed in reflections
+FIR-1170 - Expose AO shader node to RPR API
+FIR-1171 - Expose Light group AOV to RPR API <-- Known issue : not implemented on CPU 
+FIR-1176 - If rprContextCreateMeshEx was unsuccessful and error has been returned it crashes on within one of the subsequent calls to RPR
+FIR-1155 - Empty scene will make a rendering  without crashing 
+FIR-1182 - Adaptive Subdivision consumes too much memory
+
+################################################################################################################
+RPR SDK 1.300 - 2 May 2018
+
+FIR-901  - [Maxon] Adaptive subdivision in a Mesh
+FIR-951  - AO shader node
+FIR-1166 - Light group AOV
+FIR-116  - Implementation of the first tone mapping version
+FIR-916  - [Solidworks] Spherical UV projection
+FIR-917  - [Solidworks] Cylindical UV projection
+FIR-1175 - [Solidworks] Planar UV projection
+FIR-1173 - EXSWMAXON-53 Camera navigation is really slow
+
+################################################################################################################
+RPR SDK 1.297 - 25 April 2018
+
+FIR-1117 - AOV ID - add a color/id mapping - new function : rprContextSetAOVindexLookup
+FIR-1151 - [EXSWMAXON-48] Setting Framecount does not work on multi GPU setups
+FIR-1163 - EXSWMAXON-51 Convergence is way worse in 1.296
+FIR-1144 - Expose camera motion setting to RPR api
+FIR-1155 - Empty scene crashes RPR when rendering in CPU+GPU mode (core 1.296)
+FIR-1164 - Sample count doesn't sync when running multi GPUs
+FIR-1158 - EXSWMAXON-50 Backroundplane and OOC does not work
+FIR-1159 - EXSWMAXON-49 Refraction on inverted normals
+FIR-1165 - RPRX Uber - two sided feature
+FIR-1162 - Changes that will make updating the plugins easier
+FIR-1160 - [MacOS] Fatnode is disabled on Metal
+
+################################################################################################################
+RPR SDK 1.296 - 04 April 2018
+
+FIR-1123 - Transparent Background Support
+FIR-1131 - EXSWMAXON-40 Issues with 1.294
+FIR-113  - Check OpenCL/OpenGL inter-op with multi-gpus and image reconstruction filters
+FIR-1138 - PerformanceDemo crashes on NV
+FIR-1140 - Expose maxdepth.shadow
+FIR-1129 - [Maxon] EXSWMAXON-41 Instances: Much higher memory consumption
+FIR-1118 - [MAXON] EXSWMAXON-36 Emission Pass Artefacts
+FIR-1134 - [MAXON] Instances and Inheritance is Broken
+FIR-1141 - A crash occurs when rendering in cpu+gpu mode (core 1.295).
+FIR-1146 - RPR can not create scene with core 1.295 (1.295_v2.7)
+FIR-1147 - Change mipmap from context parameter to texture parameter
+FIR-1137 - Metal perf regression compared to 1.294+
+FIR-1142 - with remove of OIIO - TIF and EXR issue
+FIR-1145 - Expose Transparent Background Support
+
+################################################################################################################
+RPR SDK 1.295 - 20 March 2018
+
+FIR-1095 - [EXSWMAXON-34] Out of core unit test fails with MEM mode
+FIR-1114 - Two Sided BSDF does not work with emissive
+FIR-1107 - [Maxon] CMJ Issues on Nvidia
+FIR-1122 - Fatnode ray caster isn't working on MacOS (Metal)
+FIR-1113 - RPRX_UBER_MATERIAL_EMISSION_MODE_DOUBLESIDED does nothing.
+
+################################################################################################################
+RPR SDK 1.294 - 7 March 2018
+
+FIR-988 - CMJ produces noiser renderings than sobel [Maxon]
+FIR-1109 - Single level BVH (bmw blender)
+FIR-1100 - CPU+GPU is broken on MacOs (blender)
+FIR-1081 - Triplanar Texture Mapping
+FIR-1111 - add rprSkyLightSetDirection
+FIR-1097 - [EXSWMAXON-34] Remove TahoeGlobals.cpp
+FIR-1115 - RPRX SSS parameter mapping change
+FIR-1021 - Metalness slot on Uber2 does not behave as expected.
+FIR-1104 - Transparent material and radianceclamp
+FIR-1076 - OpenImageIO dependency has been removed.
+FIR-1069 - BSOD on WX-7100 video card with high resolution
+
+################################################################################################################
+RPR SDK 1.292 - 15 febrary 2018
+
+FIR-1064 - GITHUB-902 Object Rotation yields wrong normals when angular motion is set
+FIR-1034 - Material Tree Optimization
+FIR-1079 - Blender Plugin crashes on CPU on MacOs
+FIR-1061 - Expose RenderLayer to RPR API - work only on GPU side
+FIR-1096 - EXSWMAXON-34 Expose Mipmap switch to RPR API
+FIR-1071 - Crash if no camera in scene
+FIR-1093 - RadeonProRender.h file: include cstddef before extern "C"
+FIR-1055 - Preview mode not implemented in CPU
+FIR-1080 - Default camera far plane causes inf in depth AOV
+FIR-1066 - Update RprTools to include Radeon Pro 580, 560. 
+FIR-1085 - Exposing illumination AOVs to the RPR API
+FIR-1073 - EXSWMAXON-28 DataBuffers are not working when rendering with Multiple GPUs
+FIR-1103 - Camera Transform matrix fixes : rprCameraSetTransform was not working correctly
+           note that Identity transform matrix now means a camera pointing toward -z , with +y as up vector.
+FIR-1056 - Expose Adaptive subdivision to RPR API
+
+Note: For easier debug, we have improved the error message reported by RPR_CONTEXT_LAST_ERROR_MESSAGE.
+please, each time you are catching an RPR return code error in your code, make sure you are displaying 
+the content of CONTEXT_LAST_ERROR_MESSAGE. It will be easier for the Core team to understand the issue.
+
+
+################################################################################################################
+RPR SDK 1.291 - 20 january 2018
+
+FIR-1050 - [MAXON] Hetero volume interpolation
+FIR-1078 - Intel GPU is accepted on MacOs
+FIR-1060 - [GITHUB-892] Updating Motion Blur yields wrong motion bounding boxes
+FIR-1079 - Blender Plugin crashes on CPU on MacOs
+FIR-1068 - Expose hetero volume albedo, emission, filter to RPR API
+python2.7 to python3.5+ migration w/h keeping python2.7 compatibility 
+Ubuntu and Centos builds are missing and will be re-added in next build - if you need them, stay on 1.290
+
+
+################################################################################################################
+RPR SDK 1.290 - 11 january 2018
+
+FIR-866 - [MAXON] Stacked IOR
+FIR-974 - [Maxon] Per material Illumination AOVs
+FIR-711 - [AMDMAYA-310] Camera motion blur support
+FIR-1033 - texturegamme - specific for each texture
+FIR-797 - Adaptive Subdivision
+FIR-1042 - RPRMAYA-172 uber reflective is overiding diffuse when set to 0 0 0
+RPRMAYA-141 - crash on cpu with aov shadow catcher
+FIR-1048 - "texturegamma" overrides "gamma"
+FIR-1039 - AOV Demos doesn't work on MacOs Metal
+FIR-1052 - [MAXON] Hetero volume emission
+FIR-918 - [Theory] Layer system
+FIR-898 - Clear separation of iteration and aa samples
+FIR-1019 - Transparent object is black in diffuse direct illumination AOV
+FIR-1065 - Improve hetero volume update
+FIR-1067 - Aov Illumination doesn't work on Metal
+- C# headers are included in SDK : RadeonProRender.cs , RprLoadStore.cs , RprSupport.cs
+
+
+################################################################################################################
+RPR SDK 1.286 - 13 december 2017
+
+FIR-1029 - API - improve image filter expose : replace rprImageSetOption by rprImageSetWrap
+FIR-1025 - fix for Shadow Catcher produces artifacts
+FIR-1038 - fox OpenCL on NVIDIA : half4 in FillAOVShadowCatcherKernel
+
+
+################################################################################################################
+RPR SDK 1.285 - 06 december 2017
+
+FIR-1010 - texturegamma dynamic fix
+FIR-1024 - Shadow catcher buffer division by zero
+FIR-1020 - Align AOV opacity behavior to CPU
+FIR-1028 - Changing OOC disk cache path hangs
+FIR-1023 - AOVDemos crashes when executed with "cpugpu"
+FIR-1026 -  RPRBLND-101 - Masking issue 
+FIR-1025 - RPRBLND-100- Shadow Catcher produces artifacts
+FIR-946  - SWDEV-130642 [VEGA GL] RadeonProRender runFuncTests 7 FAILURES
+
+
+################################################################################################################
+RPR SDK 1.284 - 23 november 2017
+
+FIR-1006 - UberV2 with SSS provides empty opacity
+FIR-1005 - Luxoft - AOV and ShadowCatcher issue
+FIR-977 - [Maxon] CMJ on CPU is different from GPU
+FIR-989 - Invalid Opacity AOV when refractive material used
+FIR-1015 - Depth 0 and Depth 1 produces the same result
+FIR-961 - rprCompositeCompute functionality don't work with CPU renderer
+FIR-987 - [GITHUB#835] AOV doesn't work on Multi GPU environment
+FIR-1016 - No lighting on scene when one light source with zero intensity is present
+FIR-887 - depth values in the depth buffer are 0 when there is no object there
+
+
+################################################################################################################
+RPR SDK 1.283 - 10 november 2017
+
+FIR-971  - [RPRSW-518] Light intensity doesn't change shadow in shadow catcher
+FIR-973  - Heterogeneous volume RPR API exposure
+FIR-965  - Implement maxdepth.refraction, maxdepth.refraction.glossy
+FIR-1003 - CPUGPU difference: cpu image is brighter than gpu in Feature/Light/EnvmapReflection/EnvmapReflection demo
+FIR-966  - Implement maxdepth.* for CPU
+FIR-959  - Transparent in front of an opaque outputs zero for opacity AOV on multiGPU
+
+
+################################################################################################################
+RPR SDK 1.282 - 12 octobre 2017
+
+FIR-960 - mesh UVW-UVW - second W is 0
+FIR-935 - Environment light memory issue
+FIR-983 - Instancing very slow on Embree Fallback when using thousands of instances
+FIR-985 - Expose AOV_DIRECT_ILLUMINATION and AOV_INDIRECT_ILLUMINATION
+FIR-991 - Small memory leak in RprTools.cpp
+FIR-999 - RPR crashes when trying to render material with displacement map
+FIR-976 - [Maxon] CMJ on CPU produces black pixels
+FIR-982 - Embree: Shading is broken with flipped normals [Maxon] GitHub #831
+FIR-992 - Grayscale textures loads incorrectly
+
+
+################################################################################################################
+RPR SDK 1.281 - 22 september 2017
+
+FIR-938 - [Maxon] Heterogeneous volume stored in sparse grid
+FIR-970 - [Maxon] Improvement for per-face materials on instances
+FIR-972 - [Maxon] Illumination AOVs
+FIR-975 - [Maxon] CPU mode: CMJ sampler broken 
+FIR-907 - [Maxon] Wrong near & far clipping plane
+FIR-979 - Tiled render uses too much memory
+
+
+################################################################################################################
+RPR SDK 1.280 - 18 september 2017
+
+FIR-795 - new component W for texture: UVW
+FIR-624 - [Maxon] Arbitrary data node
+FIR-923 - [Maxon] Improve dirty flags for faster scene updates 
+FIR-906 - [Maxon] Material per face for instanced shape
+FIR-938 - [Maxon] Heterogeneous volume stored in sparse grid
+FIR-944 - RPRSW-359 Refractive objects refracting IBL instead of background image
+FIR-847 - TextureBase::TYPE_R32F implementation
+FIR-962 - Mandelblub demo setup time is long on Linux after fatnode branch merge
+FIR-943 - RprSupport.h improve include RadeonProRender.h
+FIR-756 - Expose WorldVolume to RPR
+FIR-948 - Metal branch merge
+
+
+################################################################################################################
+RPR SDK 1.275 - 30 August 2017
+
+FIR-937 - RayCast Performance Improvement FatNode
+FIR-939 - IES light differences between non-OOC and OOC
+FIR-944	- RPRSW-359 Refractive objects refracting IBL instead of background image
+FIR-830 - Rendering differences between CPU and GPU with Blender plugin (Bugatti)
+FIR-955 - Volume doesn't work if camera is in a volume
+FIR-942 - SSG support, API implementation of set OOC cache path
+
+
+################################################################################################################
+RPR SDK 1.274 - 10 August 2017
+
+FIR-931 - Expose Max depth for diffuse, glossy in RPR API
+FIR-933 - fix huge CPU RAM leak that may occur on specific scenes
+fix crash when using high number of polygons mesh
+FIR-936 - AMDBLENDER-790 RPR Core - AOV with 'preview' extremely slow
+FIR-855 - AMDMAYA-629 CPU+GPU Mode is slower than GPU only mode - note : using CPU+GPU makes sense only for good performance CPUs 
+FIR-807 - Unify code for OOC texture
+add of  RPR_MATERIAL_NODE_MICROFACET_BECKMANN   and  RPR_MATERIAL_NODE_PHONG
+
+
+################################################################################################################
+RPR SDK 1.273 - 20 July 2017
+
+FIR-922 - RPRSW-421 - Lighting not calculated correctly for normal maps using UV_PROJECT
+FIR-908 - RPRSW-413 - Intermittent Composite Resolution Drop
+FIR-929 - make "preview" works
+rprSupport make RPRX_UBER_MATERIAL_BUMP work
+RPRS load/store : manage Uber manterial of rprSupport library
+
+
+################################################################################################################
+RPR SDK 1.272 - 13 July 2017
+
+FIR-924 - AMDBLENDER-743 - fix critical issue provoking random TDR/BSOD
+
+################################################################################################################
+RPR SDK 1.271 - 07 July 2017
+
+FIR-881 - ThreadPool destructor hangs the process sometimes
+FIR-882 - AMDBLENDER-695 Displacement shading normal used is from the base mesh
+expose RPR_SCENE_AABB
+add: material can be set per face with RPR
+add: material system size can be queried for graph material system
+add: Cache folder can be set for rprIsDeviceCompatible and rprAreDevicesCompatible
+add: Exposed near and far plane
+add: general function to set all image options for RPR
+add: parameter to limit the number of threads for CPU rendering
+add: premake option to create RPRTrace project
+add: remove unnecessary nodes from the material stack during compilation
+FIR-878 - AMDMAYA-684 Render corruption using the material Wood Beech Glossy
+AMDBLENDER-550 - RPR Core - Names for FirePro cards different on Linux
+FIR-873 - AMDBLENDER-454 RPR Core - CPU - Box filter with ZERO radius still blurs image
+FA-155 - AMDMAX-1004 - improve rprLightSetTransform matrix
+FIR-852 - RPR API expose: AOV, velocity, emission
+FIR-831 - Error message API :  RPR_CONTEXT_LAST_ERROR_MESSAGE. try to help the developer to have details on last error
+FIR-793 - AMDBLENDER-544 Motion Blur looks distorted/sheared with CPU rendering
+FA-98 - make rprCameraSetApertureBlades works
+FIR-909 - RPRSW-410 RPR Core v1.270 Background AOV Corruption
+FIR-910 - RPRSW-409 RPR Core v1.270 Background AOV only uses environment IBL
+FIR-914 - RPRSW-411 RPR Core v1.270 Refractive Opacity
+FIR-880 - AMDBLENDER-689 - subdivided parameter change dynamic
+
+
+
+################################################################################################################
+RPR SDK 1.270 - 01 July 2017
+
+FIR-836 - AOV background CPU implementation
+FIR-844 - Kitchen scene crashes in BVH creation - fix
+FIR-849 - Crash in new kitchen scene - fix
+FIR-857 - API - expose composite : rpr_composite
+
+
+################################################################################################################
+RPR SDK 1.267 - 19 June 2017
+
+FIR-874  -  RPRSW-289 Removing an emissive object leaves residual lighting
+FIR-883  -   1.266 setting the width or height of the frame buffer to an exact power of 2 results in a black render
+FIR-885  -   AMDBLENDER-705 - rprLoadStore change link option
+AMDMAX-1539  -  volume material crashes once reassigned to mesh
+RPRSW-398 -  RPR Core v1.266 - fixes for Orthographic Camera and rprCameraSetTransform.  (you do not need the +3.5 fix of 1.266). please, test this one so we can confirm it is fixed.
+
+
+################################################################################################################
+RPR SDK 1.266 - 14 June 2017
+
+FIR-642 - AMDMAX-1126 - multi GPU memory usage
+FIR-877 - Fix : Low performance on Ryzen and Threadripper in Embree mode
+FA-158 - AMDBLENDER-96 - rprCameraSetTransform fix
+White list : add Pro Duo - please update RprTools.cpp in all the plugins
+
+
+################################################################################################################
+RPR SDK 1.265 - 08 June 2017
+
+FIR-840 - AMDBLENDER-622 - Glass + transparency renders a wrong Alpha channel
+FIR-859 - add new   rprContextSetParameter1u(context, "preview", 1);   for draft/preview fast rendering
+FIR-862 - AMDMAYA-671 Volume light and IBL CPU vs GPU rendering
+FIR-841 - second try to workaround the Multiple OpenCL AMD platform  -  Antonio should be able to confirm if it's fixed.
+FIR-853 - AMDBLENDER-644 - CreateImageFromFile multiplies RGB with Alpha
+FIR-864 - FIR-875 - for AOV :  RPR_AOV_MATERIAL_IDX  RPR_AOV_OBJECT_ID  RPR_AOV_OBJECT_GROUP_ID, colors have changed.  in next versions, we are planning to expose the change of those colors in API.
+FIR-829 - Improve multi gpu load balancing
+FIR-870 - Crash on a system with more than 32 threads (bug from Cirstyn's config)
+FIR-871 - AMDBLENDER-677 RPR Core - Regression - Bump doesn't use interpolated normals
+FIR-804 - AMDMAYA-631 Lighting issues in CPU+GPU mode
+FIR-800 - RPRSW-319 RPR Core 1.258 - Texture compression crashes if a background image is used (NV)
+White list : add of Radeon Vega Frontier - make sure to update RprTools.cpp in all the plugin source codes 
+
+
+################################################################################################################
+RPR SDK 1.264 - 24 May 2017
+
+FIR-817 - subdivision is now smooth
+FIR-799 - RPRSW-321 - In CPU mode, transparent objects are opaque over a reflective ground plane
+FIR-843 - input lookups on emissive materials on CPU
+FA-157 - FIR-854 - AMDBLENDER-598 - CreateImageFromFile is now reloading the image if it changed
+FIR-841 - AMDMAX-1432 & AMDMAX-1464 - if the system has several AMD OpenCL platform installed, only the 1rst one is taken into account (Antonio, please test)
+FIR-858 - RPR_MATERIAL_NODE_UV_PROJECT has now the parameter : "threshold"
+Also a RPRX API (UberMat 2.0 ) update from Dmitry, I didn't check what it fixed.
+
+
+################################################################################################################
+RPR SDK 1.263 - 18 May 2017
+
+FIR-811 - FIR-815 - new render mode : RPR_RENDER_MODE_DIFFUSE : diffuse only
+FIR-832 - new material node : RPR_MATERIAL_NODE_UV_PROJECT  , arguments :  "origin" "zaxis" "xaxis"
+FIR-832 - new image wrap: RPR_IMAGE_WRAP_TYPE_CLAMP_ZERO  RPR_IMAGE_WRAP_TYPE_CLAMP_ONE   
+FIR-828 - fix light falloff on CPU
+FIR-820 - support single channel texture
+FIR-824 - microfacet refraction fix when IOR=1
+FIR-842 - AMDMAYA-689 - RPRX normal map fix
+
+
+################################################################################################################
+RPR SDK 1.262
+
+FIR-790 - Double sided material API expose
+FIR-816	- Expose new Shadow Catcher
+
+Shadow catcher is back, this is the only major difference with 1.261.
+We will add a sample for shadow catcher in next commit.
+
+
+################################################################################################################
+RPR SDK 1.261
+
+
+list of fixes :
+ 
+FIR-782 - AA cell size support on cpu
+FIR-785 - AOV on MultiGPU
+FIR-792 - AMDBLENDER-402 - Anti Aliasing regression
+FIR-810 - MultiGPU crashes on non OOC environment
+FIR-812 - fix known issue of 1.260 concerning shuffle arithmetic operator
+FIR-813 - fix : GPU1 only flag was enabling GPU0 too
+FIR-791 - AMDBLENDER-572 - Crash when DoF is ZERO
+FIR-806 - fix known issue of 1.260 : remove displacement is now working.
+ 
+
+Note :  in order to help the API users, the check of input arguments has been re-enforced.
+        If a function was working before, and is now returning RPR_ERROR_INVALID_PARAMETER,  double check that your arguments types are correct,
+
+known issues :
+- there is no Shadow catcher. this one is planned for 1.262.
+
+
+################################################################################################################
+RPR SDK 1.260
+
+FIR-640 - make multiple scenes work
+FIR-796 - Shader graph support for displacement map
+FIR-538	- Procedural input to Bump node doesn't support Arithmetics or Blend
+FIR-783	- Texture Out of Core
+
+Concerning the API update , there are 2 changes :
+
+ 
+-- API change #1 :  the normal map input
+
+before
+the "data" input of  RPR_MATERIAL_NODE_NORMAL_MAP  was taking  an rpr_imag
+example :
+
+rpr_image imageInputA = NULL; status = rprContextCreateImageFromFile(context_,"../Resources/Textures/rocky.png",&imageInputA);
+  rpr_material_node textureNormalMap = NULL;
+status = rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_NORMAL_MAP, &textureNormalMap);
+  status = rprMaterialNodeSetInputImageData(textureNormalMap, "data", imageInputA);
+
+now "data" has been replaced by "color", and it takes a   rpr_material_node, so instead it has more possibility
+example :
+
+rpr_image imageInputA = NULL; status = rprContextCreateImageFromFile(context_,"../Resources/Textures/rocky.png",&imageInputA);
+   rpr_material_node textureNormalMap = NULL; status = rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_NORMAL_MAP, &textureNormalMap);
+   rpr_material_node matNodeTextureNormalMap = NULL; status = rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_IMAGE_TEXTURE, &matNodeTextureNormalMap);
+   status = rprMaterialNodeSetInputImageData(matNodeTextureNormalMap, "data",  imageInputA );  
+status = rprMaterialNodeSetInputN(textureNormalMap, "color", matNodeTextureNormalMap );
+
+Note that if you forget to do the upgrade, the execution will fail nicely because it will use a "data" parameter that doesn't exist anymore
+
+
+-- API change #2 : Displacement
+
+rprShapeSetDisplacementImage has been replaced by  rprShapeSetDisplacementMaterial, so instead it has more possibility.
+
+here is an example of how the code must evolve :
+Before you code was doing that :
+
+status = rprShapeSetDisplacementMaterial(mesh,imageInputA);
+
+now, you have to create a material node image :
+
+rpr_material_node matNodeTextureDisplacementMap = NULL; status = rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_IMAGE_TEXTURE, &matNodeTextureDisplacementMap);
+    status = rprMaterialNodeSetInputImageData(matNodeTextureDisplacementMap, "data",  imageInputA );
+status = rprShapeSetDisplacementMaterial(mesh,matNodeTextureDisplacementMap); (edited)
+
+in both API changes we have evolved the API so you have nice build/runtime fail if you forgot to upgrade
+
+--------
+
+Known issues
+
+- the displacement map can be replaced, but not removed.
+- potential rendering issue with the 3 operator : OP_SHUFFLE_YZWX    OP_SHUFFLE_ZWXY      OP_SHUFFLE_WXYZ 
+- shadow catcher is NOT working.
+
+---------
+
+Updates :
+
+- the 1.257 fixes for uber2 are back in
+- 1.260 is managing multiple scenes correctly
+- procedural input to Bump node now supports Arithmetic or Blend
+- Image system memory usage reduced.
+- add new demo samples 
+
+################################################################################################################
+RPR SDK 1.258
+
+FIR-627	- AOV AO is broken on CPU	Bug	Major
+FIR-718	- Artifacts with inverted normals
+FIR-720	- AMDBLENDER-277 - Shadows Artifacts on CPU
+FIR-728	- AMDBLENDER-378 BgDemo_AnotherIBL (CPUGPU difference)
+FIR-735 - BrdfDemoPassthrough (CPUGPU difference)
+FIR-764	- AMDBLENDER-462 RPR Core - CPU - Bumpmap with image input wrong lighting
+FIR-765	- AMDBLENDER-493 RPR Core - Subdivision memory leak fix
+FIR-770	- GITHUB-523 Transparent materials show environment image instead bg image for CPU mode
+FIR-771	- AMDBLENDER-459 RPR Core - CPU - Emissive material is emitting both side of the face
+FIR-772	- AMDBLENDER-441 RPR Core - IBL not rendering when theres not any renderable object in the scene
+FIR-773 - AMDMAX-1200 Texture map hooked to emissive stays in RPR AO render
+FIR-775 - AMDMAX-1395 Normals scale is broken
+FIR-776 - AMDBLENDER-538 RPR Core - adding another light in scene after SceneClear keeps color of cleared IBL in 1.257
+FIR-778 - Revert the standard shader inputs
+FIR-779 - Multi GPU slowdown on MacOS (Remove OMP)
+FIR-781 - GitHub-539 AA and framebuffer size causes artifacts
+FIR-782 - AA cell size not supported on cpu
+

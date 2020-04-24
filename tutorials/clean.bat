@@ -1,0 +1,1 @@
+..\premake4\win\premake4.exe clean

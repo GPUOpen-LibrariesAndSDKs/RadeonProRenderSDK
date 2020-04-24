@@ -1,0 +1,6 @@
+tutorials/build/
+tutorials/Bin/
+tutorials/.vs/
+tutorials/Tutorials.sln
+tutorials/Tutorials.VC.db
+tutorials/Makefile
