@@ -9,6 +9,7 @@ extern "C" {
 
 /* rpr_material_node_input */
 #define RPR_UBER_MATERIAL_LAYERS                        0x11000U
+#define RPR_MATERIAL_INPUT_CAST_SHADOW                  0x11001U
 
 /* rpr uber material layers */
 #define RPR_UBER_MATERIAL_LAYER_EMISSION        (1<<0)
@@ -34,6 +35,10 @@ extern "C" {
 #define RPR_CONTEXT_CREATEPROP_HYBRID_ENABLE_VCT 0x1605 // Tells Hybrid to enable support for VCT(Voxel Cone Tracing).
                                                         // Enabling this requires vulkan implementation to support VK_EXT_consevative_rasterisation
                                                         // and in case of VK inter-op mode it must be enabled on provided device
+#define RPR_CONTEXT_CREATEPROP_HYBRID_ENABLE_PER_FACE_MATERIALS 0x1606 // Tells Hybrid to enable support for per-face materials.
+                                                                       // This functionality requires additional memory on both -
+                                                                       // CPU and GPU even when no per-face materials set in scene.
+#define RPR_CONTEXT_CREATEPROP_HYBRID_FACE_MEMORY_SIZE 0x1607 // Size of per-face memory buffer in bytes. Used only if per-face materials enabled
 
 struct RPRHybridKernelsPathInfo
 {

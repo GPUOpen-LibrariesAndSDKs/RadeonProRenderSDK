@@ -77,9 +77,9 @@ typedef rpr_uint rpr_environment_override;
 
 #define RPR_VERSION_MAJOR 1 
 #define RPR_VERSION_MINOR 35 
-#define RPR_VERSION_REVISION 0 
-#define RPR_VERSION_BUILD 0x6a03c5b6 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00103500 
+#define RPR_VERSION_REVISION 1 
+#define RPR_VERSION_BUILD 0x184afed3 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00103501 
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
 #define RPR_API_VERSION_MINOR RPR_VERSION_BUILD 
 #define RPR_OBJECT_NAME 0x777777 
@@ -194,6 +194,8 @@ typedef enum // rpr_light_type
 	RPR_LIGHT_TYPE_ENVIRONMENT = 0x4 ,
 	RPR_LIGHT_TYPE_SKY = 0x5 ,
 	RPR_LIGHT_TYPE_IES = 0x6 ,
+	RPR_LIGHT_TYPE_SPHERE = 0x7 ,
+	RPR_LIGHT_TYPE_DISK = 0x8 ,
 } rpr_light_type ;
 
 typedef enum // rpr_context_info
@@ -495,6 +497,10 @@ typedef enum // rpr_light_info
 /* rpr_light_info - IES light */
 	RPR_IES_LIGHT_RADIANT_POWER = 0x816 ,
 	RPR_IES_LIGHT_IMAGE_DESC = 0x817 ,
+/* rpr_light_info - sphere light */
+	RPR_SPHERE_LIGHT_RADIANT_POWER = 0x822 ,
+/* rpr_light_info - disk light */
+	RPR_DISK_LIGHT_RADIANT_POWER = 0x823 ,
 } rpr_light_info ;
 
 typedef enum // rpr_parameter_info
@@ -896,7 +902,6 @@ typedef enum // rpr_aov
 	RPR_AOV_VIEW_SHADING_NORMAL = 0x1d,
 	RPR_AOV_REFLECTION_CATCHER = 0x1e,
 	RPR_AOV_COLOR_RIGHT = 0x1f ,
-	RPR_AOV_MAX = 0x20,
 } rpr_aov ;
 
 typedef enum // rpr_post_effect_type
@@ -1274,6 +1279,8 @@ extern RPR_API_ENTRY rpr_status rprContextSetParameterByKeyString(rpr_context co
     * the 'paramName' is not related with the parameters of rprContextSetParameterByKey4f.
     */
   extern RPR_API_ENTRY rpr_status rprContextSetInternalParameter4f(rpr_context context, rpr_char const * paramName, rpr_float x, rpr_float y, rpr_float z, rpr_float w);
+extern RPR_API_ENTRY rpr_status rprContextSetInternalParameter1u(rpr_context context, rpr_char const * paramName, rpr_uint x);
+extern RPR_API_ENTRY rpr_status rprContextSetInternalParameterBuffer(rpr_context context, rpr_char const * paramName, void const * buffer, size_t bufferSizeByte);
 
 
     /** @brief Perform evaluation and accumulation of a single sample (or number of AA samples if AA is enabled)
@@ -2199,6 +2206,8 @@ extern RPR_API_ENTRY rpr_status rprGridGetInfo(rpr_grid grid, rpr_grid_parameter
     *  @return         Light object
     */
   extern RPR_API_ENTRY rpr_status rprContextCreateSpotLight(rpr_context context, rpr_light * light);
+extern RPR_API_ENTRY rpr_status rprContextCreateSphereLight(rpr_context context, rpr_light * light);
+extern RPR_API_ENTRY rpr_status rprContextCreateDiskLight(rpr_context context, rpr_light * light);
 
 
     /** @brief Set radiant power of a spot light source
@@ -2209,6 +2218,8 @@ extern RPR_API_ENTRY rpr_status rprGridGetInfo(rpr_grid grid, rpr_grid_parameter
     *  @return   RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprSpotLightSetRadiantPower3f(rpr_light light, rpr_float r, rpr_float g, rpr_float b);
+extern RPR_API_ENTRY rpr_status rprSphereLightSetRadiantPower3f(rpr_light light, rpr_float r, rpr_float g, rpr_float b);
+extern RPR_API_ENTRY rpr_status rprDiskLightSetRadiantPower3f(rpr_light light, rpr_float r, rpr_float g, rpr_float b);
 
 
     /** @brief Set cone shape for a spot light

@@ -318,7 +318,6 @@ void rprAreDevicesCompatible(rpr_int tahoePluginID, rpr_char const * cache_path,
 {
 	*devicesCompatibleOut = devicesUsed;
 
-	rpr_int compatibility = RPR_ERROR_INVALID_PARAMETER;
 	if ( devicesUsed & RPR_CREATION_FLAGS_ENABLE_GPU0 ) { if ( rprIsDeviceCompatible(tahoePluginID,RPRTD_GPU0,cache_path,doWhiteListTest,os) != RPRTC_COMPATIBLE ) { *devicesCompatibleOut &= ~RPR_CREATION_FLAGS_ENABLE_GPU0; } }
 	if ( devicesUsed & RPR_CREATION_FLAGS_ENABLE_GPU1 ) { if ( rprIsDeviceCompatible(tahoePluginID,RPRTD_GPU1,cache_path,doWhiteListTest,os) != RPRTC_COMPATIBLE ) { *devicesCompatibleOut &= ~RPR_CREATION_FLAGS_ENABLE_GPU1; } }
 	if ( devicesUsed & RPR_CREATION_FLAGS_ENABLE_GPU2 ) { if ( rprIsDeviceCompatible(tahoePluginID,RPRTD_GPU2,cache_path,doWhiteListTest,os) != RPRTC_COMPATIBLE ) { *devicesCompatibleOut &= ~RPR_CREATION_FLAGS_ENABLE_GPU2; } }

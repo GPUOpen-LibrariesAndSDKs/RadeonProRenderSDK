@@ -3,6 +3,19 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 1.35.1 - 06 May 2020
+
+-- RPR API CHANGE:
+remove of RPR_AOV_MAX
+
+-- RESOLVED TICKETS for TAHOE:
+FIR-1662 - Displacement with higher min value than max value
+FIR-1601 - Subdivision changes mesh winding order
+FIR-1148 - Enabling Velocity AOV produces not correct shadow catcher AOV
+FIR-1663 - [z-emotion] Render of mipmap texture through transparent is wrong on GPU
+
+
+################################################################################################################
 RPR SDK 1.35.0 - 03 April 2020
 
 -- RPR API CHANGE :

@@ -92,7 +92,8 @@ public:
 
     // object creators
     Scene* CreateScene(Status* out_status = nullptr);
-    Shape* CreateShape(float const* vertices, size_t numVertices, rpr_int vertexStride, float const* normals, size_t numNormals, rpr_int normalStride, float const* texcoords, size_t numTexcoords, rpr_int texcoordStride, rpr_int const* vertexIndices, rpr_int vidxStride, rpr_int const* normalIndices, rpr_int nidxStride, rpr_int const* texcoordIndices, rpr_int tidxStride, rpr_int const* numFaceVertices, size_t numFaces, Status* out_status = nullptr);
+    Shape* CreateShape(rpr_float const* vertices, size_t numVertices, rpr_int vertexStride, rpr_float const* normals, size_t numNormals, rpr_int normalStride, rpr_float const* texcoords, size_t numTexcoords, rpr_int texcoordStride, rpr_int const* vertexIndices, rpr_int vidxStride, rpr_int const* normalIndices, rpr_int nidxStride, rpr_int const* texcoordIndices, rpr_int tidxStride, rpr_int const* numFaceVertices, size_t numFaces, Status* out_status = nullptr);
+    Shape* CreateShape(rpr_float const* vertices, size_t numVertices, rpr_int vertexStride, rpr_float const* normals, size_t numNormals, rpr_int normalStride, rpr_int const * perVertexFlag, size_t numPerVertexFlags, rpr_int perVertexFlagStride, rpr_int numberOfTexCoordLayers, rpr_float const ** texcoords, size_t const * numTexcoords, rpr_int const * texcoordStride, rpr_int const* vertexIndices, rpr_int vidxStride, rpr_int const * normalIndices, rpr_int nidxStride, rpr_int const ** texcoordIndices, rpr_int const * tidxStride, rpr_int const * numFaceVertices, size_t numFaces, rpr_mesh_info const * meshProperties, Status* out_status = nullptr);
     Shape* CreateShapeInstance(Shape* prototypeShape, Status* out_status = nullptr);
     Camera* CreateCamera(Status* out_status = nullptr);
     FrameBuffer* CreateFrameBuffer(FramebufferFormat const& format, FramebufferDesc const& fbDesc, Status* out_status = nullptr);
@@ -156,7 +157,13 @@ private:
 
     rpr_context m_context = nullptr;
     rpr_material_system m_materialSystem = nullptr; // one material system per context is the good design for any project.
+
+    friend rpr_context GetRprObject(rpr::Context* ptr);
 };
+
+inline rpr_context GetRprObject(rpr::Context* ptr) {
+    return ptr ? ptr->m_context : nullptr;
+}
 
 #ifndef RPR_USE_CUSTOMIZED_NODE
 class BaseNode_Customized {

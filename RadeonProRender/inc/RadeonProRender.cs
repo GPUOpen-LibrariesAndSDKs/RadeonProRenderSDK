@@ -193,6 +193,8 @@ SPOT = 0x3 ,
 ENVIRONMENT = 0x4 ,
 SKY = 0x5 ,
 IES = 0x6 ,
+SPHERE = 0x7 ,
+DISK = 0x8 ,
 }
 /*rpr_context_info*/
 public enum ContextInfo : int
@@ -494,6 +496,10 @@ SKY_LIGHT_PORTAL_COUNT = 0x821 ,
 /* rpr_light_info - IES light */
 IES_LIGHT_RADIANT_POWER = 0x816 ,
 IES_LIGHT_IMAGE_DESC = 0x817 ,
+/* rpr_light_info - sphere light */
+SPHERE_LIGHT_RADIANT_POWER = 0x822 ,
+/* rpr_light_info - disk light */
+DISK_LIGHT_RADIANT_POWER = 0x823 ,
 }
 /*rpr_parameter_info*/
 public enum Parameter : int
@@ -895,7 +901,6 @@ VARIANCE = 0x1c ,
 VIEW_SHADING_NORMAL = 0x1d,
 REFLECTION_CATCHER = 0x1e,
 COLOR_RIGHT = 0x1f ,
-MAX = 0x20,
 }
 /*rpr_post_effect_type*/
 public enum PostEffectType : int
@@ -1059,9 +1064,9 @@ VISIBILITY_LIGHT = 0x421 ,
 }
 public const int RPR_VERSION_MAJOR = 1 ;
 public const int RPR_VERSION_MINOR = 35 ;
-public const int RPR_VERSION_REVISION = 0 ;
-public const int RPR_VERSION_BUILD = 0x6a03c5b6 ;
-public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00103500 ;
+public const int RPR_VERSION_REVISION = 1 ;
+public const int RPR_VERSION_BUILD = 0x184afed3 ;
+public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00103501 ;
 // Deprecated version naming - will be removed in the future :
 
 public const int RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -1319,6 +1324,16 @@ return rprContextSetParameterByKeyString(context, in_input, value);
 public static Status ContextSetInternalParameter4f(IntPtr context, string paramName, float x, float y, float z, float w)
 {
 return rprContextSetInternalParameter4f(context, paramName, x, y, z, w);
+}
+[DllImport(dllName)] static extern Status rprContextSetInternalParameter1u(IntPtr context, string paramName, uint x);
+public static Status ContextSetInternalParameter1u(IntPtr context, string paramName, uint x)
+{
+return rprContextSetInternalParameter1u(context, paramName, x);
+}
+[DllImport(dllName)] static extern Status rprContextSetInternalParameterBuffer(IntPtr context, string paramName, IntPtr buffer, long bufferSizeByte);
+public static Status ContextSetInternalParameterBuffer(IntPtr context, string paramName, IntPtr buffer, long bufferSizeByte)
+{
+return rprContextSetInternalParameterBuffer(context, paramName, buffer, bufferSizeByte);
 }
 
     /** @brief Perform evaluation and accumulation of a single sample (or number of AA samples if AA is enabled)
@@ -2567,6 +2582,16 @@ public static Status ContextCreateSpotLight(IntPtr context, out IntPtr light)
 {
 return rprContextCreateSpotLight(context, out light);
 }
+[DllImport(dllName)] static extern Status rprContextCreateSphereLight(IntPtr context, out IntPtr light);
+public static Status ContextCreateSphereLight(IntPtr context, out IntPtr light)
+{
+return rprContextCreateSphereLight(context, out light);
+}
+[DllImport(dllName)] static extern Status rprContextCreateDiskLight(IntPtr context, out IntPtr light);
+public static Status ContextCreateDiskLight(IntPtr context, out IntPtr light)
+{
+return rprContextCreateDiskLight(context, out light);
+}
 
     /** @brief Set radiant power of a spot light source
     *
@@ -2580,6 +2605,16 @@ return rprContextCreateSpotLight(context, out light);
 public static Status SpotLightSetRadiantPower3f(IntPtr light, float r, float g, float b)
 {
 return rprSpotLightSetRadiantPower3f(light, r, g, b);
+}
+[DllImport(dllName)] static extern Status rprSphereLightSetRadiantPower3f(IntPtr light, float r, float g, float b);
+public static Status SphereLightSetRadiantPower3f(IntPtr light, float r, float g, float b)
+{
+return rprSphereLightSetRadiantPower3f(light, r, g, b);
+}
+[DllImport(dllName)] static extern Status rprDiskLightSetRadiantPower3f(IntPtr light, float r, float g, float b);
+public static Status DiskLightSetRadiantPower3f(IntPtr light, float r, float g, float b)
+{
+return rprDiskLightSetRadiantPower3f(light, r, g, b);
 }
 
     /** @brief Set cone shape for a spot light
