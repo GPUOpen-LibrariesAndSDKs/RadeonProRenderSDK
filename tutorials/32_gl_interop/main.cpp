@@ -13,21 +13,27 @@
 *  year of creation of the work.
 *
 \*****************************************************************************/
+
+#ifdef __APPLE__
+#include "GL/glew.h"
+#elif WIN32
+#define NOMINMAX
+#include <Windows.h>
+#include "GL/glew.h"
+#include "GLUT/GLUT.h"
+#endif
+
 #include "RadeonProRender.h"
 #include "RadeonProRender_GL.h"
 #include "Math/mathutils.h"
 #include "../common/common.h"
 #include "ShaderManager.h"
 
+
 #ifdef __APPLE__
-#include <OpenGL/OpenGL.h>
-#elif WIN32
-#define NOMINMAX
-#include <Windows.h>
-#include "GL/glew.h"
-#include "GLUT/GLUT.h"
-#elif defined(__LINUX__)
-#include <GL/gl.h>
+    #ifndef GL_RGBA32F
+    #define GL_RGBA32F GL_RGBA32F_ARB
+    #endif 
 #endif
 
 #include <cassert>

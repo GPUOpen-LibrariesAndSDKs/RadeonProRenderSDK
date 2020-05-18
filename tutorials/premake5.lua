@@ -60,7 +60,7 @@ solution "Tutorials"
 		libdirs {"../RadeonProRender/binUbuntu18" }
 	end
 	if os.istarget("macosx") then
-		libdirs {"../RadeonProRender/libMacOs" }
+		libdirs {"../RadeonProRender/binMacOS" }
 	end
 
 	include "00_context_creation"

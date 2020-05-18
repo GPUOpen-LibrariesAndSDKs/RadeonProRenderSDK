@@ -7,6 +7,9 @@ project "32_gl_interop"
 	if os.istarget("windows") then
     	includedirs{ "../../3rdParty/glew/include", "../../3rdParty/freeglut/include"} 	
 	end
+    if os.istarget("macosx") then
+    	includedirs{ "../../3rdParty/glew/include"} 	
+	end
 	
     buildoptions "-std=c++11"
 
@@ -16,15 +19,23 @@ project "32_gl_interop"
 
 	if os.istarget("windows") then
 		links {"freeglut"}
-	else
-		links {"glut"}	
-		links {"GL"}
-	end
-
+    end
+    if os.istarget("linux") then
+        links {"glut"}
+        links {"GL"}
+    end
+    if os.istarget("macosx") then
+         linkoptions{"-framework OpenGL", "-framework GLUT"}   
+    end
+    
+    
 	if os.istarget("windows") then
-		libdirs {"../../3rdParty/glew/lib/x64", "../../3rdParty/freeglut/lib/x64"}
+		libdirs {"../../3rdParty/glew/libWin64", "../../3rdParty/freeglut/lib/x64"}
 	end
-	
+	if os.istarget("macosx") then
+		libdirs {"../../3rdParty/glew/libOsx64"}
+	end
+    
     configuration {"x64", "Debug"}
         targetdir "../Bin"
     configuration {"x64", "Release"}
