@@ -1051,6 +1051,12 @@ Status Image::SetFilter(ImageFilterType type) {
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
+Status Image::SetUDIM(rpr_uint tileIndex, Image* image) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprImageSetUDIM(GetRprObject(this), tileIndex, GetRprObject(image))
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
 Status Image::SetGamma(rpr_float type) {
     RPR_CPPWRAPER_CALL_PREFIX
     rprImageSetGamma(GetRprObject(this), type)

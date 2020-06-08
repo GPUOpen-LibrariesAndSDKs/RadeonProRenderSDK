@@ -39,9 +39,9 @@ extern "C" {
 
 #define RPR_VERSION_MAJOR 1 
 #define RPR_VERSION_MINOR 35 
-#define RPR_VERSION_REVISION 1 
-#define RPR_VERSION_BUILD 0x184afed3 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00103501 
+#define RPR_VERSION_REVISION 2 
+#define RPR_VERSION_BUILD 0xc237daef 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00103502 
 
 // Deprecated version naming - will be removed in the future :
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
@@ -293,6 +293,7 @@ extern "C" {
 #define RPR_IMAGE_MIPMAP_ENABLED 0x308 
 #define RPR_IMAGE_MIP_COUNT 0x309 
 #define RPR_IMAGE_GAMMA_FROM_FILE 0x30A 
+#define RPR_IMAGE_UDIM 0x30B 
 #define RPR_IMAGE_NAME RPR_OBJECT_NAME
 #define RPR_IMAGE_UNIQUE_ID RPR_OBJECT_UNIQUE_ID
 #define RPR_IMAGE_CUSTOM_PTR RPR_OBJECT_CUSTOM_PTR
@@ -1673,6 +1674,15 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
     *  @return             RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprImageSetWrap(rpr_image image, rpr_image_wrap_type type);
+
+
+    /** @brief  Set a tile to an UDIM image.
+    *
+    *  @param  imageUdimRoot   must be an UDIM image  ( created with no data:  rprContextCreateImage(context, {0,RPR_COMPONENT_TYPE_UINT8}, nullptr, nullptr, ); )
+    *  @param  tileIndex       a valid UDIM index: 1001 , 1002, 1003 ... 1011, 1012, 1013 ... etc ...
+    *  @param  imageTile       a valid classic rpr_image
+    */
+  extern RPR_API_ENTRY rpr_status rprImageSetUDIM(rpr_image imageUdimRoot, rpr_uint tileIndex, rpr_image imageTile);
 
 
     /** @brief

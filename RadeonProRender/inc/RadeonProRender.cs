@@ -351,6 +351,7 @@ GAMMA = 0x307 ,
 MIPMAP_ENABLED = 0x308 ,
 MIP_COUNT = 0x309 ,
 GAMMA_FROM_FILE = 0x30A ,
+UDIM = 0x30B ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -1064,9 +1065,9 @@ VISIBILITY_LIGHT = 0x421 ,
 }
 public const int RPR_VERSION_MAJOR = 1 ;
 public const int RPR_VERSION_MINOR = 35 ;
-public const int RPR_VERSION_REVISION = 1 ;
-public const int RPR_VERSION_BUILD = 0x184afed3 ;
-public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00103501 ;
+public const int RPR_VERSION_REVISION = 2 ;
+public const int RPR_VERSION_BUILD = 0xc237daef ;
+public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00103502 ;
 // Deprecated version naming - will be removed in the future :
 
 public const int RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -1943,6 +1944,19 @@ return rprImageGetInfo(image, image_info, size, data, out size_ret);
 public static Status ImageSetWrap(IntPtr image, ImageWrapType type)
 {
 return rprImageSetWrap(image, type);
+}
+
+    /** @brief  Set a tile to an UDIM image.
+    *
+    *  @param  imageUdimRoot   must be an UDIM image  ( created with no data:  rprContextCreateImage(context, {0,RPR_COMPONENT_TYPE_UINT8}, nullptr, nullptr, ); )
+    *  @param  tileIndex       a valid UDIM index: 1001 , 1002, 1003 ... 1011, 1012, 1013 ... etc ...
+    *  @param  imageTile       a valid classic rpr_image
+    */
+  
+[DllImport(dllName)] static extern Status rprImageSetUDIM(IntPtr imageUdimRoot, uint tileIndex, IntPtr imageTile);
+public static Status ImageSetUDIM(IntPtr imageUdimRoot, uint tileIndex, IntPtr imageTile)
+{
+return rprImageSetUDIM(imageUdimRoot, tileIndex, imageTile);
 }
 
     /** @brief

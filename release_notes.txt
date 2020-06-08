@@ -3,6 +3,17 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 1.35.2 - 08 June 2020
+
+-- RESOLVED TICKETS for TAHOE:
+FIR-1656 - Crash when rendering RPR Volume on NVidea
+FIR-1673 - Object motion and camera motion use different time
+FIR-1675 - Apply gamma to some AOVs from RprsRender
+FIR-1677 - Motion blur rotation causes weird terminator lines
+FIR-1678 - 128 threads machine caps 64 threads
+
+
+################################################################################################################
 RPR SDK 1.35.1 - 06 May 2020
 
 -- RPR API CHANGE:

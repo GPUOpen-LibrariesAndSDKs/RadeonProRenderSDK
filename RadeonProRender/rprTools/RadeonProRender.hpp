@@ -498,6 +498,7 @@ public:
     Status GetInfo(ImageInfo imageInfo, size_t size, void* data, size_t* size_ret);
     Status SetWrap(ImageWrapType type);
     Status SetFilter(ImageFilterType type);
+    Status SetUDIM(rpr_uint tileIndex, Image* image);
     Status SetGamma(float type);
     Status SetMipmapEnabled(rpr_bool enabled);
 
