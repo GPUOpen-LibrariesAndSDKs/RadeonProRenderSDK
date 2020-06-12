@@ -1,0 +1,8 @@
+newmtl initialShadingGroup
+illum 5
+Kd 0.150 0.50 0.150
+Ka 0.00 0.00 0.00
+Ks 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+Ni 1.50
+Ns 1000.0
