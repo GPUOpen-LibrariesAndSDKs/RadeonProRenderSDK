@@ -59,11 +59,8 @@ solution "Tutorials"
     
     configuration {} -- back to all configurations
 	if os.istarget("windows") then
-                if _ACTION == "vs2017" then
-                toolset "msc-v141"
                 systemversion(os.winSdkVersion() .. ".0")
-                end
-		libdirs {"../RadeonProRender/libWin64" }
+                libdirs {"../RadeonProRender/libWin64" }
 	end
 	if os.istarget("linux") then
 		defines{ "__LINUX__" }
