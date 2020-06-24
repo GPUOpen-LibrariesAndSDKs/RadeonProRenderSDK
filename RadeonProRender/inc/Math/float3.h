@@ -16,6 +16,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 
 #pragma once
 
+#include <iostream>
 #include <cmath>
 #include <algorithm>
 
@@ -38,12 +39,18 @@ namespace RadeonProRender
         float3& operator *= (float3 const& o) { x*=o.x; y*=o.y; z*= o.z; return *this;}
         float3& operator *= (float c) { x*=c; y*=c; z*= c; return *this;}
         float3& operator /= (float c) { float cinv = 1.f/c; x*=cinv; y*=cinv; z*=cinv; return *this;}
-
+        friend std::ostream& operator<<(std::ostream& os, const float3& o);
+       
         float x, y, z, w;
     };
 
     typedef float3 float4;
 
+    std::ostream& operator<<(std::ostream& os, const float3& o)
+    {
+        os << "[" << o.x << ", " << o.y << ", " << o.z << ", " << o.w <<  "]";
+        return os;
+    }
 
     inline float3 operator+(float3 const& v1, float3 const& v2)
     {

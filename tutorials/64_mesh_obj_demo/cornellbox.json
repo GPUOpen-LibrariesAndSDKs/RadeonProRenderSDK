@@ -1,0 +1,33 @@
+{
+    "camera": {
+	    "position":[0.0, -1.0, 20.0],
+        "aimed":[0.0, 0.0, 0.0],
+        "up":[0.0, 1.0, 0.0],
+        "focal_length":75.0, 		
+        "translation": [0.0, 0.0, 0.0],
+        "rotation": [0.0, 1.0, 0.0, 3.14159],
+        "type": "perspective"
+    },
+    "obj": {
+        "name": "floor",
+        "geomObjFile": "../../Resources/Meshes/cornellBox.obj",
+        "translation": [0.0, -3.0, 0.0],
+        "rotation": [0,0,0,0],
+        "scale": [1,1,1]
+    },
+    "context": {
+        "rendermode":"gi",
+        "recursion":"10",
+        "width":"1280",
+        "height":"720",
+        "iterations":"100",
+        "batchsize":"32",
+        "output":"cornellbox.png",
+        "output.json":"output.json",
+        "gui":"0",
+        "device": {
+            "gpu0":"1",
+            "cpu":"0"
+        }
+    }
+}
