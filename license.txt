@@ -27,4 +27,5 @@ GLEW - https://github.com/nigels-com/glew/blob/master/LICENSE.txt
 FreeGLUT – MIT License - https://sourceforge.net/projects/freeglut/
 glTF - https://www.khronos.org/gltf/, licensed under the Khronos IP frameworkhttps://www.khronos.org/members/ip-framework
 gtest - BSD 3-clauses License - https://github.com/google/googletest
-
+picoJson - JSON parser - 2-clause BSD license - https://github.com/kazuho/picojson
+tinyObjLoader - OBJ parser - MIT License - https://github.com/tinyobjloader/tinyobjloader
