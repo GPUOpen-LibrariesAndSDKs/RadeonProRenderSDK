@@ -46,7 +46,7 @@ namespace RadeonProRender
 
     typedef float3 float4;
 
-    std::ostream& operator<<(std::ostream& os, const float3& o)
+    inline std::ostream& operator<<(std::ostream& os, const float3& o)
     {
         os << "[" << o.x << ", " << o.y << ", " << o.z << ", " << o.w <<  "]";
         return os;
