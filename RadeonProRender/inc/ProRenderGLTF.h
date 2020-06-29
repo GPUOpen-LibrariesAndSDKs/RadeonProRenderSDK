@@ -29,7 +29,8 @@ extern "C" {
 //             Advantage of using this flag is that we ensure to attach the original image files into the GLTF, instead of using an image compressed/modified by RPR.
 //             For Unicode, you can encode the name with UTF-8
 #define RPRGLTF_EXPORTFLAG_COPY_IMAGES_USING_OBJECTNAME (1 << 2) 
-
+// if flag enabled, export lights with both RPR and KHR extensions.
+#define RPRGLTF_EXPORTFLAG_KHR_LIGHT (1 << 3) 
 
 //
 // import flags :

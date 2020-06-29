@@ -1,1 +1,1 @@
-..\premake4\win\premake4.exe clean
+..\premake5\win\premake5.exe clean
