@@ -3,6 +3,31 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 1.35.3 - 03 July 2020
+
+-- RESOLVED TICKETS for TAHOE:
+FIR-1686 - Color table values are not initialized with consistent colors to northstar
+FIR-1676 - [z-emotion] Sawtooth artifact appears with normal map
+
+-- RESOLVED TICKETS for NORTHSTAR:
+RPRNEXT-32  - Shadow catcher
+RPRNEXT-177 - Out of Core Geometry unit test
+RPRNEXT-37  - Curves
+RPRNEXT-184 - ALI reported Scene differences 1.0 vs 2.0
+RPRNEXT-189 - "backgroundplane" in Northstar
+RPRNEXT-199 - Northstar - Opacity AOV implementation
+RPRNEXT-162 - Light sampler doesn't work with back side emission
+RPRNEXT-193 - UDIM crash on object delete
+RPRNEXT-171 - Artifacts on Lexus scene
+RPRNEXT-194 - Improve rendering perf by using tiled render
+RPRNEXT-139 - BVH memory reduction
+RPRNEXT-146 - Firefly suppression
+RPRNEXT-191 - Implement resolve Normalization only
+RPRNEXT-173 - Maya "Remap HSV" node is not working
+RPRNEXT-202 - Non uniform scaling cause wrong shading normal
+RPRNEXT-196 - Weird edge darkness
+
+################################################################################################################
 RPR SDK 1.35.2 - 08 June 2020
 
 -- RESOLVED TICKETS for TAHOE:

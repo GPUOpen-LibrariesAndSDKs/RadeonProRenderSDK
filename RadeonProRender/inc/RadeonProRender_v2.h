@@ -77,9 +77,9 @@ typedef rpr_uint rpr_environment_override;
 
 #define RPR_VERSION_MAJOR 1 
 #define RPR_VERSION_MINOR 35 
-#define RPR_VERSION_REVISION 2 
-#define RPR_VERSION_BUILD 0xc237daef 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00103502 
+#define RPR_VERSION_REVISION 3 
+#define RPR_VERSION_BUILD 0x92f604e2 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00103503 
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
 #define RPR_API_VERSION_MINOR RPR_VERSION_BUILD 
 #define RPR_OBJECT_NAME 0x777777 
@@ -651,6 +651,15 @@ typedef enum // rpr_material_node_type
 	RPR_MATERIAL_NODE_TRANSFORM = 0x2c,
 	RPR_MATERIAL_NODE_RGB_TO_HSV = 0x2d,
 	RPR_MATERIAL_NODE_HSV_TO_RGB = 0x2e,
+
+	// MaterialX materials
+	RPR_MATERIAL_NODE_MATX_DIFFUSE_BRDF = 0x1000,
+	RPR_MATERIAL_NODE_MATX_DIELECTRIC_BRDF = 0x1001,
+	RPR_MATERIAL_NODE_MATX_GENERALIZED_SCHLICK_BRDF = 0x1002,
+	RPR_MATERIAL_NODE_MATX_NOISE3D = 0x1003,
+	RPR_MATERIAL_NODE_MATX_TANGENT = 0x1004,
+	RPR_MATERIAL_NODE_MATX_NORMAL = 0x1005,
+	RPR_MATERIAL_NODE_MATX_POSITION = 0x1006,
 } rpr_material_node_type ;
 
 typedef enum // rpr_material_node_input
@@ -701,6 +710,11 @@ typedef enum // rpr_material_node_input
 	RPR_MATERIAL_INPUT_4 = 0x2b ,
 	RPR_MATERIAL_INPUT_SCHLICK_APPROXIMATION = 0x2c ,
 	RPR_MATERIAL_INPUT_APPLYSURFACE = 0x2d ,
+	RPR_MATERIAL_INPUT_TANGENT = 0x2e ,
+	RPR_MATERIAL_INPUT_DISTRIBUTION = 0x2f ,
+	RPR_MATERIAL_INPUT_BASE = 0x30 ,
+	RPR_MATERIAL_INPUT_TINT = 0x31 ,
+	RPR_MATERIAL_INPUT_EXPONENT = 0x32 ,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR = 0x910,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT = 0x927,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -838,6 +852,7 @@ typedef enum // rpr_material_node_lookup_value
 	RPR_MATERIAL_NODE_LOOKUP_VERTEX_VALUE3 = 0xa ,
 	RPR_MATERIAL_NODE_LOOKUP_SHAPE_RANDOM_COLOR = 0xb ,
 	RPR_MATERIAL_NODE_LOOKUP_OBJECT_ID = 0xc ,
+	RPR_MATERIAL_NODE_LOOKUP_PRIMITIVE_RANDOM_COLOR = 0xd ,
 } rpr_material_node_lookup_value ;
 
 typedef enum // rpr_material_node_uvtype_value
@@ -2953,6 +2968,48 @@ extern RPR_API_ENTRY rpr_status rprHeteroVolumeSetAlbedoLookup(rpr_hetero_volume
 extern RPR_API_ENTRY rpr_status rprHeteroVolumeSetAlbedoScale(rpr_hetero_volume heteroVolume, rpr_float scale);
 extern RPR_API_ENTRY rpr_status rprHeteroVolumeSetEmissionScale(rpr_hetero_volume heteroVolume, rpr_float scale);
 extern RPR_API_ENTRY rpr_status rprHeteroVolumeSetDensityScale(rpr_hetero_volume heteroVolume, rpr_float scale);
+
+
+  /** @brief Parse a MaterialX XML data, and create the Material graph composed of rpr_material_nodes, and rpr_images
+  *
+  * @param xmlData                       null-terminated string of the MaterialX XML data
+  * @param basePath                      base path used for image loading
+  *
+  * @param imageAlreadyCreated_count
+  * @param imageAlreadyCreated_paths
+  * @param imageAlreadyCreated_list
+  * We can specify a list of rpr_image that are already loaded. 
+  * If rprLoadMaterialX finds any images in the XML belonging to this list it will use it directly instead of creating it with rprContextCreateImageFromFile
+  * Those images will not be added in the listImagesOut list.
+  * example to add an image in the imageAlreadyCreated list:
+  * imageAlreadyCreated_count = 1
+  * imageAlreadyCreated_paths[0] = "../../Textures/UVCheckerMap13-1024.png"    // same path specified in the 'value' of the image in the XML
+  * imageAlreadyCreated_list[0] = (rpr_image) existing_rpr_image
+  * imageAlreadyCreated_paths and imageAlreadyCreated_list must have the same size.
+  *
+  * @param listNodesOut 
+  * @param listImagesOut
+  * Thoses 2 buffers are allocated by rprLoadMaterialX, then you should use rprLoadMaterialX_free to free them.
+  * they contain the list of rpr_material and rpr_image created by rprLoadMaterialX.
+  *
+  * @param rootNodeOut         Closure node in the material graph. Index inside listNodesOut. Could be -1 if an error occured.
+  *                            This is the material that should be assigned to shape: rprShapeSetMaterial(shape,listNodesOut[rootNodeOut]);
+  *
+  * This function is NOT traced. However internally it's calling some RPR API to build the graph, those calls are traced.
+  */
+  extern RPR_API_ENTRY rpr_status rprLoadMaterialX(rpr_context in_context, rpr_material_system in_matsys, char const * xmlData, char const * basePath, int imageAlreadyCreated_count, char const ** imageAlreadyCreated_paths, rpr_image * imageAlreadyCreated_list, rpr_material_node ** listNodesOut, rpr_uint * listNodesOut_count, rpr_image ** listImagesOut, rpr_uint * listImagesOut_count, rpr_uint * rootNodeOut);
+
+
+  /** @brief Free the buffers allocated by rprLoadMaterialX
+  *
+  * It does NOT call any rprObjectDelete
+  * Internally it's doing a simple:
+  * delete[] listNodes;
+  * delete[] listImages;
+  * 
+  * This function is NOT traced.
+  */
+  extern RPR_API_ENTRY rpr_status rprLoadMaterialX_free(rpr_material_node * listNodes, rpr_image * listImages);
 #ifdef __cplusplus
 }
 #endif

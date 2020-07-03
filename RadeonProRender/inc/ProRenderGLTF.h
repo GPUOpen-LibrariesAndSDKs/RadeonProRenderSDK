@@ -140,12 +140,12 @@ extern int rprGLTF_GetParentGroupFromGroup(const rpr_char* groupChild, size_t si
 
 
 // when rprImportFromGLTF is called, some buffers will be allocated and kept in memory for future getters.
-// for example, getters for animations data.
+// for example, getters for animations data, Extra-Parameters ...
 // calling this function will clean all data - and make value from getters unavailable.
 //
 // a typical usage is :
 // - first call rprImportFromGLTF(...)
-// - call all the getters you need :  rprGLTF_GetParentGroupFromShape , rprGLTF_GetAnimation ....
+// - call all the getters you need :  rprGLTF_GetParentGroupFromShape , rprGLTF_GetAnimation , rprGLTF_GetExtraParameterInt ....
 // - then call rprGLTF_ReleaseImportedData();
 // - all pointers returned by getters become undefined - and musn't be used anymore.
 // - render the scene.
@@ -215,6 +215,53 @@ extern int rprGLTF_AddExtraCamera(rpr_camera extraCam);
 // Using this function user can assign any custom parameters for the given shape.
 // At the moment we support only int type, but it may be enhanced in the future
 extern int rprGLTF_AddExtraShapeParameter(rpr_shape shape, const rpr_char* parameterName, int value);
+
+
+
+// === Store of Extra Parameters ===
+// API user can store extra int, float, buffers... inside the GLTF.
+// Those parameters won't be used by any features of the importer. However the API user can access those value after an rprImportFromGLTF.
+//
+// Call rprGLTF_AddExtraParameter* before calling rprExportToGLTF
+// As soon as rprExportToGLTF is called, all the lists of Extra-Parameter are stored into the .GLTF, and those lists are also deleted for the next Export.
+//
+// Example:
+// rprGLTF_AddExtraParameterInt("var",1);
+// rprExportToGLTF("fileA.gltf"...); // fileA will contains the "var"
+// rprExportToGLTF("fileB.gltf"...); // fileB won't contain any ExtraParameter
+//
+// Return RPR_SUCCESS if success.
+//
+extern rpr_status rprGLTF_AddExtraParameterInt(const rpr_char* parameterName, rpr_int v);
+extern rpr_status rprGLTF_AddExtraParameterFloat(const rpr_char* parameterName, rpr_float x);
+extern rpr_status rprGLTF_AddExtraParameterFloat2(const rpr_char* parameterName, rpr_float x, rpr_float y);
+extern rpr_status rprGLTF_AddExtraParameterFloat4(const rpr_char* parameterName, rpr_float x, rpr_float y, rpr_float z, rpr_float w);
+extern rpr_status rprGLTF_AddExtraParameterString(const rpr_char* parameterName, const rpr_char* value);
+// for rprGLTF_AddExtraParameterBuffer, the buffer will be copied and stored inside the GLTF library.
+// so API user doesn't need to keep the 'buffer' valid.
+// internally, the stored Extra-Parameter Buffers will be deleted automatically during the rprExportToGLTF call.
+extern rpr_status rprGLTF_AddExtraParameterBuffer(const rpr_char* parameterName, const rpr_uchar* buffer, size_t bufferSizeByte);
+
+
+
+
+// === Get of Extra Parameters ===
+// call those after calling rprImportFromGLTF
+//
+// for String and Buffer, it can be done in 2 calls:
+// - first call with bufferOut and bufferOut_SizeByte = 0  -->  sizeOut returns the size needed
+// - allocate a buffer of 'sizeOut' bytes.
+// - second call with the allocated bufferOut
+//
+// as soon as rprGLTF_ReleaseImportedData() is called  - ( or if another rprImportFromGLTF() is called ) - it's no longer possible to GetExtraParameter* of the imported gltf.
+//
+extern rpr_status rprGLTF_GetExtraParameterInt(const rpr_char* parameterName, rpr_int* v);
+extern rpr_status rprGLTF_GetExtraParameterFloat(const rpr_char* parameterName, rpr_float* x);
+extern rpr_status rprGLTF_GetExtraParameterFloat2(const rpr_char* parameterName, rpr_float* x, rpr_float* y);
+extern rpr_status rprGLTF_GetExtraParameterFloat4(const rpr_char* parameterName, rpr_float* x, rpr_float* y, rpr_float* z, rpr_float* w);
+extern rpr_status rprGLTF_GetExtraParameterString(const rpr_char* parameterName, rpr_char* bufferOut, size_t bufferOut_SizeByte, size_t* sizeOut);
+extern rpr_status rprGLTF_GetExtraParameterBuffer(const rpr_char* parameterName, rpr_uchar* bufferOut, size_t bufferOut_SizeByte, size_t* sizeOut);
+
 
 
 #ifdef __cplusplus

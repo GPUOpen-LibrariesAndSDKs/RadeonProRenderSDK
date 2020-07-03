@@ -650,6 +650,15 @@ UBERV2 = 0x2b,
 TRANSFORM = 0x2c,
 RGB_TO_HSV = 0x2d,
 HSV_TO_RGB = 0x2e,
+
+	// MaterialX materials
+MATX_DIFFUSE_BRDF = 0x1000,
+MATX_DIELECTRIC_BRDF = 0x1001,
+MATX_GENERALIZED_SCHLICK_BRDF = 0x1002,
+MATX_NOISE3D = 0x1003,
+MATX_TANGENT = 0x1004,
+MATX_NORMAL = 0x1005,
+MATX_POSITION = 0x1006,
 }
 /*rpr_material_node_input*/
 public enum MaterialInput : int
@@ -700,6 +709,11 @@ INDEX3 = 0x2a ,
 INDEX4 = 0x2b ,
 SCHLICK_APPROXIMATION = 0x2c ,
 APPLYSURFACE = 0x2d ,
+TANGENT = 0x2e ,
+DISTRIBUTION = 0x2f ,
+BASE = 0x30 ,
+TINT = 0x31 ,
+EXPONENT = 0x32 ,
 UBER_DIFFUSE_COLOR = 0x910,
 UBER_DIFFUSE_WEIGHT = 0x927,
 UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -837,6 +851,7 @@ VERTEX_VALUE2 = 0x9 ,
 VERTEX_VALUE3 = 0xa ,
 SHAPE_RANDOM_COLOR = 0xb ,
 OBJECT_ID = 0xc ,
+PRIMITIVE_RANDOM_COLOR = 0xd ,
 }
 /*rpr_material_node_uvtype_value*/
 public enum MaterialNodeUvtype : int
@@ -1065,9 +1080,9 @@ VISIBILITY_LIGHT = 0x421 ,
 }
 public const int RPR_VERSION_MAJOR = 1 ;
 public const int RPR_VERSION_MINOR = 35 ;
-public const int RPR_VERSION_REVISION = 2 ;
-public const int RPR_VERSION_BUILD = 0xc237daef ;
-public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00103502 ;
+public const int RPR_VERSION_REVISION = 3 ;
+public const int RPR_VERSION_BUILD = 0x92f604e2 ;
+public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00103503 ;
 // Deprecated version naming - will be removed in the future :
 
 public const int RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -3761,6 +3776,56 @@ return rprHeteroVolumeSetEmissionScale(heteroVolume, scale);
 public static Status HeteroVolumeSetDensityScale(IntPtr heteroVolume, float scale)
 {
 return rprHeteroVolumeSetDensityScale(heteroVolume, scale);
+}
+
+  /** @brief Parse a MaterialX XML data, and create the Material graph composed of rpr_material_nodes, and rpr_images
+  *
+  * @param xmlData                       null-terminated string of the MaterialX XML data
+  * @param basePath                      base path used for image loading
+  *
+  * @param imageAlreadyCreated_count
+  * @param imageAlreadyCreated_paths
+  * @param imageAlreadyCreated_list
+  * We can specify a list of rpr_image that are already loaded. 
+  * If rprLoadMaterialX finds any images in the XML belonging to this list it will use it directly instead of creating it with rprContextCreateImageFromFile
+  * Those images will not be added in the listImagesOut list.
+  * example to add an image in the imageAlreadyCreated list:
+  * imageAlreadyCreated_count = 1
+  * imageAlreadyCreated_paths[0] = "../../Textures/UVCheckerMap13-1024.png"    // same path specified in the 'value' of the image in the XML
+  * imageAlreadyCreated_list[0] = (rpr_image) existing_rpr_image
+  * imageAlreadyCreated_paths and imageAlreadyCreated_list must have the same size.
+  *
+  * @param listNodesOut 
+  * @param listImagesOut
+  * Thoses 2 buffers are allocated by rprLoadMaterialX, then you should use rprLoadMaterialX_free to free them.
+  * they contain the list of rpr_material and rpr_image created by rprLoadMaterialX.
+  *
+  * @param rootNodeOut         Closure node in the material graph. Index inside listNodesOut. Could be -1 if an error occured.
+  *                            This is the material that should be assigned to shape: rprShapeSetMaterial(shape,listNodesOut[rootNodeOut]);
+  *
+  * This function is NOT traced. However internally it's calling some RPR API to build the graph, those calls are traced.
+  */
+  
+[DllImport(dllName)] static extern Status rprLoadMaterialX(IntPtr in_context, IntPtr in_matsys, IntPtr xmlData, IntPtr basePath, int imageAlreadyCreated_count, IntPtr imageAlreadyCreated_paths, IntPtr imageAlreadyCreated_list, out IntPtr listNodesOut, out uint listNodesOut_count, out IntPtr listImagesOut, out uint listImagesOut_count, out uint rootNodeOut);
+public static Status LoadMaterialX(IntPtr in_context, IntPtr in_matsys, IntPtr xmlData, IntPtr basePath, int imageAlreadyCreated_count, IntPtr imageAlreadyCreated_paths, IntPtr imageAlreadyCreated_list, out IntPtr listNodesOut, out uint listNodesOut_count, out IntPtr listImagesOut, out uint listImagesOut_count, out uint rootNodeOut)
+{
+return rprLoadMaterialX(in_context, in_matsys, xmlData, basePath, imageAlreadyCreated_count, imageAlreadyCreated_paths, imageAlreadyCreated_list, out listNodesOut, out listNodesOut_count, out listImagesOut, out listImagesOut_count, out rootNodeOut);
+}
+
+  /** @brief Free the buffers allocated by rprLoadMaterialX
+  *
+  * It does NOT call any rprObjectDelete
+  * Internally it's doing a simple:
+  * delete[] listNodes;
+  * delete[] listImages;
+  * 
+  * This function is NOT traced.
+  */
+  
+[DllImport(dllName)] static extern Status rprLoadMaterialX_free(IntPtr listNodes, IntPtr listImages);
+public static Status LoadMaterialX_free(IntPtr listNodes, IntPtr listImages)
+{
+return rprLoadMaterialX_free(listNodes, listImages);
 }
 }
 }

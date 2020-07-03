@@ -39,6 +39,7 @@ extern "C" {
                                                                        // This functionality requires additional memory on both -
                                                                        // CPU and GPU even when no per-face materials set in scene.
 #define RPR_CONTEXT_CREATEPROP_HYBRID_FACE_MEMORY_SIZE 0x1607 // Size of per-face memory buffer in bytes. Used only if per-face materials enabled
+#define RPR_CONTEXT_CREATEPROP_HYBRID_ENABLE_RADEON_RAYS 0x1608 // Use RadeonRays instead of native Vulkan VK_KHR_ray_tracing extension for raytracing.
 
 struct RPRHybridKernelsPathInfo
 {
@@ -80,7 +81,17 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_USE_HALF_RES_SHADOWS 0x101F // Trace shadows at half resolution
 #define RPR_CONTEXT_USE_HALF_RES_AO 0x1020 // Trace ambient occlusion at half resolution
 #define RPR_CONTEXT_USE_HALF_RES_REFLECTIONS 0x1021 // Trace reflections at half resolution
-#define RPR_CONTEXT_ENABLE_RELAXED_MATERIAL_CHECKS 0x101D // fallback (RPR_FALSE - whole material, RPR_TRUE - invalid input) to default value
+#define RPR_CONTEXT_ENABLE_RELAXED_MATERIAL_CHECKS 0x1022 // fallback (RPR_FALSE - whole material, RPR_TRUE - invalid input) to default value
+#define RPR_CONTEXT_IRRADIANCE_VOLUME_ENABLED 0x1023 // Use irradiance volume for dynamic indirect diffuse illumination (works only in medium quality)
+#define RPR_CONTEXT_IRRADIANCE_VOLUME_RESOLUTION_X 0x1024 // Irradiance volume grid x resolution
+#define RPR_CONTEXT_IRRADIANCE_VOLUME_RESOLUTION_Y 0x1025 // Irradiance volume grid y resolution
+#define RPR_CONTEXT_IRRADIANCE_VOLUME_RESOLUTION_Z 0x1026 // Irradiance volume grid z resolution
+#define RPR_CONTEXT_IRRADIANCE_VOLUME_NUM_LODS 0x1027 // Number of irradiance volume LODs
+#define RPR_CONTEXT_IRRADIANCE_VOLUME_CELL_SIZE 0x1028 // Cell size of 0th LOD of irradiance volume grid
+#define RPR_CONTEXT_ENABLE_RAYTRACE_SHADOWS 0x1029 // turn on ray-trace shadows in custom quality
+#define RPR_CONTEXT_ENABLE_RAYTRACE_REFLECTION 0x102A // turn on ray-trace reflection in custom quality
+#define RPR_CONTEXT_ENABLE_RAYTRACE_REFRACTION 0x102B // turn on ray-trace refraction in custom quality
+#define RPR_CONTEXT_GLOBAL_ILLUMINATION_MODE 0x102C // change global illumination mode in custom quality
 
 /* Traversal modes */
 #define RPR_HYBRID_TRAVERSAL_STATIC_TLAS_SEPARATE 0x1 ///< Use a separate acceleration structure for static objects
@@ -91,6 +102,12 @@ struct RPRHybridKernelsPathInfo
 #define RPR_RENDER_QUALITY_MEDIUM 1u
 #define RPR_RENDER_QUALITY_HIGH 2u
 #define RPR_RENDER_QUALITY_ULTRA 3u
+#define RPR_RENDER_QUALITY_CUSTOM 4u
+
+/*global illumination modes*/
+#define RPR_GLOBAL_ILLUMINATION_SSAO 0u
+#define RPR_GLOBAL_ILLUMINATION_IRRADIANCE_VOLUME 1u
+#define RPR_GLOBAL_ILLUMINATION_PATH_TRACE_AO 2u
 
 /* Extended rpr_image_filter_type */
 #define RPR_IMAGE_FILTER_TYPE_TRILINEAR 0x4
