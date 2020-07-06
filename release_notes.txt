@@ -9,7 +9,7 @@ RPR SDK 1.35.3 - 03 July 2020
 FIR-1686 - Color table values are not initialized with consistent colors to northstar
 FIR-1676 - [z-emotion] Sawtooth artifact appears with normal map
 
--- RESOLVED TICKETS for NORTHSTAR:
+-- RESOLVED TICKETS for NORTHSTAR: (2.01.3)
 RPRNEXT-32  - Shadow catcher
 RPRNEXT-177 - Out of Core Geometry unit test
 RPRNEXT-37  - Curves
