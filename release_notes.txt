@@ -3,6 +3,45 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 1.35.4 - 31 July 2020
+
+-- RESOLVED TICKETS for NORTHSTAR:
+RPRNEXT-36 - Displacement
+RPRNEXT-206 - MaterialX support for standard-surface material
+RPRNEXT-213 - Spiral artifact on glass object
+RPRNEXT-208 - RPR unit test reports NS memory leak
+RPRNEXT-216 - bad behaviour when disk light update
+RPRNEXT-219 - Firefly with disklight
+RPRNEXT-62 - Light Path Expression AOVs
+RPRNEXT-231 - 360 camera doesn't render correctly with lens radius
+RPRNEXT-221 - [ACCA] Area light is black
+RPRNEXT-227 - [ACCA] Improve shader exec performance
+RPRNEXT-226 - A flag to turn on caustics
+RPRNEXT-228 - [ACCA] Reflection is wrong
+RPRNEXT-235 - Background override can't be seen through transparent material
+RPRNEXT-238 - Crash on ResidentEvil scene
+RPRNEXT-236 - Firefly through transparent surface
+RPRNEXT-125 - Make object id and material id consistent
+RPRNEXT-240 - Light BVH isn't correct when a light is scaled
+RPRNEXT-215 - crash in PolygonMesh::GetIndices
+RPRNEXT-242 - Disk-Sphere Light should be invisible by default. 
+RPRNEXT-243 - Invalid material id by sphere disk light cause access violation
+RPRNEXT-234 - LightExitanceEstimatorShader takes forever
+RPRNEXT-241 - Weird pattern in AOV on CPU
+RPRNEXT-244 - Cap subdivision level to avoid over subdivision
+RPRNEXT-246 - Background AOV
+RPRNEXT-247 - Shadow catcher plane doesn't consider background override
+RPRNEXT-222 - [ACCA] Deep transparency isn't right
+RPRNEXT-253 - Displacement is broken after scene update
+RPRNEXT-252 - Ray extension didn't work for a shape with per face material
+RPRNEXT-158 - BridgeBooble NVIDIA crash
+
+-- RPR API CHANGE:
+Rename of constants.
+RPR_CONTEXT_CREATEPROP_COMPILE_CALLBACK --> RPR_CONTEXT_COMPILE_CALLBACK_FUNC 
+RPR_CONTEXT_CREATEPROP_COMPILE_USER_DATA --> RPR_CONTEXT_COMPILE_CALLBACK_DATA
+
+################################################################################################################
 RPR SDK 1.35.3 - 03 July 2020
 
 -- RESOLVED TICKETS for TAHOE:

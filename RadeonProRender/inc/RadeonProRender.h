@@ -39,9 +39,9 @@ extern "C" {
 
 #define RPR_VERSION_MAJOR 1 
 #define RPR_VERSION_MINOR 35 
-#define RPR_VERSION_REVISION 3 
-#define RPR_VERSION_BUILD 0x92f604e2 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00103503 
+#define RPR_VERSION_REVISION 4 
+#define RPR_VERSION_BUILD 0x5f0522b2 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00103504 
 
 // Deprecated version naming - will be removed in the future :
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
@@ -137,10 +137,6 @@ extern "C" {
 #define RPR_OBJECT_NAME 0x777777 
 #define RPR_OBJECT_UNIQUE_ID 0x777778 
 #define RPR_OBJECT_CUSTOM_PTR 0x777779 
-
-/* rpr_context_properties */
-#define RPR_CONTEXT_CREATEPROP_COMPILE_CALLBACK 0x601 
-#define RPR_CONTEXT_CREATEPROP_COMPILE_USER_DATA 0x602 
 
 /*rpr_context_info*/
 #define RPR_CONTEXT_CREATION_FLAGS 0x102 
@@ -249,12 +245,17 @@ extern "C" {
 #define RPR_CONTEXT_TILE_RECT 0x16A 
 #define RPR_CONTEXT_PLUGIN_VERSION 0x16B 
 #define RPR_CONTEXT_RUSSIAN_ROULETTE_DEPTH 0x16C 
+#define RPR_CONTEXT_SHADOW_CATCHER_BAKING 0x16D 
+#define RPR_CONTEXT_RENDER_UPDATE_CALLBACK_FUNC 0x16E 
+#define RPR_CONTEXT_RENDER_UPDATE_CALLBACK_DATA 0x16F 
+#define RPR_CONTEXT_COMPILE_CALLBACK_FUNC 0x601 
+#define RPR_CONTEXT_COMPILE_CALLBACK_DATA 0x602 
 #define RPR_CONTEXT_NAME RPR_OBJECT_NAME
 #define RPR_CONTEXT_UNIQUE_ID RPR_OBJECT_UNIQUE_ID
 #define RPR_CONTEXT_CUSTOM_PTR RPR_OBJECT_CUSTOM_PTR
 
 /* last of the RPR_CONTEXT_* */
-  #define RPR_CONTEXT_MAX 0x16D 
+  #define RPR_CONTEXT_MAX 0x170 
 
 /*rpr_camera_info*/
 #define RPR_CAMERA_TRANSFORM 0x201 
@@ -430,9 +431,12 @@ extern "C" {
 
     
 #define RPR_SPHERE_LIGHT_RADIANT_POWER 0x822 
+#define RPR_SPHERE_LIGHT_RADIUS 0x824 
 
     
 #define RPR_DISK_LIGHT_RADIANT_POWER 0x823 
+#define RPR_DISK_LIGHT_RADIUS 0x825 
+#define RPR_DISK_LIGHT_ANGLE 0x826 
 /*rpr_parameter_info*/
 #define RPR_PARAMETER_NAME 0x1201 
 #define RPR_PARAMETER_TYPE 0x1203 
@@ -448,6 +452,7 @@ extern "C" {
 #define RPR_FRAMEBUFFER_GL_TARGET 0x1304 
 #define RPR_FRAMEBUFFER_GL_MIPLEVEL 0x1305 
 #define RPR_FRAMEBUFFER_GL_TEXTURE 0x1306 
+#define RPR_FRAMEBUFFER_LPE 0x1307 
 #define RPR_FRAMEBUFFER_NAME RPR_OBJECT_NAME
 #define RPR_FRAMEBUFFER_UNIQUE_ID RPR_OBJECT_UNIQUE_ID
 #define RPR_FRAMEBUFFER_CUSTOM_PTR RPR_OBJECT_CUSTOM_PTR
@@ -565,6 +570,18 @@ extern "C" {
 #define RPR_MATERIAL_NODE_MATX_TANGENT 0x1004
 #define RPR_MATERIAL_NODE_MATX_NORMAL 0x1005
 #define RPR_MATERIAL_NODE_MATX_POSITION 0x1006
+#define RPR_MATERIAL_NODE_MATX_ROUGHNESS_ANISOTROPY 0x1007
+#define RPR_MATERIAL_NODE_MATX_ROTATE3D 0x1008
+#define RPR_MATERIAL_NODE_MATX_NORMALIZE 0x1009
+#define RPR_MATERIAL_NODE_MATX_IFGREATER 0x100A
+#define RPR_MATERIAL_NODE_MATX_SHEEN_BRDF 0x100B
+#define RPR_MATERIAL_NODE_MATX_DIFFUSE_BTDF 0x100C
+#define RPR_MATERIAL_NODE_MATX_CONVERT 0x100D
+#define RPR_MATERIAL_NODE_MATX_SUBSURFACE_BRDF 0x100E
+#define RPR_MATERIAL_NODE_MATX_DIELECTRIC_BTDF 0x100F
+#define RPR_MATERIAL_NODE_MATX_CONDUCTOR_BRDF 0x1010
+#define RPR_MATERIAL_NODE_MATX_FRESNEL 0x1011
+#define RPR_MATERIAL_NODE_MATX_LUMINANCE 0x1012
 /*rpr_material_node_input*/
 #define RPR_MATERIAL_INPUT_COLOR 0x0 
 #define RPR_MATERIAL_INPUT_COLOR0 0x1 
@@ -617,6 +634,16 @@ extern "C" {
 #define RPR_MATERIAL_INPUT_BASE 0x30 
 #define RPR_MATERIAL_INPUT_TINT 0x31 
 #define RPR_MATERIAL_INPUT_EXPONENT 0x32 
+#define RPR_MATERIAL_INPUT_AMPLITUDE 0x33 
+#define RPR_MATERIAL_INPUT_PIVOT 0x34 
+#define RPR_MATERIAL_INPUT_POSITION 0x35 
+#define RPR_MATERIAL_INPUT_AMOUNT 0x36 
+#define RPR_MATERIAL_INPUT_AXIS 0x37 
+#define RPR_MATERIAL_INPUT_LUMACOEFF 0x38 
+#define RPR_MATERIAL_INPUT_REFLECTIVITY 0x39 
+#define RPR_MATERIAL_INPUT_EDGE_COLOR 0x3a 
+#define RPR_MATERIAL_INPUT_VIEW_DIRECTION 0x3b 
+#define RPR_MATERIAL_INPUT_INTERIOR 0x3c 
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR 0x910
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT 0x927
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_ROUGHNESS 0x911
@@ -793,6 +820,15 @@ extern "C" {
 #define RPR_AOV_VIEW_SHADING_NORMAL 0x1d
 #define RPR_AOV_REFLECTION_CATCHER 0x1e
 #define RPR_AOV_COLOR_RIGHT 0x1f 
+#define RPR_AOV_LPE_0 0x20 
+#define RPR_AOV_LPE_1 0x21 
+#define RPR_AOV_LPE_2 0x22 
+#define RPR_AOV_LPE_3 0x23 
+#define RPR_AOV_LPE_4 0x24 
+#define RPR_AOV_LPE_5 0x25 
+#define RPR_AOV_LPE_6 0x26 
+#define RPR_AOV_LPE_7 0x27 
+#define RPR_AOV_LPE_8 0x28 
 /*rpr_post_effect_type*/
 #define RPR_POST_EFFECT_TONE_MAP 0x0 
 #define RPR_POST_EFFECT_WHITE_BALANCE 0x1 
@@ -1167,6 +1203,17 @@ typedef _rpr_ies_image_desc rpr_ies_image_desc;
   extern RPR_API_ENTRY rpr_status rprContextSetAOV(rpr_context context, rpr_aov aov, rpr_framebuffer frame_buffer);
 
 
+    /** @brief Set a LPE ( Light Path Expression ) to a framebuffer.
+    *          Note that this framebuffer should also be assigned to a LPE AOV:  RPR_AOV_LPE_0 , RPR_AOV_LPE_1 ....
+    *
+    *
+    *  @param  frame_buffer    Frame buffer object to set
+    *  @param  lpe             Light Path Expression
+    *  @return                 RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprFrameBufferSetLPE(rpr_framebuffer frame_buffer, rpr_char const * lpe);
+
+
     /** @brief Set AOV Index Lookup Color
     *          change the color of  AOV rendering IDs,  like : RPR_AOV_MATERIAL_IDX , RPR_AOV_OBJECT_ID, RPR_AOV_OBJECT_GROUP_ID.
     *          for example, you can render all the  shapes with ObjectGroupID=4  in the Red color inside the RPR_AOV_OBJECT_GROUP_ID AOV
@@ -1218,6 +1265,7 @@ typedef _rpr_ies_image_desc rpr_ies_image_desc;
     * @return             RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprContextSetParameterByKey1u(rpr_context context, rpr_context_info in_input, rpr_uint x);
+extern RPR_API_ENTRY rpr_status rprContextSetParameterByKeyPtr(rpr_context context, rpr_context_info in_input, void * x);
 extern RPR_API_ENTRY rpr_status rprContextSetParameterByKey1f(rpr_context context, rpr_context_info in_input, rpr_float x);
 extern RPR_API_ENTRY rpr_status rprContextSetParameterByKey3f(rpr_context context, rpr_context_info in_input, rpr_float x, rpr_float y, rpr_float z);
 extern RPR_API_ENTRY rpr_status rprContextSetParameterByKey4f(rpr_context context, rpr_context_info in_input, rpr_float x, rpr_float y, rpr_float z, rpr_float w);
@@ -2181,7 +2229,10 @@ extern RPR_API_ENTRY rpr_status rprContextCreateDiskLight(rpr_context context, r
     */
   extern RPR_API_ENTRY rpr_status rprSpotLightSetRadiantPower3f(rpr_light light, rpr_float r, rpr_float g, rpr_float b);
 extern RPR_API_ENTRY rpr_status rprSphereLightSetRadiantPower3f(rpr_light light, rpr_float r, rpr_float g, rpr_float b);
+extern RPR_API_ENTRY rpr_status rprSphereLightSetRadius(rpr_light light, rpr_float angle);
 extern RPR_API_ENTRY rpr_status rprDiskLightSetRadiantPower3f(rpr_light light, rpr_float r, rpr_float g, rpr_float b);
+extern RPR_API_ENTRY rpr_status rprDiskLightSetRadius(rpr_light light, rpr_float radius);
+extern RPR_API_ENTRY rpr_status rprDiskLightSetAngle(rpr_light light, rpr_float angle);
 
 
     /** @brief Set cone shape for a spot light

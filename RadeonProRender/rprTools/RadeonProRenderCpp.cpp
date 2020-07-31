@@ -1,5 +1,6 @@
 #include "RadeonProRender.hpp"
 #include <cassert>
+#include <vector>
 
 #ifdef RPR_CPPWRAPER_DISABLE_MUTEXLOCK
 #define RPR_CPPWRAPER_MUTEXLOCK
@@ -255,6 +256,26 @@ Lut* Context::CreateLutFromFile(const rpr_char* fileLutPath, Status* out_status)
     return newCppObj;
 }
 
+SphereLight* Context::CreateSphereLight(Status* out_status) {
+    typename RprApiTypeOf<SphereLight>::value newRprObj = nullptr;
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprContextCreateSphereLight(m_context, &newRprObj)
+    RPR_CPPWRAPER_CALL_SUFFIX_CREATOR
+    SphereLight* newCppObj = new SphereLight(*this, newRprObj);
+    RPR_CPPWRAPER_SET_CUSTOM_PTR
+    return newCppObj;
+}
+
+DiskLight* Context::CreateDiskLight(Status* out_status) {
+    typename RprApiTypeOf<DiskLight>::value newRprObj = nullptr;
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprContextCreateDiskLight(m_context, &newRprObj)
+    RPR_CPPWRAPER_CALL_SUFFIX_CREATOR
+    DiskLight* newCppObj = new DiskLight(*this, newRprObj);
+    RPR_CPPWRAPER_SET_CUSTOM_PTR
+    return newCppObj;
+}
+
 PointLight* Context::CreatePointLight(Status* out_status) {
     typename RprApiTypeOf<PointLight>::value newRprObj = nullptr;
     RPR_CPPWRAPER_CALL_PREFIX
@@ -315,6 +336,36 @@ IESLight* Context::CreateIESLight(Status* out_status) {
     return newCppObj;
 }
 
+MaterialXNode* Context::CreateMaterialXNode(char const* xmlData, char const* basePath, int imageAlreadyCreated_count, char const** imageAlreadyCreated_paths, rpr::Image** imageAlreadyCreated_list, Status* out_status) {
+    std::vector<rpr_image> imageAlreadyCreated_handles;
+    if (imageAlreadyCreated_count > 0) {
+        imageAlreadyCreated_handles.reserve(imageAlreadyCreated_count);
+        for (int i = 0; i < imageAlreadyCreated_count; ++i) {
+            imageAlreadyCreated_handles[i] = GetRprObject(imageAlreadyCreated_list[i]);
+        }
+    }
+
+    rpr_material_node* nodes;
+    rpr_uint numNodes;
+    rpr_image* images;
+    rpr_uint numImages;
+    rpr_uint rootNodeIdx;
+
+    RPR_CPPWRAPER_MUTEXLOCK;
+
+    Status status = rprLoadMaterialX(
+        m_context, m_materialSystem, xmlData, basePath,
+        int(imageAlreadyCreated_handles.size()), imageAlreadyCreated_paths, imageAlreadyCreated_handles.data(),
+        &nodes, &numNodes, &images, &numImages, &rootNodeIdx);
+    if (status != RPR_SUCCESS) {
+        if (out_status) {
+            *out_status = status;
+        }
+        return nullptr;
+    }
+    return new MaterialXNode(*this, nodes, numNodes, images, numImages, rootNodeIdx);
+}
+
 ContextObject::~ContextObject() {
     RPR_CPPWRAPER_MUTEXLOCK
     rprObjectDelete(m_rprObject);
@@ -330,22 +381,25 @@ Buffer::Buffer(Context& ctx, rpr_buffer obj) : ContextObject(ctx, obj) {}
 Camera::Camera(Context& ctx, rpr_camera obj) : SceneObject(ctx, obj) {}
 Composite::Composite(Context& ctx, rpr_composite obj) : ContextObject(ctx, obj) {}
 Curve::Curve(Context& ctx, rpr_curve obj) : SceneObject(ctx, obj) {}
-DirectionalLight::DirectionalLight(Context& ctx, rpr_light obj) : Light(ctx, obj) {}
+DirectionalLight::DirectionalLight(Context& ctx, rpr_light obj) : RadiantLight(ctx, obj) {}
 EnvironmentLight::EnvironmentLight(Context& ctx, rpr_light obj) : Light(ctx, obj) {}
 FrameBuffer::FrameBuffer(Context& ctx, rpr_framebuffer obj) : ContextObject(ctx, obj) {}
 Grid::Grid(Context& ctx, rpr_grid obj) : ContextObject(ctx, obj) {}
 HeteroVolume::HeteroVolume(Context& ctx, rpr_hetero_volume obj) : SceneObject(ctx, obj) {}
-IESLight::IESLight(Context& ctx, rpr_light obj) : Light(ctx, obj) {}
+IESLight::IESLight(Context& ctx, rpr_light obj) : RadiantLight(ctx, obj) {}
 Image::Image(Context& ctx, rpr_image obj) : ContextObject(ctx, obj) {}
 Light::Light(Context& ctx, rpr_light obj) : SceneObject(ctx, obj) {}
+RadiantLight::RadiantLight(Context& ctx, rpr_light obj) : Light(ctx, obj) {}
 Lut::Lut(Context& ctx, rpr_lut obj) : ContextObject(ctx, obj) {}
 MaterialNode::MaterialNode(Context& ctx, rpr_material_node obj) : ContextObject(ctx, obj) {}
-PointLight::PointLight(Context& ctx, rpr_light obj) : Light(ctx, obj) {}
+PointLight::PointLight(Context& ctx, rpr_light obj) : RadiantLight(ctx, obj) {}
 PostEffect::PostEffect(Context& ctx, rpr_post_effect obj) : ContextObject(ctx, obj) {}
 Scene::Scene(Context& ctx, rpr_scene obj) : ContextObject(ctx, obj) {}
 Shape::Shape(Context& ctx, rpr_shape obj) : SceneObject(ctx, obj) {}
 SkyLight::SkyLight(Context& ctx, rpr_light obj) : Light(ctx, obj) {}
-SpotLight::SpotLight(Context& ctx, rpr_light obj) : Light(ctx, obj) {}
+SpotLight::SpotLight(Context& ctx, rpr_light obj) : RadiantLight(ctx, obj) {}
+DiskLight::DiskLight(Context& ctx, rpr_light obj) : RadiantLight(ctx, obj) {}
+SphereLight::SphereLight(Context& ctx, rpr_light obj) : RadiantLight(ctx, obj) {}
 
 Light::~Light() {}
 
@@ -916,6 +970,36 @@ Status PointLight::SetRadiantPower(rpr_float r, rpr_float g, rpr_float b) {
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
+Status DiskLight::SetRadiantPower(rpr_float r, rpr_float g, rpr_float b) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprDiskLightSetRadiantPower3f(GetRprObject(this), r, g, b)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
+Status DiskLight::SetRadius(float radius) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprDiskLightSetRadius(GetRprObject(this), radius)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
+Status DiskLight::SetAngle(float angle) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprDiskLightSetAngle(GetRprObject(this), angle)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
+Status SphereLight::SetRadiantPower(rpr_float r, rpr_float g, rpr_float b) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprSphereLightSetRadiantPower3f(GetRprObject(this), r, g, b)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
+Status SphereLight::SetRadius(float radius) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprSphereLightSetRadius(GetRprObject(this), radius)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
 Status SpotLight::SetRadiantPower(rpr_float r, rpr_float g, rpr_float b) {
     RPR_CPPWRAPER_CALL_PREFIX
     rprSpotLightSetRadiantPower3f(GetRprObject(this), r, g, b)
@@ -1243,6 +1327,35 @@ Status MaterialNode::GetInputInfo(rpr_int in_input_idx, MaterialNodeInputInfo in
     RPR_CPPWRAPER_CALL_PREFIX
     rprMaterialNodeGetInputInfo(GetRprObject(this), in_input_idx, in_info, in_size, in_data, out_size)
     RPR_CPPWRAPER_CALL_SUFFIX
+}
+
+MaterialXNode::MaterialXNode(
+    Context& ctx,
+    rpr_material_node* nodes,
+    rpr_uint numNodes,
+    rpr_image* images,
+    rpr_uint numImages,
+    rpr_uint rootNodeIdx)
+    : MaterialNode(ctx, nodes[rootNodeIdx])
+    , m_auxiliaryNodes(nodes)
+    , m_numAuxiliaryNodes(numNodes)
+    , m_auxiliaryImages(images)
+    , m_numAuxiliaryImages(numImages) {
+    m_auxiliaryNodes[rootNodeIdx] = nullptr;
+}
+
+MaterialXNode::~MaterialXNode() {
+    for (rpr_uint i = 0; i < m_numAuxiliaryNodes; ++i) {
+        if (m_auxiliaryNodes[i]) {
+            rprObjectDelete(m_auxiliaryNodes[i]);
+        }
+    }
+    for (rpr_uint i = 0; i < m_numAuxiliaryImages; ++i) {
+        if (m_auxiliaryImages[i]) {
+            rprObjectDelete(m_auxiliaryImages[i]);
+        }
+    }
+    rprLoadMaterialX_free(m_auxiliaryNodes, m_auxiliaryImages);
 }
 
 Status PostEffect::SetParameter(rpr_char const* name, rpr_uint x) {

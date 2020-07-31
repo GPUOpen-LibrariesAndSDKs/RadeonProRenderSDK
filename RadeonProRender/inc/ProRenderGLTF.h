@@ -96,7 +96,12 @@ extern int rprGLTF_ListImported_PostEffects(rpr_post_effect * PostEffects, int s
 extern int rprGLTF_ListImported_HeteroVolumes(rpr_hetero_volume * HeteroVolumes, int sizeHeteroVolumesBytes, int * numberOfHeteroVolumes);
 extern int rprGLTF_ListImported_Buffer(rpr_buffer * Buffers, int sizeShapeBytes, int * numberOfBuffers);
 
+
+// Getters for Extra-Attribute. Call them just AFTER the rprImportFromGLTF call.
+// rprGLTF_AddExtra*** is used for setting thoses attributes.
 extern int rprGLTF_GetImportedExtraShapeAttribute(rpr_shape shape, char* name, int& outParam);
+extern int rprGLTF_GetImportedExtraLightAttribute(rpr_light light, char* name, int& outParam);
+
 
 /*
 Extra feature :  a shape hierarchy can be saved inside the GLTF
@@ -212,10 +217,12 @@ extern int rprGLTF_AddAnimation(const rprgltf_animation* anim);
 // return RPR_SUCCESS if success.
 extern int rprGLTF_AddExtraCamera(rpr_camera extraCam);
 
-// Using this function user can assign any custom parameters for the given shape.
+// Using this function user can assign any custom parameters for the given shape/light.
+// Call them just BEFORE the rprExportToGLTF call.
 // At the moment we support only int type, but it may be enhanced in the future
+// rprGLTF_GetImportedExtra*** can be used to get those parameters.
 extern int rprGLTF_AddExtraShapeParameter(rpr_shape shape, const rpr_char* parameterName, int value);
-
+extern int rprGLTF_AddExtraLightParameter(rpr_light light, const rpr_char* parameterName, int value);
 
 
 // === Store of Extra Parameters ===

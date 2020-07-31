@@ -66,6 +66,8 @@ class Buffer;
 class Camera;
 class Composite;
 class Curve;
+class SphereLight;
+class DiskLight;
 class DirectionalLight;
 class EnvironmentLight;
 class FrameBuffer;
@@ -76,6 +78,7 @@ class Image;
 class Light;
 class Lut;
 class MaterialNode;
+class MaterialXNode;
 class PointLight;
 class PostEffect;
 class Scene;
@@ -108,12 +111,15 @@ public:
     PostEffect* CreatePostEffect(PostEffectType type, Status* out_status = nullptr);
     Composite* CreateComposite(CompositeType type, Status* out_status = nullptr);
     Lut* CreateLutFromFile(const rpr_char* fileLutPath, Status* out_status = nullptr);
+    SphereLight* CreateSphereLight(Status* out_status = nullptr);
+    DiskLight* CreateDiskLight(Status* out_status = nullptr);
     PointLight* CreatePointLight(Status* out_status = nullptr);
     SpotLight* CreateSpotLight(Status* out_status = nullptr);
     DirectionalLight* CreateDirectionalLight(Status* out_status = nullptr);
     EnvironmentLight* CreateEnvironmentLight(Status* out_status = nullptr);
     SkyLight* CreateSkyLight(Status* out_status = nullptr);
     IESLight* CreateIESLight(Status* out_status = nullptr);
+    MaterialXNode* CreateMaterialXNode(char const* xmlData, char const* basePath, int imageAlreadyCreated_count, char const** imageAlreadyCreated_paths, rpr::Image** imageAlreadyCreated_list, Status* out_status = nullptr);
 
     Status SetActivePlugin(rpr_int pluginID);
     Status GetInfo(ContextInfo contextInfo, size_t size, void* data, size_t* size_ret);
@@ -197,6 +203,8 @@ DEFINE_CONTEXT_OBJECT_RPR_API_TYPE(Scene, rpr_scene);
 DEFINE_CONTEXT_OBJECT_RPR_API_TYPE(Shape, rpr_shape);
 DEFINE_CONTEXT_OBJECT_RPR_API_TYPE(SkyLight, rpr_light);
 DEFINE_CONTEXT_OBJECT_RPR_API_TYPE(SpotLight, rpr_light);
+DEFINE_CONTEXT_OBJECT_RPR_API_TYPE(DiskLight, rpr_light);
+DEFINE_CONTEXT_OBJECT_RPR_API_TYPE(SphereLight, rpr_light);
 
 class ContextObject : BaseNode_Customized {
 public:
@@ -342,36 +350,71 @@ protected:
     Light(Context& ctx, rpr_light obj);
 };
 
-class PointLight : public Light {
+class RadiantLight : public Light {
+public:
+    ~RadiantLight() override = default;
+
+    virtual Status SetRadiantPower(float r, float g, float b) = 0;
+
+protected:
+    RadiantLight(Context& ctx, rpr_light obj);
+};
+
+class PointLight final : public RadiantLight {
     friend class Context;
 
 public:
     virtual ~PointLight() = default;
 
-    Status SetRadiantPower(float r, float g, float b);
+    Status SetRadiantPower(float r, float g, float b) override;
 private:
     PointLight(Context& ctx, rpr_light obj);
 };
 
-class SpotLight : public Light {
+class SpotLight final : public RadiantLight {
     friend class Context;
 
 public:
     virtual ~SpotLight() = default;
 
-    Status SetRadiantPower(float r, float g, float b);
+    Status SetRadiantPower(float r, float g, float b) override;
     Status SetConeShape(float iangle, float oangle);
 private:
     SpotLight(Context& ctx, rpr_light obj);
 };
 
-class DirectionalLight : public Light {
+class DiskLight final : public RadiantLight {
+    friend class Context;
+
+public:
+    virtual ~DiskLight() = default;
+
+    Status SetRadiantPower(float r, float g, float b) override;
+    Status SetRadius(float radius);
+    Status SetAngle(float angle);
+private:
+    DiskLight(Context& ctx, rpr_light obj);
+};
+
+class SphereLight final : public RadiantLight {
+    friend class Context;
+
+public:
+    virtual ~SphereLight() = default;
+
+    Status SetRadiantPower(float r, float g, float b) override;
+    Status SetRadius(float radius);
+private:
+    SphereLight(Context& ctx, rpr_light obj);
+};
+
+class DirectionalLight final : public RadiantLight {
     friend class Context;
 
 public:
     virtual ~DirectionalLight() = default;
 
-    Status SetRadiantPower(float r, float g, float b);
+    Status SetRadiantPower(float r, float g, float b) override;
     Status SetShadowSoftnessAngle(float angle);
 private:
     DirectionalLight(Context& ctx, rpr_light obj);
@@ -409,13 +452,13 @@ private:
     SkyLight(Context& ctx, rpr_light obj);
 };
 
-class IESLight : public Light {
+class IESLight final : public RadiantLight {
     friend class Context;
 
 public:
     virtual ~IESLight() = default;
 
-    Status SetRadiantPower(float r, float g, float b);
+    Status SetRadiantPower(float r, float g, float b) override;
     Status SetImageFromFile(rpr_char const* imagePath, rpr_int nx, rpr_int ny);
     Status SetImageFromIESdata(rpr_char const* iesData, rpr_int nx, rpr_int ny);
 private:
@@ -532,8 +575,28 @@ public:
     Status GetInfo(MaterialNodeInfo info, size_t size, void* data, size_t* size_ret);
     Status GetInputInfo(rpr_int inputIdx, MaterialNodeInputInfo info, size_t size, void* data, size_t* out_size);
 
-private:
+protected:
     MaterialNode(Context& ctx, rpr_material_node obj);
+};
+
+class MaterialXNode : public MaterialNode {
+public:
+    virtual ~MaterialXNode() override;
+
+private:
+    friend class Context;
+    MaterialXNode(
+        Context& ctx,
+        rpr_material_node* nodes,
+        rpr_uint numNodes,
+        rpr_image* images,
+        rpr_uint numImages,
+        rpr_uint rootNodeIdx);
+
+    rpr_material_node* m_auxiliaryNodes;
+    rpr_uint m_numAuxiliaryNodes;
+    rpr_image* m_auxiliaryImages;
+    rpr_uint m_numAuxiliaryImages;
 };
 
 class PostEffect : public ContextObject {

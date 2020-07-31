@@ -305,6 +305,11 @@ TRACING_PATH = 0x169 ,
 TILE_RECT = 0x16A ,
 PLUGIN_VERSION = 0x16B ,
 RUSSIAN_ROULETTE_DEPTH = 0x16C ,
+SHADOW_CATCHER_BAKING = 0x16D ,
+RENDER_UPDATE_CALLBACK_FUNC = 0x16E ,
+RENDER_UPDATE_CALLBACK_DATA = 0x16F ,
+COMPILE_CALLBACK_FUNC = 0x601 ,
+COMPILE_CALLBACK_DATA = 0x602 ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -499,8 +504,11 @@ IES_LIGHT_RADIANT_POWER = 0x816 ,
 IES_LIGHT_IMAGE_DESC = 0x817 ,
 /* rpr_light_info - sphere light */
 SPHERE_LIGHT_RADIANT_POWER = 0x822 ,
+SPHERE_LIGHT_RADIUS = 0x824 ,
 /* rpr_light_info - disk light */
 DISK_LIGHT_RADIANT_POWER = 0x823 ,
+DISK_LIGHT_RADIUS = 0x825 ,
+DISK_LIGHT_ANGLE = 0x826 ,
 }
 /*rpr_parameter_info*/
 public enum Parameter : int
@@ -519,6 +527,7 @@ DATA = 0x1303 ,
 GL_TARGET = 0x1304 ,
 GL_MIPLEVEL = 0x1305 ,
 GL_TEXTURE = 0x1306 ,
+LPE = 0x1307 ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -659,6 +668,18 @@ MATX_NOISE3D = 0x1003,
 MATX_TANGENT = 0x1004,
 MATX_NORMAL = 0x1005,
 MATX_POSITION = 0x1006,
+MATX_ROUGHNESS_ANISOTROPY = 0x1007,
+MATX_ROTATE3D = 0x1008,
+MATX_NORMALIZE = 0x1009,
+MATX_IFGREATER = 0x100A,
+MATX_SHEEN_BRDF = 0x100B,
+MATX_DIFFUSE_BTDF = 0x100C,
+MATX_CONVERT = 0x100D,
+MATX_SUBSURFACE_BRDF = 0x100E,
+MATX_DIELECTRIC_BTDF = 0x100F,
+MATX_CONDUCTOR_BRDF = 0x1010,
+MATX_FRESNEL = 0x1011,
+MATX_LUMINANCE = 0x1012,
 }
 /*rpr_material_node_input*/
 public enum MaterialInput : int
@@ -714,6 +735,16 @@ DISTRIBUTION = 0x2f ,
 BASE = 0x30 ,
 TINT = 0x31 ,
 EXPONENT = 0x32 ,
+AMPLITUDE = 0x33 ,
+PIVOT = 0x34 ,
+POSITION = 0x35 ,
+AMOUNT = 0x36 ,
+AXIS = 0x37 ,
+LUMACOEFF = 0x38 ,
+REFLECTIVITY = 0x39 ,
+EDGE_COLOR = 0x3a ,
+VIEW_DIRECTION = 0x3b ,
+INTERIOR = 0x3c ,
 UBER_DIFFUSE_COLOR = 0x910,
 UBER_DIFFUSE_WEIGHT = 0x927,
 UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -917,6 +948,15 @@ VARIANCE = 0x1c ,
 VIEW_SHADING_NORMAL = 0x1d,
 REFLECTION_CATCHER = 0x1e,
 COLOR_RIGHT = 0x1f ,
+LPE_0 = 0x20 ,
+LPE_1 = 0x21 ,
+LPE_2 = 0x22 ,
+LPE_3 = 0x23 ,
+LPE_4 = 0x24 ,
+LPE_5 = 0x25 ,
+LPE_6 = 0x26 ,
+LPE_7 = 0x27 ,
+LPE_8 = 0x28 ,
 }
 /*rpr_post_effect_type*/
 public enum PostEffectType : int
@@ -1080,9 +1120,9 @@ VISIBILITY_LIGHT = 0x421 ,
 }
 public const int RPR_VERSION_MAJOR = 1 ;
 public const int RPR_VERSION_MINOR = 35 ;
-public const int RPR_VERSION_REVISION = 3 ;
-public const int RPR_VERSION_BUILD = 0x92f604e2 ;
-public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00103503 ;
+public const int RPR_VERSION_REVISION = 4 ;
+public const int RPR_VERSION_BUILD = 0x5f0522b2 ;
+public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00103504 ;
 // Deprecated version naming - will be removed in the future :
 
 public const int RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -1090,13 +1130,9 @@ public const int RPR_API_VERSION_MINOR = RPR_VERSION_BUILD ;
 public const int RPR_OBJECT_NAME = 0x777777 ;
 public const int RPR_OBJECT_UNIQUE_ID = 0x777778 ;
 public const int RPR_OBJECT_CUSTOM_PTR = 0x777779 ;
-/* rpr_context_properties */
-
-public const int RPR_CONTEXT_CREATEPROP_COMPILE_CALLBACK = 0x601 ;
-public const int RPR_CONTEXT_CREATEPROP_COMPILE_USER_DATA = 0x602 ;
 /* last of the RPR_CONTEXT_* */
   
-public const int RPR_CONTEXT_MAX = 0x16D ;
+public const int RPR_CONTEXT_MAX = 0x170 ;
 // RPR_PARAMETER_NAME_STRING 0x1202   not used anymore  you can only set/get parameters using  RPR_CONTEXT_*
 
 
@@ -1239,6 +1275,21 @@ public static Status ContextSetAOV(IntPtr context, Aov aov, IntPtr frame_buffer)
 return rprContextSetAOV(context, aov, frame_buffer);
 }
 
+    /** @brief Set a LPE ( Light Path Expression ) to a framebuffer.
+    *          Note that this framebuffer should also be assigned to a LPE AOV:  RPR_AOV_LPE_0 , RPR_AOV_LPE_1 ....
+    *
+    *
+    *  @param  frame_buffer    Frame buffer object to set
+    *  @param  lpe             Light Path Expression
+    *  @return                 RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprFrameBufferSetLPE(IntPtr frame_buffer, string lpe);
+public static Status FrameBufferSetLPE(IntPtr frame_buffer, string lpe)
+{
+return rprFrameBufferSetLPE(frame_buffer, lpe);
+}
+
     /** @brief Set AOV Index Lookup Color
     *          change the color of  AOV rendering IDs,  like : RPR_AOV_MATERIAL_IDX , RPR_AOV_OBJECT_ID, RPR_AOV_OBJECT_GROUP_ID.
     *          for example, you can render all the  shapes with ObjectGroupID=4  in the Red color inside the RPR_AOV_OBJECT_GROUP_ID AOV
@@ -1306,6 +1357,11 @@ return rprContextGetScene(arg0, out out_scene);
 public static Status ContextSetParameterByKey1u(IntPtr context, ContextInfo in_input, uint x)
 {
 return rprContextSetParameterByKey1u(context, in_input, x);
+}
+[DllImport(dllName)] static extern Status rprContextSetParameterByKeyPtr(IntPtr context, ContextInfo in_input, IntPtr x);
+public static Status ContextSetParameterByKeyPtr(IntPtr context, ContextInfo in_input, IntPtr x)
+{
+return rprContextSetParameterByKeyPtr(context, in_input, x);
 }
 [DllImport(dllName)] static extern Status rprContextSetParameterByKey1f(IntPtr context, ContextInfo in_input, float x);
 public static Status ContextSetParameterByKey1f(IntPtr context, ContextInfo in_input, float x)
@@ -2640,10 +2696,25 @@ public static Status SphereLightSetRadiantPower3f(IntPtr light, float r, float g
 {
 return rprSphereLightSetRadiantPower3f(light, r, g, b);
 }
+[DllImport(dllName)] static extern Status rprSphereLightSetRadius(IntPtr light, float angle);
+public static Status SphereLightSetRadius(IntPtr light, float angle)
+{
+return rprSphereLightSetRadius(light, angle);
+}
 [DllImport(dllName)] static extern Status rprDiskLightSetRadiantPower3f(IntPtr light, float r, float g, float b);
 public static Status DiskLightSetRadiantPower3f(IntPtr light, float r, float g, float b)
 {
 return rprDiskLightSetRadiantPower3f(light, r, g, b);
+}
+[DllImport(dllName)] static extern Status rprDiskLightSetRadius(IntPtr light, float radius);
+public static Status DiskLightSetRadius(IntPtr light, float radius)
+{
+return rprDiskLightSetRadius(light, radius);
+}
+[DllImport(dllName)] static extern Status rprDiskLightSetAngle(IntPtr light, float angle);
+public static Status DiskLightSetAngle(IntPtr light, float angle)
+{
+return rprDiskLightSetAngle(light, angle);
 }
 
     /** @brief Set cone shape for a spot light

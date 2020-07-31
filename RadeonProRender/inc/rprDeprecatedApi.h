@@ -50,6 +50,10 @@ typedef _rprxcontext *rprx_context;
 typedef _rprxmaterial *rprx_material;
 
 
+#define RPR_CONTEXT_CREATEPROP_COMPILE_CALLBACK 0x601
+#define RPR_CONTEXT_CREATEPROP_COMPILE_USER_DATA 0x602
+
+
 // in order to unify the RPR_MATERIAL_INPUT_ prefix for all material input :
 // old Uber param input : RPR_UBER_MATERIAL_INPUT_*
 // new Uber param input : RPR_MATERIAL_INPUT_UBER_*
