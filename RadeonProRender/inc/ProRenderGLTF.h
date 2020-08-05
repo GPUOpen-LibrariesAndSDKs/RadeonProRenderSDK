@@ -133,10 +133,14 @@ rprGLTF_GetParentGroupFromGroup("hand", 512, groupName, NULL);
 
 if the shape/folder has not parent, the empty string is returned in groupName
 
+rprGLTF_AssignLightToGroup only works if the light is exported as KHR_lights_punctual.
+Meaning that RPRGLTF_EXPORTFLAG_KHR_LIGHT must be used. and the light must be directional, point or spot.
+
 these functions return RPR_SUCCESS if success
 */
 extern int rprGLTF_AssignShapeToGroup(rpr_shape shape, const rpr_char* groupName);
 extern int rprGLTF_AssignCameraToGroup(rpr_camera camera, const rpr_char* groupName);
+extern int rprGLTF_AssignLightToGroup(rpr_light light, const rpr_char* groupName);
 extern int rprGLTF_AssignParentGroupToGroup(const rpr_char* groupChild, const rpr_char* groupParent);
 extern int rprGLTF_SetTransformGroup(const rpr_char* groupChild, float* matrixComponents);
 extern int rprGLTF_GetParentGroupFromShape(rpr_shape shape, size_t size, rpr_char* groupName, size_t* size_ret);
