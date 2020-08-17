@@ -137,12 +137,10 @@ these functions return RPR_SUCCESS if success
 */
 extern int rprGLTF_AssignShapeToGroup(rpr_shape shape, const rpr_char* groupName);
 extern int rprGLTF_AssignCameraToGroup(rpr_camera camera, const rpr_char* groupName);
-extern int rprGLTF_AssignLightToGroup(rpr_light light, const rpr_char* groupName);
 extern int rprGLTF_AssignParentGroupToGroup(const rpr_char* groupChild, const rpr_char* groupParent);
 extern int rprGLTF_SetTransformGroup(const rpr_char* groupChild, float* matrixComponents);
 extern int rprGLTF_GetParentGroupFromShape(rpr_shape shape, size_t size, rpr_char* groupName, size_t* size_ret);
 extern int rprGLTF_GetParentGroupFromCamera(rpr_camera camera, size_t size, rpr_char* groupName, size_t* size_ret);
-extern int rprGLTF_GetParentGroupFromLight(rpr_light light, size_t size, rpr_char* groupName, size_t* size_ret);
 extern int rprGLTF_GetParentGroupFromGroup(const rpr_char* groupChild, size_t size, rpr_char* groupName, size_t* size_ret);
 
 
