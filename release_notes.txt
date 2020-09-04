@@ -3,6 +3,35 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 1.35.5 - 04 September 2020
+
+-- RESOLVED TICKETS for NORTHSTAR:
+RPRNEXT-266 - Improve ray cast performance
+RPRNEXT-272 - Steppy artifact with envmap (IBL)
+RPRNEXT-267 - uber caustics option isn't handled correctly
+RPRNEXT-270 - Opacity AOV is different between CPU and GPU
+RPRNEXT-244 - Cap subdivision level to avoid over subdivision
+RPRNEXT-283 - Progressive iteration change converges slowly
+RPRNEXT-254 - Reflection is wrong
+RPRNEXT-125 - Make object id and material id consistent
+RPRNEXT-300 - diffuse albedo firefly on cpu
+RPRNEXT-284 - Bad pixels from usd market
+RPRNEXT-298 - Sphere light convergence
+RPRNEXT-304 - allow caustics unexpected contribution
+RPRNEXT-237 - Shadow Catcher Fireflies on Object Edges
+RPRNEXT-310 - Multiple scene crash
+RPRNEXT-311 - Principled material loose reflection if reflection weight = 0 under metalness mode
+RPRNEXT-316 - Disk Light missing scale handling
+RPRNEXT-315 - Inconsistent sphere light behavior
+RPRNEXT-319 - Sphere Light explicit contribution is not consistent
+RPRNEXT-318 - Uber metalness parameter gives an unnatural look
+
+-- RPR API CHANGE:
+RPR_AOV_MATERIAL_IDX was renamed RPR_AOV_MATERIAL_ID
+this is to clarify that this AOV is rendering an ID, and not an Index.
+( the ID can be changed with  rprMaterialNodeSetID(rpr_material_node mat, rpr_uint id) )
+
+################################################################################################################
 RPR SDK 1.35.4 - 31 July 2020
 
 -- RESOLVED TICKETS for NORTHSTAR:

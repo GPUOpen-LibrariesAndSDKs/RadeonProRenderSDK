@@ -39,9 +39,9 @@ extern "C" {
 
 #define RPR_VERSION_MAJOR 1 
 #define RPR_VERSION_MINOR 35 
-#define RPR_VERSION_REVISION 4 
-#define RPR_VERSION_BUILD 0x5f0522b2 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00103504 
+#define RPR_VERSION_REVISION 5 
+#define RPR_VERSION_BUILD 0x6cb0092b 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00103505 
 
 // Deprecated version naming - will be removed in the future :
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
@@ -505,6 +505,7 @@ extern "C" {
 #define RPR_MATERIAL_NODE_TYPE 0x1101 
 #define RPR_MATERIAL_NODE_SYSTEM 0x1102 
 #define RPR_MATERIAL_NODE_INPUT_COUNT 0x1103 
+#define RPR_MATERIAL_NODE_ID 0x1104 
 #define RPR_MATERIAL_NODE_NAME RPR_OBJECT_NAME
 #define RPR_MATERIAL_NODE_UNIQUE_ID RPR_OBJECT_UNIQUE_ID
 #define RPR_MATERIAL_CUSTOM_PTR RPR_OBJECT_CUSTOM_PTR
@@ -792,7 +793,7 @@ extern "C" {
 #define RPR_AOV_OPACITY 0x1 
 #define RPR_AOV_WORLD_COORDINATE 0x2 
 #define RPR_AOV_UV 0x3 
-#define RPR_AOV_MATERIAL_IDX 0x4 
+#define RPR_AOV_MATERIAL_ID 0x4 
 #define RPR_AOV_GEOMETRIC_NORMAL 0x5 
 #define RPR_AOV_SHADING_NORMAL 0x6 
 #define RPR_AOV_DEPTH 0x7 
@@ -1215,7 +1216,7 @@ typedef _rpr_ies_image_desc rpr_ies_image_desc;
 
 
     /** @brief Set AOV Index Lookup Color
-    *          change the color of  AOV rendering IDs,  like : RPR_AOV_MATERIAL_IDX , RPR_AOV_OBJECT_ID, RPR_AOV_OBJECT_GROUP_ID.
+    *          change the color of  AOV rendering IDs,  like : RPR_AOV_MATERIAL_ID , RPR_AOV_OBJECT_ID, RPR_AOV_OBJECT_GROUP_ID.
     *          for example, you can render all the  shapes with ObjectGroupID=4  in the Red color inside the RPR_AOV_OBJECT_GROUP_ID AOV
     *
     *  @param  context         The context to set AOV index lookup
@@ -2821,6 +2822,13 @@ extern RPR_API_ENTRY rpr_status rprSceneGetEnvironmentLight(rpr_scene in_scene, 
     *
     */
   extern RPR_API_ENTRY rpr_status rprMaterialSystemCreateNode(rpr_material_system in_matsys, rpr_material_node_type in_type, rpr_material_node * out_node);
+
+
+    /** @brief set the RPR_MATERIAL_NODE_ID of a material.
+    *   this ID doesn't need to be unique.
+    *   this ID can be rendered with the RPR_AOV_MATERIAL_ID AOV - color of this AOV can be customized with rprContextSetAOVindexLookup.
+    */
+  extern RPR_API_ENTRY rpr_status rprMaterialNodeSetID(rpr_material_node in_node, rpr_uint id);
 
 
     /** @brief Connect nodes

@@ -242,6 +242,8 @@ extern RPR_API_ENTRY rpr_status rprContextSetParameterString(rpr_context context
 // DEPRECATED : replaced by rprDirectionalLightSetShadowSoftnessAngle
 extern RPR_API_ENTRY rpr_status rprDirectionalLightSetShadowSoftness(rpr_light light, rpr_float coeff);
 
+// name was changed for clarification
+#define RPR_AOV_MATERIAL_IDX RPR_AOV_MATERIAL_ID
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //

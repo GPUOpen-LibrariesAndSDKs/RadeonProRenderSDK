@@ -487,6 +487,12 @@ Status Context::SetParameter(ContextInfo in_input, rpr_char const* value) {
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
+Status Context::SetParameter(ContextInfo in_input, void* value) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprContextSetParameterByKeyPtr(m_context, in_input, value)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
 Status Context::Render() {
     RPR_CPPWRAPER_CALL_PREFIX
     rprContextRender(m_context)
@@ -1284,6 +1290,12 @@ Status FrameBuffer::FillWithColor(rpr_float r, rpr_float g, rpr_float b, rpr_flo
 Status FrameBuffer::SaveToFile(rpr_char const* file_path) {
     RPR_CPPWRAPER_CALL_PREFIX
     rprFrameBufferSaveToFile(GetRprObject(this), file_path)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
+Status FrameBuffer::SetLPE(const char* lpe) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprFrameBufferSetLPE(GetRprObject(this), lpe)
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 

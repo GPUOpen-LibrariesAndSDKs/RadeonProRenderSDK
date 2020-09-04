@@ -600,6 +600,7 @@ public enum MaterialNodeInfo : int
 TYPE = 0x1101 ,
 SYSTEM = 0x1102 ,
 INPUT_COUNT = 0x1103 ,
+ID = 0x1104 ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 RPR_MATERIAL_CUSTOM_PTR = 0x777779 ,
@@ -920,7 +921,7 @@ COLOR = 0x0 ,
 OPACITY = 0x1 ,
 WORLD_COORDINATE = 0x2 ,
 UV = 0x3 ,
-MATERIAL_IDX = 0x4 ,
+MATERIAL_ID = 0x4 ,
 GEOMETRIC_NORMAL = 0x5 ,
 SHADING_NORMAL = 0x6 ,
 DEPTH = 0x7 ,
@@ -1120,9 +1121,9 @@ VISIBILITY_LIGHT = 0x421 ,
 }
 public const int RPR_VERSION_MAJOR = 1 ;
 public const int RPR_VERSION_MINOR = 35 ;
-public const int RPR_VERSION_REVISION = 4 ;
-public const int RPR_VERSION_BUILD = 0x5f0522b2 ;
-public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00103504 ;
+public const int RPR_VERSION_REVISION = 5 ;
+public const int RPR_VERSION_BUILD = 0x6cb0092b ;
+public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00103505 ;
 // Deprecated version naming - will be removed in the future :
 
 public const int RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -1291,7 +1292,7 @@ return rprFrameBufferSetLPE(frame_buffer, lpe);
 }
 
     /** @brief Set AOV Index Lookup Color
-    *          change the color of  AOV rendering IDs,  like : RPR_AOV_MATERIAL_IDX , RPR_AOV_OBJECT_ID, RPR_AOV_OBJECT_GROUP_ID.
+    *          change the color of  AOV rendering IDs,  like : RPR_AOV_MATERIAL_ID , RPR_AOV_OBJECT_ID, RPR_AOV_OBJECT_GROUP_ID.
     *          for example, you can render all the  shapes with ObjectGroupID=4  in the Red color inside the RPR_AOV_OBJECT_GROUP_ID AOV
     *
     *  @param  context         The context to set AOV index lookup
@@ -3520,6 +3521,17 @@ return rprMaterialSystemGetSize(in_context, out out_size);
 public static Status MaterialSystemCreateNode(IntPtr in_matsys, MaterialNodeType in_type, out IntPtr out_node)
 {
 return rprMaterialSystemCreateNode(in_matsys, in_type, out out_node);
+}
+
+    /** @brief set the RPR_MATERIAL_NODE_ID of a material.
+    *   this ID doesn't need to be unique.
+    *   this ID can be rendered with the RPR_AOV_MATERIAL_ID AOV - color of this AOV can be customized with rprContextSetAOVindexLookup.
+    */
+  
+[DllImport(dllName)] static extern Status rprMaterialNodeSetID(IntPtr in_node, uint id);
+public static Status MaterialNodeSetID(IntPtr in_node, uint id)
+{
+return rprMaterialNodeSetID(in_node, id);
 }
 
     /** @brief Connect nodes

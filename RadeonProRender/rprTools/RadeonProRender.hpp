@@ -134,6 +134,7 @@ public:
     Status SetParameter(ContextInfo input, float x, float y, float z);
     Status SetParameter(ContextInfo input, float x, float y, float z, float w);
     Status SetParameter(ContextInfo input, rpr_char const* value);
+    Status SetParameter(ContextInfo input, void* value);
     Status Render();
     Status AbortRender();
     Status RenderTile(rpr_uint xmin, rpr_uint xmax, rpr_uint ymin, rpr_uint ymax);
@@ -527,6 +528,7 @@ public:
     Status Clear();
     Status FillWithColor(float r, float g, float b, float a);
     Status SaveToFile(rpr_char const* filePath);
+    Status SetLPE(const char* lpe);
 
 private:
     FrameBuffer(Context& ctx, rpr_framebuffer obj);
