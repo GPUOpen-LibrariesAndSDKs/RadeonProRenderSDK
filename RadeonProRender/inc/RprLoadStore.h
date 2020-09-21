@@ -124,6 +124,18 @@ extern RPR_API_ENTRY rpr_status rprsImportCustomList(char const * rprsFileName, 
 
 
 
+
+// In classic usage, rprsExport only saves 1 camera ( the camera attached to scene )
+// however, user may need to store more cameras. You can do that with this function.
+// Just call rprsAddExtraCamera for each extra camera, then call rprsExport.
+// internally, the list of extra cameras will be reset as soon as you call rprsExport
+// return RPR_SUCCESS if success.
+extern RPR_API_ENTRY rpr_status rprsAddExtraCamera(rpr_camera extraCam);
+
+
+
+extern RPR_API_ENTRY rpr_status rprsAddExtraShapeParameter(rpr_shape shape, const rpr_char * parameterName, rpr_int value);
+extern RPR_API_ENTRY rpr_status rprsGetExtraShapeParameter(rpr_shape shape, const rpr_char * parameterName, rpr_int * value);
 extern RPR_API_ENTRY rpr_status rprsExportToXML(char const * rprsFileNameBinary, char const * rprsFileNameAscii);
 
 
@@ -142,7 +154,10 @@ extern RPR_API_ENTRY rpr_status rprsExportToXML(char const * rprsFileNameBinary,
 // ...
 // the groups with no parent will be at the root of the scene.
 // the call order of  rprsAssignShapeToGroup  and  rprsAssignParentGroupToGroup  doesn't matter
-// 
+//
+// Note that for rprsSetTransformGroup and rprsGetTransformGroup, matrixComponents is an array of 10 floats in the following order: 
+//       0-2:Translation, 3-6:RotationQuaternion,  7-9:Scale
+//
 // then, call rprsExport. Internally this will export the hierarchy to the RPRS, and clean the group list for next export.
 // 
 // -- Usage for Import
@@ -159,11 +174,14 @@ extern RPR_API_ENTRY rpr_status rprsExportToXML(char const * rprsFileNameBinary,
 // those functions return RPR_SUCCESS if success
 // 
 extern RPR_API_ENTRY rpr_status rprsAssignShapeToGroup(rpr_shape shape, const rpr_char * groupName);
+extern RPR_API_ENTRY rpr_status rprsAssignLightToGroup(rpr_light light, const rpr_char * groupName);
 extern RPR_API_ENTRY rpr_status rprsAssignCameraToGroup(rpr_camera camera, const rpr_char * groupName);
 extern RPR_API_ENTRY rpr_status rprsAssignParentGroupToGroup(const rpr_char * groupChild, const rpr_char * groupParent);
 extern RPR_API_ENTRY rpr_status rprsSetTransformGroup(const rpr_char * groupChild, const float * matrixComponents);
+extern RPR_API_ENTRY rpr_status rprsGetTransformGroup(const rpr_char * groupChild, float * matrixComponents);
 extern RPR_API_ENTRY rpr_status rprsGetParentGroupFromShape(rpr_shape shape, size_t size, rpr_char * groupName, size_t * size_ret);
 extern RPR_API_ENTRY rpr_status rprsGetParentGroupFromCamera(rpr_camera camera, size_t size, rpr_char * groupName, size_t * size_ret);
+extern RPR_API_ENTRY rpr_status rprsGetParentGroupFromLight(rpr_light light, size_t size, rpr_char * groupName, size_t * size_ret);
 extern RPR_API_ENTRY rpr_status rprsGetParentGroupFromGroup(const rpr_char * groupChild, size_t size, rpr_char * groupName, size_t * size_ret);
 
 
@@ -227,8 +245,9 @@ typedef _rprs_animation rprs_animation;
 extern RPR_API_ENTRY const rprs_animation * rprsGetAnimation(int animIndex);
 
 
-// make sure the pointers specified inside rprs_animation structure  ( groupName2, timeKeys, transformValues) stay available from this call to the rprsExport call.
-// after that, they won't be used anymore by the LoadStore library.
+// before 2.01.6 SDK : make sure the pointers specified inside rprs_animation structure  ( groupName2, timeKeys, transformValues) stay available from this call to the rprsExport call.
+//                     after that, they won't be used anymore by the LoadStore library.
+// from   2.01.6 SDK : RPRS library will copy the animation buffers internally until the rprsExport call. So pointers given to rprsAddAnimation don't need to be kept by the API user.
 // return RPR_SUCCESS if success.
 extern RPR_API_ENTRY rpr_status rprsAddAnimation(const rprs_animation * anim);
 

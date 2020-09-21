@@ -256,6 +256,31 @@ return rprsImportCustomList(rprsFileName, context, materialSystem, materialNode_
 
 
 
+
+// In classic usage, rprsExport only saves 1 camera ( the camera attached to scene )
+// however, user may need to store more cameras. You can do that with this function.
+// Just call rprsAddExtraCamera for each extra camera, then call rprsExport.
+// internally, the list of extra cameras will be reset as soon as you call rprsExport
+// return RPR_SUCCESS if success.
+
+[DllImport(dllName)] static extern Status rprsAddExtraCamera(IntPtr extraCam);
+public static Status sAddExtraCamera(IntPtr extraCam)
+{
+return rprsAddExtraCamera(extraCam);
+}
+
+
+
+[DllImport(dllName)] static extern Status rprsAddExtraShapeParameter(IntPtr shape, IntPtr parameterName, int value);
+public static Status sAddExtraShapeParameter(IntPtr shape, IntPtr parameterName, int value)
+{
+return rprsAddExtraShapeParameter(shape, parameterName, value);
+}
+[DllImport(dllName)] static extern Status rprsGetExtraShapeParameter(IntPtr shape, IntPtr parameterName, IntPtr value);
+public static Status sGetExtraShapeParameter(IntPtr shape, IntPtr parameterName, IntPtr value)
+{
+return rprsGetExtraShapeParameter(shape, parameterName, value);
+}
 [DllImport(dllName)] static extern Status rprsExportToXML(IntPtr rprsFileNameBinary, IntPtr rprsFileNameAscii);
 public static Status sExportToXML(IntPtr rprsFileNameBinary, IntPtr rprsFileNameAscii)
 {
@@ -277,7 +302,10 @@ return rprsExportToXML(rprsFileNameBinary, rprsFileNameAscii);
 // ...
 // the groups with no parent will be at the root of the scene.
 // the call order of  rprsAssignShapeToGroup  and  rprsAssignParentGroupToGroup  doesn't matter
-// 
+//
+// Note that for rprsSetTransformGroup and rprsGetTransformGroup, matrixComponents is an array of 10 floats in the following order: 
+//       0-2:Translation, 3-6:RotationQuaternion,  7-9:Scale
+//
 // then, call rprsExport. Internally this will export the hierarchy to the RPRS, and clean the group list for next export.
 // 
 // -- Usage for Import
@@ -299,6 +327,11 @@ public static Status sAssignShapeToGroup(IntPtr shape, IntPtr groupName)
 {
 return rprsAssignShapeToGroup(shape, groupName);
 }
+[DllImport(dllName)] static extern Status rprsAssignLightToGroup(IntPtr light, IntPtr groupName);
+public static Status sAssignLightToGroup(IntPtr light, IntPtr groupName)
+{
+return rprsAssignLightToGroup(light, groupName);
+}
 [DllImport(dllName)] static extern Status rprsAssignCameraToGroup(IntPtr camera, IntPtr groupName);
 public static Status sAssignCameraToGroup(IntPtr camera, IntPtr groupName)
 {
@@ -314,6 +347,11 @@ public static Status sSetTransformGroup(IntPtr groupChild, IntPtr matrixComponen
 {
 return rprsSetTransformGroup(groupChild, matrixComponents);
 }
+[DllImport(dllName)] static extern Status rprsGetTransformGroup(IntPtr groupChild, IntPtr matrixComponents);
+public static Status sGetTransformGroup(IntPtr groupChild, IntPtr matrixComponents)
+{
+return rprsGetTransformGroup(groupChild, matrixComponents);
+}
 [DllImport(dllName)] static extern Status rprsGetParentGroupFromShape(IntPtr shape, long size, IntPtr groupName, IntPtr size_ret);
 public static Status sGetParentGroupFromShape(IntPtr shape, long size, IntPtr groupName, IntPtr size_ret)
 {
@@ -323,6 +361,11 @@ return rprsGetParentGroupFromShape(shape, size, groupName, size_ret);
 public static Status sGetParentGroupFromCamera(IntPtr camera, long size, IntPtr groupName, IntPtr size_ret)
 {
 return rprsGetParentGroupFromCamera(camera, size, groupName, size_ret);
+}
+[DllImport(dllName)] static extern Status rprsGetParentGroupFromLight(IntPtr light, long size, IntPtr groupName, IntPtr size_ret);
+public static Status sGetParentGroupFromLight(IntPtr light, long size, IntPtr groupName, IntPtr size_ret)
+{
+return rprsGetParentGroupFromLight(light, size, groupName, size_ret);
 }
 [DllImport(dllName)] static extern Status rprsGetParentGroupFromGroup(IntPtr groupChild, long size, IntPtr groupName, IntPtr size_ret);
 public static Status sGetParentGroupFromGroup(IntPtr groupChild, long size, IntPtr groupName, IntPtr size_ret)
@@ -385,8 +428,9 @@ public static IntPtr sGetAnimation(int animIndex)
 return rprsGetAnimation(animIndex);
 }
 
-// make sure the pointers specified inside rprs_animation structure  ( groupName2, timeKeys, transformValues) stay available from this call to the rprsExport call.
-// after that, they won't be used anymore by the LoadStore library.
+// before 2.01.6 SDK : make sure the pointers specified inside rprs_animation structure  ( groupName2, timeKeys, transformValues) stay available from this call to the rprsExport call.
+//                     after that, they won't be used anymore by the LoadStore library.
+// from   2.01.6 SDK : RPRS library will copy the animation buffers internally until the rprsExport call. So pointers given to rprsAddAnimation don't need to be kept by the API user.
 // return RPR_SUCCESS if success.
 
 [DllImport(dllName)] static extern Status rprsAddAnimation(IntPtr anim);
