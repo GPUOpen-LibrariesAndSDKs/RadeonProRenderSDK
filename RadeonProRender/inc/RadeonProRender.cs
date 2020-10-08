@@ -357,6 +357,7 @@ MIPMAP_ENABLED = 0x308 ,
 MIP_COUNT = 0x309 ,
 GAMMA_FROM_FILE = 0x30A ,
 UDIM = 0x30B ,
+OCIO_COLORSPACE = 0x30C ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -681,6 +682,8 @@ MATX_DIELECTRIC_BTDF = 0x100F,
 MATX_CONDUCTOR_BRDF = 0x1010,
 MATX_FRESNEL = 0x1011,
 MATX_LUMINANCE = 0x1012,
+MATX_FRACTAL3D = 0x1013,
+MATX_MIX = 0x1014,
 }
 /*rpr_material_node_input*/
 public enum MaterialInput : int
@@ -746,6 +749,9 @@ REFLECTIVITY = 0x39 ,
 EDGE_COLOR = 0x3a ,
 VIEW_DIRECTION = 0x3b ,
 INTERIOR = 0x3c ,
+OCTAVES = 0x3d ,
+LACUNARITY = 0x3e ,
+DIMINISH = 0x3f ,
 UBER_DIFFUSE_COLOR = 0x910,
 UBER_DIFFUSE_WEIGHT = 0x927,
 UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -759,6 +765,7 @@ UBER_REFLECTION_MODE = 0x917,
 UBER_REFLECTION_IOR = 0x918,
 UBER_REFLECTION_METALNESS = 0x919,
 UBER_REFLECTION_NORMAL = 0x929,
+UBER_REFLECTION_DIELECTRIC_REFLECTANCE = 0x93e,
 UBER_REFRACTION_COLOR = 0x91A,
 UBER_REFRACTION_WEIGHT = 0x92a,
 UBER_REFRACTION_ROUGHNESS = 0x91B,
@@ -1119,11 +1126,11 @@ VISIBILITY_GLOSSY_REFLECTION = 0x41F ,
 VISIBILITY_GLOSSY_REFRACTION = 0x420 ,
 VISIBILITY_LIGHT = 0x421 ,
 }
-public const int RPR_VERSION_MAJOR = 1 ;
-public const int RPR_VERSION_MINOR = 35 ;
-public const int RPR_VERSION_REVISION = 5 ;
-public const int RPR_VERSION_BUILD = 0x6cb0092b ;
-public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00103505 ;
+public const int RPR_VERSION_MAJOR = 2 ;
+public const int RPR_VERSION_MINOR = 1 ;
+public const int RPR_VERSION_REVISION = 6 ;
+public const int RPR_VERSION_BUILD = 0xca39c79b ;
+public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200106 ;
 // Deprecated version naming - will be removed in the future :
 
 public const int RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -1391,22 +1398,38 @@ return rprContextSetParameterByKeyString(context, in_input, value);
     * Use this only if you understand what you are doing.
     * It's sending the name/value directly to the plugin without any process of RPR API.
     * the 'paramName' is not related with the parameters of rprContextSetParameterByKey4f.
+    * 'pluginIndex' can be used if the context has more than one plugin - Not Implemented for now, set it to 0.
     */
   
-[DllImport(dllName)] static extern Status rprContextSetInternalParameter4f(IntPtr context, string paramName, float x, float y, float z, float w);
-public static Status ContextSetInternalParameter4f(IntPtr context, string paramName, float x, float y, float z, float w)
+[DllImport(dllName)] static extern Status rprContextSetInternalParameter4f(IntPtr context, uint pluginIndex, string paramName, float x, float y, float z, float w);
+public static Status ContextSetInternalParameter4f(IntPtr context, uint pluginIndex, string paramName, float x, float y, float z, float w)
 {
-return rprContextSetInternalParameter4f(context, paramName, x, y, z, w);
+return rprContextSetInternalParameter4f(context, pluginIndex, paramName, x, y, z, w);
 }
-[DllImport(dllName)] static extern Status rprContextSetInternalParameter1u(IntPtr context, string paramName, uint x);
-public static Status ContextSetInternalParameter1u(IntPtr context, string paramName, uint x)
+[DllImport(dllName)] static extern Status rprContextSetInternalParameter1u(IntPtr context, uint pluginIndex, string paramName, uint x);
+public static Status ContextSetInternalParameter1u(IntPtr context, uint pluginIndex, string paramName, uint x)
 {
-return rprContextSetInternalParameter1u(context, paramName, x);
+return rprContextSetInternalParameter1u(context, pluginIndex, paramName, x);
 }
-[DllImport(dllName)] static extern Status rprContextSetInternalParameterBuffer(IntPtr context, string paramName, IntPtr buffer, long bufferSizeByte);
-public static Status ContextSetInternalParameterBuffer(IntPtr context, string paramName, IntPtr buffer, long bufferSizeByte)
+[DllImport(dllName)] static extern Status rprContextSetInternalParameterBuffer(IntPtr context, uint pluginIndex, string paramName, IntPtr buffer, long bufferSizeByte);
+public static Status ContextSetInternalParameterBuffer(IntPtr context, uint pluginIndex, string paramName, IntPtr buffer, long bufferSizeByte)
 {
-return rprContextSetInternalParameterBuffer(context, paramName, buffer, bufferSizeByte);
+return rprContextSetInternalParameterBuffer(context, pluginIndex, paramName, buffer, bufferSizeByte);
+}
+[DllImport(dllName)] static extern Status rprContextGetInternalParameter4f(IntPtr context, uint pluginIndex, string paramName, IntPtr x, IntPtr y, IntPtr z, IntPtr w);
+public static Status ContextGetInternalParameter4f(IntPtr context, uint pluginIndex, string paramName, IntPtr x, IntPtr y, IntPtr z, IntPtr w)
+{
+return rprContextGetInternalParameter4f(context, pluginIndex, paramName, x, y, z, w);
+}
+[DllImport(dllName)] static extern Status rprContextGetInternalParameter1u(IntPtr context, uint pluginIndex, string paramName, IntPtr x);
+public static Status ContextGetInternalParameter1u(IntPtr context, uint pluginIndex, string paramName, IntPtr x)
+{
+return rprContextGetInternalParameter1u(context, pluginIndex, paramName, x);
+}
+[DllImport(dllName)] static extern Status rprContextGetInternalParameterBuffer(IntPtr context, uint pluginIndex, string paramName, long bufferSizeByte, IntPtr buffer, IntPtr size_ret);
+public static Status ContextGetInternalParameterBuffer(IntPtr context, uint pluginIndex, string paramName, long bufferSizeByte, IntPtr buffer, IntPtr size_ret)
+{
+return rprContextGetInternalParameterBuffer(context, pluginIndex, paramName, bufferSizeByte, buffer, size_ret);
 }
 
     /** @brief Perform evaluation and accumulation of a single sample (or number of AA samples if AA is enabled)
@@ -2016,6 +2039,16 @@ return rprImageGetInfo(image, image_info, size, data, out size_ret);
 public static Status ImageSetWrap(IntPtr image, ImageWrapType type)
 {
 return rprImageSetWrap(image, type);
+}
+
+    /** @brief Set the OCIO Color Space
+    *
+    */
+  
+[DllImport(dllName)] static extern Status rprImageSetOcioColorspace(IntPtr image, string ocioColorspace);
+public static Status ImageSetOcioColorspace(IntPtr image, string ocioColorspace)
+{
+return rprImageSetOcioColorspace(image, ocioColorspace);
 }
 
     /** @brief  Set a tile to an UDIM image.
@@ -3446,6 +3479,25 @@ public static Status FrameBufferSaveToFile(IntPtr frame_buffer, string file_path
 return rprFrameBufferSaveToFile(frame_buffer, file_path);
 }
 
+    /** @brief Save frame buffer to file
+    *
+    *  Same that rprFrameBufferSaveToFile, but more options.
+    *  A list of frambuffers can be given, they will be saved to a multilayer EXR.
+    *
+    *  'extraOptions' is not used for now, but may be use in the future to define some export options, like channel configurations, compression...
+    *                 It must be set to NULL for now.
+    *
+    *  For layer names, the framebuffer names ( from rprObjectSetName ) will be used if it exists.
+    *
+    *  As this function is new ( 2.01.6 SDK ) and still experimental, its arguments may change in the future.
+    */
+  
+[DllImport(dllName)] static extern Status rprFrameBufferSaveToFileEx(IntPtr framebufferList, uint framebufferCount, string filePath, IntPtr extraOptions);
+public static Status FrameBufferSaveToFileEx(IntPtr framebufferList, uint framebufferCount, string filePath, IntPtr extraOptions)
+{
+return rprFrameBufferSaveToFileEx(framebufferList, framebufferCount, filePath, extraOptions);
+}
+
     /** @brief Resolve framebuffer
     *
     *   Resolve applies AA filters and tonemapping operators to the framebuffer data
@@ -3889,10 +3941,10 @@ return rprHeteroVolumeSetDensityScale(heteroVolume, scale);
   * This function is NOT traced. However internally it's calling some RPR API to build the graph, those calls are traced.
   */
   
-[DllImport(dllName)] static extern Status rprLoadMaterialX(IntPtr in_context, IntPtr in_matsys, IntPtr xmlData, IntPtr basePath, int imageAlreadyCreated_count, IntPtr imageAlreadyCreated_paths, IntPtr imageAlreadyCreated_list, out IntPtr listNodesOut, out uint listNodesOut_count, out IntPtr listImagesOut, out uint listImagesOut_count, out uint rootNodeOut);
-public static Status LoadMaterialX(IntPtr in_context, IntPtr in_matsys, IntPtr xmlData, IntPtr basePath, int imageAlreadyCreated_count, IntPtr imageAlreadyCreated_paths, IntPtr imageAlreadyCreated_list, out IntPtr listNodesOut, out uint listNodesOut_count, out IntPtr listImagesOut, out uint listImagesOut_count, out uint rootNodeOut)
+[DllImport(dllName)] static extern Status rprLoadMaterialX(IntPtr in_context, IntPtr in_matsys, IntPtr xmlData, IntPtr incudeData, int includeCount, IntPtr basePath, int imageAlreadyCreated_count, IntPtr imageAlreadyCreated_paths, IntPtr imageAlreadyCreated_list, out IntPtr listNodesOut, out uint listNodesOut_count, out IntPtr listImagesOut, out uint listImagesOut_count, out uint rootNodeOut, out uint rootDisplacementNodeOut);
+public static Status LoadMaterialX(IntPtr in_context, IntPtr in_matsys, IntPtr xmlData, IntPtr incudeData, int includeCount, IntPtr basePath, int imageAlreadyCreated_count, IntPtr imageAlreadyCreated_paths, IntPtr imageAlreadyCreated_list, out IntPtr listNodesOut, out uint listNodesOut_count, out IntPtr listImagesOut, out uint listImagesOut_count, out uint rootNodeOut, out uint rootDisplacementNodeOut)
 {
-return rprLoadMaterialX(in_context, in_matsys, xmlData, basePath, imageAlreadyCreated_count, imageAlreadyCreated_paths, imageAlreadyCreated_list, out listNodesOut, out listNodesOut_count, out listImagesOut, out listImagesOut_count, out rootNodeOut);
+return rprLoadMaterialX(in_context, in_matsys, xmlData, incudeData, includeCount, basePath, imageAlreadyCreated_count, imageAlreadyCreated_paths, imageAlreadyCreated_list, out listNodesOut, out listNodesOut_count, out listImagesOut, out listImagesOut_count, out rootNodeOut, out rootDisplacementNodeOut);
 }
 
   /** @brief Free the buffers allocated by rprLoadMaterialX

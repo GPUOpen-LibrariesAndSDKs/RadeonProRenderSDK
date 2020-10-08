@@ -127,7 +127,8 @@ struct RPRHybridKernelsPathInfo
 #define RPR_SHAPE_LIGHTMAP_CHART_INDEX 0x1440
 
 // rprMeshGetInfo extension
-#define RPR_MESH_AABB 0x519
+#define RPR_MESH_IS_DYNAMIC_MESH 0x519
+#define RPR_MESH_AABB 0x520
 
 /**
  * Sets directional light shadow splits count for for rasterization renderer.

@@ -55,6 +55,17 @@ extern "C" {
                                          // Access is read only.
                                          // This info can be requested only in VK interop mode
 
+// rpr_mesh_info extensions
+#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFERS 0x5503   // Provides access to all vkBuffer-s with vertex data for mesh (on main instance), which created with RPR_MESH_IS_DYNAMIC_MESH flag
+                                                    // Write to buffer with index RPR_MESH_DYNAMIC_MESH_INDEX_TO_MODIFY, signal to semaphore, then call rprVkDynamicMeshModified()
+#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFER_INDEX_TO_MODIFY 0x5504 // Index of dynamic vertex buffer that we can modify
+#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFER_SIGNAL_SEMAPHORES 0x5505 // Index of semaphore to be signaled when the dynamic buffer modification is complete
+#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFER_POSITION_OFFSET 0x5506 // Offset of position's float3 relative to the beginning of the buffer (in bytes)
+#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFER_NORMAL_OFFSET 0x5507 // Offset of normal's float3 relative to the beginning of the buffer (in bytes)
+
+typedef rpr_int(*rprVkDynamicMeshModified_func)(rpr_shape mesh); // Notify rpr that dynamic vertex buffer was modifed. Semaphore with appropriate index must be signaled before this call
+#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFER_MODIFED_FUNC_NAME "rprVkDynamicMeshModified"
+
 
 /* rpr_context_properties names */
 #define RPR_CONTEXT_CREATEPROP_VK_INTEROP_INFO 0x5601

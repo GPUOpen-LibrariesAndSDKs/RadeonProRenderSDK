@@ -337,6 +337,11 @@ IESLight* Context::CreateIESLight(Status* out_status) {
 }
 
 MaterialXNode* Context::CreateMaterialXNode(char const* xmlData, char const* basePath, int imageAlreadyCreated_count, char const** imageAlreadyCreated_paths, rpr::Image** imageAlreadyCreated_list, Status* out_status) {
+ 
+    
+/*
+// ... WAITING STABLE  rprLoadMaterialX  API  BEFORE IMPLEMENTING THE C++ WRAPPER ...
+ 
     std::vector<rpr_image> imageAlreadyCreated_handles;
     if (imageAlreadyCreated_count > 0) {
         imageAlreadyCreated_handles.reserve(imageAlreadyCreated_count);
@@ -364,6 +369,10 @@ MaterialXNode* Context::CreateMaterialXNode(char const* xmlData, char const* bas
         return nullptr;
     }
     return new MaterialXNode(*this, nodes, numNodes, images, numImages, rootNodeIdx);
+*/
+
+
+    return nullptr;
 }
 
 ContextObject::~ContextObject() {

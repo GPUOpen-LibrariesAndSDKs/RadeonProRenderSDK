@@ -37,11 +37,11 @@ extern "C" {
 #endif
 
 
-#define RPR_VERSION_MAJOR 1 
-#define RPR_VERSION_MINOR 35 
-#define RPR_VERSION_REVISION 5 
-#define RPR_VERSION_BUILD 0x6cb0092b 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00103505 
+#define RPR_VERSION_MAJOR 2 
+#define RPR_VERSION_MINOR 1 
+#define RPR_VERSION_REVISION 6 
+#define RPR_VERSION_BUILD 0xca39c79b 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200106 
 
 // Deprecated version naming - will be removed in the future :
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
@@ -295,6 +295,7 @@ extern "C" {
 #define RPR_IMAGE_MIP_COUNT 0x309 
 #define RPR_IMAGE_GAMMA_FROM_FILE 0x30A 
 #define RPR_IMAGE_UDIM 0x30B 
+#define RPR_IMAGE_OCIO_COLORSPACE 0x30C 
 #define RPR_IMAGE_NAME RPR_OBJECT_NAME
 #define RPR_IMAGE_UNIQUE_ID RPR_OBJECT_UNIQUE_ID
 #define RPR_IMAGE_CUSTOM_PTR RPR_OBJECT_CUSTOM_PTR
@@ -583,6 +584,8 @@ extern "C" {
 #define RPR_MATERIAL_NODE_MATX_CONDUCTOR_BRDF 0x1010
 #define RPR_MATERIAL_NODE_MATX_FRESNEL 0x1011
 #define RPR_MATERIAL_NODE_MATX_LUMINANCE 0x1012
+#define RPR_MATERIAL_NODE_MATX_FRACTAL3D 0x1013
+#define RPR_MATERIAL_NODE_MATX_MIX 0x1014
 /*rpr_material_node_input*/
 #define RPR_MATERIAL_INPUT_COLOR 0x0 
 #define RPR_MATERIAL_INPUT_COLOR0 0x1 
@@ -645,6 +648,9 @@ extern "C" {
 #define RPR_MATERIAL_INPUT_EDGE_COLOR 0x3a 
 #define RPR_MATERIAL_INPUT_VIEW_DIRECTION 0x3b 
 #define RPR_MATERIAL_INPUT_INTERIOR 0x3c 
+#define RPR_MATERIAL_INPUT_OCTAVES 0x3d 
+#define RPR_MATERIAL_INPUT_LACUNARITY 0x3e 
+#define RPR_MATERIAL_INPUT_DIMINISH 0x3f 
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR 0x910
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT 0x927
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_ROUGHNESS 0x911
@@ -658,6 +664,7 @@ extern "C" {
 #define RPR_MATERIAL_INPUT_UBER_REFLECTION_IOR 0x918
 #define RPR_MATERIAL_INPUT_UBER_REFLECTION_METALNESS 0x919
 #define RPR_MATERIAL_INPUT_UBER_REFLECTION_NORMAL 0x929
+#define RPR_MATERIAL_INPUT_UBER_REFLECTION_DIELECTRIC_REFLECTANCE 0x93e
 #define RPR_MATERIAL_INPUT_UBER_REFRACTION_COLOR 0x91A
 #define RPR_MATERIAL_INPUT_UBER_REFRACTION_WEIGHT 0x92a
 #define RPR_MATERIAL_INPUT_UBER_REFRACTION_ROUGHNESS 0x91B
@@ -1279,10 +1286,14 @@ extern RPR_API_ENTRY rpr_status rprContextSetParameterByKeyString(rpr_context co
     * Use this only if you understand what you are doing.
     * It's sending the name/value directly to the plugin without any process of RPR API.
     * the 'paramName' is not related with the parameters of rprContextSetParameterByKey4f.
+    * 'pluginIndex' can be used if the context has more than one plugin - Not Implemented for now, set it to 0.
     */
-  extern RPR_API_ENTRY rpr_status rprContextSetInternalParameter4f(rpr_context context, rpr_char const * paramName, rpr_float x, rpr_float y, rpr_float z, rpr_float w);
-extern RPR_API_ENTRY rpr_status rprContextSetInternalParameter1u(rpr_context context, rpr_char const * paramName, rpr_uint x);
-extern RPR_API_ENTRY rpr_status rprContextSetInternalParameterBuffer(rpr_context context, rpr_char const * paramName, void const * buffer, size_t bufferSizeByte);
+  extern RPR_API_ENTRY rpr_status rprContextSetInternalParameter4f(rpr_context context, rpr_uint pluginIndex, rpr_char const * paramName, rpr_float x, rpr_float y, rpr_float z, rpr_float w);
+extern RPR_API_ENTRY rpr_status rprContextSetInternalParameter1u(rpr_context context, rpr_uint pluginIndex, rpr_char const * paramName, rpr_uint x);
+extern RPR_API_ENTRY rpr_status rprContextSetInternalParameterBuffer(rpr_context context, rpr_uint pluginIndex, rpr_char const * paramName, void const * buffer, size_t bufferSizeByte);
+extern RPR_API_ENTRY rpr_status rprContextGetInternalParameter4f(rpr_context context, rpr_uint pluginIndex, rpr_char const * paramName, rpr_float * x, rpr_float * y, rpr_float * z, rpr_float * w);
+extern RPR_API_ENTRY rpr_status rprContextGetInternalParameter1u(rpr_context context, rpr_uint pluginIndex, rpr_char const * paramName, rpr_uint * x);
+extern RPR_API_ENTRY rpr_status rprContextGetInternalParameterBuffer(rpr_context context, rpr_uint pluginIndex, rpr_char const * paramName, size_t bufferSizeByte, void * buffer, size_t * size_ret);
 
 
     /** @brief Perform evaluation and accumulation of a single sample (or number of AA samples if AA is enabled)
@@ -1738,6 +1749,12 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
     *  @return             RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprImageSetWrap(rpr_image image, rpr_image_wrap_type type);
+
+
+    /** @brief Set the OCIO Color Space
+    *
+    */
+  extern RPR_API_ENTRY rpr_status rprImageSetOcioColorspace(rpr_image image, rpr_char const * ocioColorspace);
 
 
     /** @brief  Set a tile to an UDIM image.
@@ -2767,6 +2784,21 @@ extern RPR_API_ENTRY rpr_status rprSceneGetEnvironmentLight(rpr_scene in_scene, 
   extern RPR_API_ENTRY rpr_status rprFrameBufferSaveToFile(rpr_framebuffer frame_buffer, rpr_char const * file_path);
 
 
+    /** @brief Save frame buffer to file
+    *
+    *  Same that rprFrameBufferSaveToFile, but more options.
+    *  A list of frambuffers can be given, they will be saved to a multilayer EXR.
+    *
+    *  'extraOptions' is not used for now, but may be use in the future to define some export options, like channel configurations, compression...
+    *                 It must be set to NULL for now.
+    *
+    *  For layer names, the framebuffer names ( from rprObjectSetName ) will be used if it exists.
+    *
+    *  As this function is new ( 2.01.6 SDK ) and still experimental, its arguments may change in the future.
+    */
+  extern RPR_API_ENTRY rpr_status rprFrameBufferSaveToFileEx(rpr_framebuffer * framebufferList, rpr_uint framebufferCount, rpr_char const * filePath, void const * extraOptions);
+
+
     /** @brief Resolve framebuffer
     *
     *   Resolve applies AA filters and tonemapping operators to the framebuffer data
@@ -2993,7 +3025,7 @@ extern RPR_API_ENTRY rpr_status rprHeteroVolumeSetDensityScale(rpr_hetero_volume
   *
   * This function is NOT traced. However internally it's calling some RPR API to build the graph, those calls are traced.
   */
-  extern RPR_API_ENTRY rpr_status rprLoadMaterialX(rpr_context in_context, rpr_material_system in_matsys, char const * xmlData, char const * basePath, int imageAlreadyCreated_count, char const ** imageAlreadyCreated_paths, rpr_image * imageAlreadyCreated_list, rpr_material_node ** listNodesOut, rpr_uint * listNodesOut_count, rpr_image ** listImagesOut, rpr_uint * listImagesOut_count, rpr_uint * rootNodeOut);
+  extern RPR_API_ENTRY rpr_status rprLoadMaterialX(rpr_context in_context, rpr_material_system in_matsys, char const * xmlData, char const ** incudeData, int includeCount, char const * basePath, int imageAlreadyCreated_count, char const ** imageAlreadyCreated_paths, rpr_image * imageAlreadyCreated_list, rpr_material_node ** listNodesOut, rpr_uint * listNodesOut_count, rpr_image ** listImagesOut, rpr_uint * listImagesOut_count, rpr_uint * rootNodeOut, rpr_uint * rootDisplacementNodeOut);
 
 
   /** @brief Free the buffers allocated by rprLoadMaterialX

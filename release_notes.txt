@@ -3,6 +3,41 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.01.6 - 08 Octobre 2020
+
+-- RESOLVED TICKETS for NORTHSTAR:
+RPRNEXT-303 - Wired lighting in cornell box
+RPRNEXT-368 - Resume render from where aborted
+RPRNEXT-340 - Texture Disk cache
+RPRNEXT-161 - OpenColorIO support
+RPRNEXT-350 - RE turntable scene crash with LPE on CPU
+RPRNEXT-308 - LPE AOVs are different between CPU and GPU
+RPRNEXT-273 - Issue with RPR 2.0 and viewport render
+RPRNEXT-279 - LPE is broken on navi10 gfx10 (LC)
+RPRNEXT-376 - TIR handling for Uber fresnel approx
+RPRNEXT-178 - Implement Camera Motion Blur
+RPRNEXT-375 - MaterialX - blending issue
+RPRNEXT-382 - Implement outline extraction integrator
+RPRNEXT-275 - crash on barFullTrace
+RPRNEXT-176 - Rotation motion blur is not correct.
+RPRNEXT-387 - Reduce buffer size required to capture LPE
+
+-- KNOWN ISSUES:
+LPE, and AOV based on LPE:
+	RPR_AOV_DIRECT_ILLUMINATION
+	RPR_AOV_INDIRECT_ILLUMINATION
+	RPR_AOV_DIRECT_DIFFUSE
+	RPR_AOV_DIRECT_REFLECT
+	RPR_AOV_INDIRECT_DIFFUSE
+	RPR_AOV_INDIRECT_REFLECT
+	RPR_AOV_REFRACT
+	RPR_AOV_EMISSION
+	are not working on Northstar depending on the OpenCL driver: only current AMD internal drivers can make them work.
+
+CentOS build of Hybrid has not been updated ( still on 1.35.5 ) - will be committed later.
+
+
+################################################################################################################
 RPR SDK 1.35.5 - 04 September 2020
 
 -- RESOLVED TICKETS for NORTHSTAR:
