@@ -137,10 +137,8 @@ int main()
 	}
 
 	// Progressively render an image
-	for (int i = 0; i < NUM_ITERATIONS; ++i)
-	{
-		CHECK( rprContextRender(context) );
-	}
+	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
+	CHECK( rprContextRender(context) );
 
 	std::cout << "Rendering finished.\n";
 

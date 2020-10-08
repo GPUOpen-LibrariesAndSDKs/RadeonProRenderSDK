@@ -142,7 +142,7 @@ int main()
 
 	rpr_material_node uberMat3_imgTexture = nullptr;
 	CHECK(rprMaterialSystemCreateNode(matsys,RPR_MATERIAL_NODE_IMAGE_TEXTURE,&uberMat3_imgTexture));
-	CHECK(rprMaterialNodeSetInputNByKey(uberMat3_imgTexture,   RPR_MATERIAL_INPUT_DATA  ,uberMat3_img));
+	CHECK(rprMaterialNodeSetInputImageDataByKey(uberMat3_imgTexture,   RPR_MATERIAL_INPUT_DATA  ,uberMat3_img));
 
 	rpr_material_node uberMat3 = nullptr;
 	CHECK(rprMaterialSystemCreateNode(matsys,RPR_MATERIAL_NODE_UBERV2,&uberMat3));
@@ -162,10 +162,10 @@ int main()
 	
 	rpr_material_node uberMat2_imgTexture1 = nullptr;
 	CHECK(rprMaterialSystemCreateNode(matsys,RPR_MATERIAL_NODE_IMAGE_TEXTURE,&uberMat2_imgTexture1));
-	CHECK(rprMaterialNodeSetInputNByKey(uberMat2_imgTexture1,   RPR_MATERIAL_INPUT_DATA  ,uberMat2_img1));
+	CHECK(rprMaterialNodeSetInputImageDataByKey(uberMat2_imgTexture1,   RPR_MATERIAL_INPUT_DATA  ,uberMat2_img1));
 	rpr_material_node uberMat2_imgTexture2 = nullptr;
 	CHECK(rprMaterialSystemCreateNode(matsys,RPR_MATERIAL_NODE_IMAGE_TEXTURE,&uberMat2_imgTexture2));
-	CHECK(rprMaterialNodeSetInputNByKey(uberMat2_imgTexture2,   RPR_MATERIAL_INPUT_DATA  ,uberMat2_img2));
+	CHECK(rprMaterialNodeSetInputImageDataByKey(uberMat2_imgTexture2,   RPR_MATERIAL_INPUT_DATA  ,uberMat2_img2));
 
 	rpr_material_node uberMat2 = nullptr;
 	CHECK(rprMaterialSystemCreateNode(matsys,RPR_MATERIAL_NODE_UBERV2,&uberMat2));

@@ -20,6 +20,20 @@
 #include <cassert>
 #include <iostream>
 
+struct UPDATE_CALLBACK_DATA
+{
+	// developpers fill it as he wants
+	// ...
+	// ...
+};
+
+void UpdateCallback( float progress, void* userData )
+{
+	UPDATE_CALLBACK_DATA* userDataIn = (UPDATE_CALLBACK_DATA*)userData;
+	std::cout <<  "progress = "<< (int)(progress*100) << "%" << std::endl;
+	return;
+}
+
 int main()
 {
 	//	enable Radeon ProRender API trace
@@ -40,6 +54,11 @@ int main()
 
 	// Create context using a single GPU 
 	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, RPR_CREATION_FLAGS_ENABLE_GPU0, NULL, NULL, &context) );
+
+	UPDATE_CALLBACK_DATA dataCallback;
+
+	CHECK( rprContextSetParameterByKeyPtr(context, RPR_CONTEXT_RENDER_UPDATE_CALLBACK_FUNC, (void*)UpdateCallback));
+	CHECK( rprContextSetParameterByKeyPtr(context, RPR_CONTEXT_RENDER_UPDATE_CALLBACK_DATA, &dataCallback));
 
 	// Set active plugin.
 	CHECK(  rprContextSetActivePlugin(context, plugins[0]) );
@@ -163,14 +182,14 @@ int main()
 
 
 	// Create framebuffer to store rendering result
-	rpr_framebuffer_desc desc;
-	desc.fb_width = 800;
-	desc.fb_height = 600;
+	rpr_framebuffer_desc desc = { 800,600 };
 
 	// 4 component 32-bit float value each
 	rpr_framebuffer_format fmt = {4, RPR_COMPONENT_TYPE_FLOAT32};
-	rpr_framebuffer frame_buffer;
+	rpr_framebuffer frame_buffer = nullptr;
+	rpr_framebuffer frame_buffer_resolved = nullptr;
 	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer) );
+	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer_resolved) );
 
 	// Clear framebuffer to black color
 	CHECK( rprFrameBufferClear(frame_buffer) );
@@ -195,15 +214,14 @@ int main()
 	}
 
 	// Progressively render an image
-	for (int i = 0; i < NUM_ITERATIONS; ++i)
-	{
-		CHECK( rprContextRender(context) );
-	}
+	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
+	CHECK( rprContextRender(context) );
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
 
 	std::cout << "Rendering finished.\n";
 
 	// Save the result to file
-	CHECK( rprFrameBufferSaveToFile(frame_buffer, "22.png") );
+	CHECK( rprFrameBufferSaveToFile(frame_buffer_resolved, "22.png") );
 
 	// Release the stuff we created
 	CHECK(rprObjectDelete(img));img=nullptr;
@@ -217,12 +235,9 @@ int main()
 	CHECK(rprObjectDelete(scene));scene=nullptr;
 	CHECK(rprObjectDelete(camera));camera=nullptr;
 	CHECK(rprObjectDelete(frame_buffer));frame_buffer=nullptr;
+	CHECK(rprObjectDelete(frame_buffer_resolved));frame_buffer_resolved=nullptr;
 	CheckNoLeak(context);
 	CHECK(rprObjectDelete(context));context=nullptr; // Always delete the RPR Context in last.
 	return 0;
 }
 
-
-// Things to try in this tutorial:
-// 1) Did you notice the x after rpr (rprxCreateMaterial), rprx use rpr, don't get confuse
-// 2) Try to play with the UBER material properties look into RprSupport.h and apply it on the cube

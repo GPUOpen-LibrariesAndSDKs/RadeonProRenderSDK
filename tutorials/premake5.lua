@@ -41,7 +41,7 @@ solution "Tutorials"
 		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\RadeonProRender64.dll\" \".\\Bin\\\"")
 		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\RprLoadStore64.dll\" \".\\Bin\\\"")
 		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\Tahoe64.dll\" \".\\Bin\\\"")
-		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\RprSupport64.dll\" \".\\Bin\\\"")
+		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\Northstar64.dll\" \".\\Bin\\\"")
 		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\Hybrid.dll\" \".\\Bin\\\"")
 	end
 
@@ -69,6 +69,8 @@ solution "Tutorials"
 	if os.istarget("macosx") then
 		libdirs {"../RadeonProRender/binMacOS" }
 	end
+
+	defines{ "RPR_API_USE_HEADER_V2" }  -- make sure to use the API V2: it's a safer C API
 
 	include "00_context_creation"
 	include "01_camera_setup"

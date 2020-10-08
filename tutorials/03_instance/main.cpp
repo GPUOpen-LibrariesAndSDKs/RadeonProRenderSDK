@@ -25,9 +25,9 @@ int main()
 	//	set this before any rpr API calls
 //	rprContextSetParameterByKey1u(0,RPR_CONTEXT_TRACING_ENABLED,1);
 
-    std::cout << "Radeon ProRender SDK simple rendering tutorial.\n";
-    // Indicates whether the last operation has suceeded or not
-    rpr_int status = RPR_SUCCESS;
+	std::cout << "Radeon ProRender SDK simple rendering tutorial.\n";
+	// Indicates whether the last operation has suceeded or not
+	rpr_int status = RPR_SUCCESS;
 	// Create OpenCL context using a single GPU 
 	rpr_context context = NULL;
 	
@@ -59,7 +59,7 @@ int main()
 	rpr_scene scene=nullptr;
 	CHECK( rprContextCreateScene(context, &scene) );
 
-    // Create cube mesh
+	// Create cube mesh
 	rpr_shape cube=nullptr;
 	{
 		CHECK( rprContextCreateMesh(context,
@@ -80,7 +80,7 @@ int main()
 		// Set the transform 
 		CHECK( rprShapeSetTransform(cube, RPR_TRUE, &m.m00) );
 	}
-    // Create plane mesh
+	// Create plane mesh
 	rpr_shape plane=nullptr;
 	{
 		CHECK( rprContextCreateMesh(context,
@@ -95,7 +95,7 @@ int main()
 		// Add plane into the scene
 		CHECK( rprSceneAttachShape(scene, plane) );
 	}
-    // Create camera
+	// Create camera
 	rpr_camera camera=nullptr;
 	{
 		CHECK( rprContextCreateCamera(context, &camera) );
@@ -111,24 +111,24 @@ int main()
 		// Set camera for the scene
 		CHECK( rprSceneSetCamera(scene, camera) );
 	}
-    // Set scene to render for the context
-    CHECK( rprContextSetScene(context, scene) );
+	// Set scene to render for the context
+	CHECK( rprContextSetScene(context, scene) );
  
-    // Create framebuffer to store rendering result
-    rpr_framebuffer_desc desc;
-    desc.fb_width = 800;
-    desc.fb_height = 600;
+	// Create framebuffer to store rendering result
+	rpr_framebuffer_desc desc;
+	desc.fb_width = 800;
+	desc.fb_height = 600;
 
-    // 4 component 32-bit float value each
-    rpr_framebuffer_format fmt = {4, RPR_COMPONENT_TYPE_FLOAT32};
+	// 4 component 32-bit float value each
+	rpr_framebuffer_format fmt = {4, RPR_COMPONENT_TYPE_FLOAT32};
 	rpr_framebuffer frame_buffer;
 	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer) );
 
-    // Clear framebuffer to black color
-    CHECK( rprFrameBufferClear(frame_buffer) );
+	// Clear framebuffer to black color
+	CHECK( rprFrameBufferClear(frame_buffer) );
 
-    // Set framebuffer for the context
-    CHECK( rprContextSetAOV(context, RPR_AOV_COLOR, frame_buffer) );
+	// Set framebuffer for the context
+	CHECK( rprContextSetAOV(context, RPR_AOV_COLOR, frame_buffer) );
 
 	CHECK( rprContextSetParameterByKey1u(context, RPR_CONTEXT_RENDER_MODE, RPR_RENDER_MODE_NORMAL) );
 
@@ -149,20 +149,18 @@ int main()
 		CHECK(rprSceneAttachShape(scene, instance));
 	}
 
-    // Progressively render an image
-    for (int i = 0; i < NUM_ITERATIONS; ++i)
-    {
-        CHECK( rprContextRender(context) );
-    }
+	// Progressively render an image
+	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
+	CHECK( rprContextRender(context) );
 
-    std::cout << "Rendering finished.\n";
+	std::cout << "Rendering finished.\n";
 
-    // Save the result to file
-    CHECK( rprFrameBufferSaveToFile(frame_buffer, "03.png") );
+	// Save the result to file
+	CHECK( rprFrameBufferSaveToFile(frame_buffer, "03.png") );
 
-    // Release the stuff we created
+	// Release the stuff we created
 	CHECK(rprObjectDelete(matsys));matsys=nullptr;
-    CHECK(rprObjectDelete(plane));plane=nullptr;
+	CHECK(rprObjectDelete(plane));plane=nullptr;
 	CHECK(rprObjectDelete(cube));cube=nullptr;
 	CHECK(rprObjectDelete(instance));instance=nullptr;
 	CHECK(rprObjectDelete(scene));scene=nullptr;
@@ -170,7 +168,7 @@ int main()
 	CHECK(rprObjectDelete(frame_buffer));frame_buffer=nullptr;
 	CheckNoLeak(context);
 	CHECK(rprObjectDelete(context));context=nullptr; // Always delete the RPR Context in last.
-    return 0;
+	return 0;
 }
 
 

@@ -31,9 +31,9 @@
 
 
 #ifdef __APPLE__
-    #ifndef GL_RGBA32F
-    #define GL_RGBA32F GL_RGBA32F_ARB
-    #endif 
+	#ifndef GL_RGBA32F
+	#define GL_RGBA32F GL_RGBA32F_ARB
+	#endif 
 #endif
 
 #include <cassert>
@@ -292,9 +292,7 @@ int main(int argc, char** argv)
 	}
 
 	// Create framebuffer to store rendering result
-	rpr_framebuffer_desc desc;
-	desc.fb_width = 800;
-	desc.fb_height = 600;
+	rpr_framebuffer_desc desc = { 800,600 };
 
 	// 4 component 32-bit float value each
 	rpr_framebuffer_format fmt = { 4, RPR_COMPONENT_TYPE_FLOAT32 };

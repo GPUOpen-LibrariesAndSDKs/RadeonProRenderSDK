@@ -65,9 +65,7 @@ int main()
 	CHECK(rprContextSetScene(context, scene));
 
 	// Create framebuffer to store rendering result
-	rpr_framebuffer_desc desc;
-	desc.fb_width = 800;
-	desc.fb_height = 600;
+	rpr_framebuffer_desc desc = { 800,600 };
 
 	// 4 component 32-bit float value each
 	rpr_framebuffer_format fmt = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
@@ -85,10 +83,8 @@ int main()
 	CHECK(rprsImport("cube_floor.rprs", context, matsys, &scene, true));
 
 	// Progressively render an image
-	for (int i = 0; i < NUM_ITERATIONS; ++i)
-	{
-		CHECK(rprContextRender(context));
-	}
+	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
+	CHECK(rprContextRender(context));
 
 	std::cout << "Rendering finished.\n";
 

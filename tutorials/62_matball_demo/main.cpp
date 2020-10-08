@@ -89,10 +89,8 @@ int main()
 
 	// Progressively render an image
 	std::cout << "Rendering scene 1... ";
-	for (int i = 0; i < nbIterations; ++i)
-	{
-		CHECK(rprContextRender(context));
-	}
+	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,nbIterations));
+	CHECK(rprContextRender(context));
 	std::cout << "finished.\n";
 
 	// apply post effect on 'frame_buffer' ,  store result in 'frame_buffer_resolve'
@@ -187,10 +185,8 @@ int main()
 
 	// Progressively render an image
 	std::cout << "Rendering scene 2... ";
-	for (int i = 0; i < nbIterations; ++i)
-	{
-		CHECK(rprContextRender(context));
-	}
+	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,nbIterations));
+	CHECK(rprContextRender(context));
 	std::cout << "finished.\n";
 
 	// apply post effect on 'frame_buffer' ,  store result in 'frame_buffer_resolve'
@@ -209,7 +205,7 @@ int main()
 
 	rpr_material_node uberMat3_imgTexture = nullptr;
 	CHECK(rprMaterialSystemCreateNode(matsys,RPR_MATERIAL_NODE_IMAGE_TEXTURE,&uberMat3_imgTexture));
-	CHECK(rprMaterialNodeSetInputNByKey(uberMat3_imgTexture,   RPR_MATERIAL_INPUT_DATA  ,uberMat3_img));
+	CHECK(rprMaterialNodeSetInputImageDataByKey(uberMat3_imgTexture,   RPR_MATERIAL_INPUT_DATA  ,uberMat3_img));
 
 	rpr_material_node uberMat3_bumpmap = nullptr;
 	CHECK(rprMaterialSystemCreateNode(matsys,RPR_MATERIAL_NODE_BUMP_MAP,&uberMat3_bumpmap));
@@ -271,10 +267,8 @@ int main()
 
 	// Progressively render an image
 	std::cout << "Rendering scene 3... ";
-	for (int i = 0; i < nbIterations; ++i)
-	{
-		CHECK(rprContextRender(context));
-	}
+	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,nbIterations));
+	CHECK(rprContextRender(context));
 	std::cout << "finished.\n";
 
 	// apply post effect on 'frame_buffer' ,  store result in 'frame_buffer_resolve'

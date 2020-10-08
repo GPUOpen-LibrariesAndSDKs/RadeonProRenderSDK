@@ -3,6 +3,8 @@
 #include <assert.h> 
 #include <iostream>
 
+// Tahoe plugin is in maintenance mode - no new features planned.
+#if 0 
 #if defined(WIN32)
 #define RPR_PLUGIN_FILE_NAME "Tahoe64.dll"
 #elif defined(__LINUX__)
@@ -10,6 +12,19 @@
 #elif defined(__APPLE__)
 #define RPR_PLUGIN_FILE_NAME "libTahoe64.dylib"
 #endif
+
+// Northstar is the successor of Tahoe. It's in active development since 2020
+#else
+#if defined(WIN32)
+#define RPR_PLUGIN_FILE_NAME "Northstar64.dll"
+#elif defined(__LINUX__)
+#define RPR_PLUGIN_FILE_NAME "libNorthstar64.so"
+#elif defined(__APPLE__)
+#define RPR_PLUGIN_FILE_NAME "libNorthstar64.dylib"
+#endif
+#define USING_NORTHSTAR
+#endif
+
 
 // Structure to describe vertex layout
 struct vertex

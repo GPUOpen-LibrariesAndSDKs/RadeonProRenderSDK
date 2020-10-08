@@ -130,9 +130,7 @@ int main()
 	}
 
 	// Create framebuffer to store rendering result
-	rpr_framebuffer_desc desc;
-	desc.fb_width = 800;
-	desc.fb_height = 600;
+	rpr_framebuffer_desc desc = { 800,600 };
 
 	// 4 component 32-bit float value each
 	rpr_framebuffer_format fmt = {4, RPR_COMPONENT_TYPE_FLOAT32};
@@ -153,7 +151,8 @@ int main()
 	///////// Tutorial Emissive Light //////////
 
 	// Create the light
-	rpr_shape light;
+	rpr_shape light = nullptr;
+	rpr_material_node emissive = nullptr;
 	{
 		CHECK( rprContextCreateMesh(context,
 			(rpr_float const*)&plane_data[0], 4, sizeof(vertex),
@@ -170,7 +169,6 @@ int main()
 		// Set transform for the light
 		CHECK( rprShapeSetTransform(light, RPR_TRUE, &lightm.m00) );
 
-		rpr_material_node emissive;
 		{
 			CHECK( rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_EMISSIVE, &emissive) );
 
@@ -186,10 +184,8 @@ int main()
 	}
 
 	// Progressively render an image
-	for (int i = 0; i < NUM_ITERATIONS; ++i)
-	{
-		CHECK( rprContextRender(context) );
-	}
+	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
+	CHECK( rprContextRender(context) );
 
 	std::cout << "Rendering finished.\n";
 
@@ -197,6 +193,7 @@ int main()
 	CHECK( rprFrameBufferSaveToFile(frame_buffer, "11.png") );
 
 	// Release the stuff we created
+	CHECK(rprObjectDelete(emissive));
 	CHECK(rprObjectDelete(matsys));
 	CHECK(rprObjectDelete(plane));
 	CHECK(rprObjectDelete(cube));

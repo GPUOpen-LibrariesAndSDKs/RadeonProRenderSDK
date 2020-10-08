@@ -4,7 +4,7 @@
 *  Project        Radeon pro render rendering tutorial
 *
 *  Description    How to render a scene using tiles. This doesn't require you to
-                  allocate the full framebuffer.
+				  allocate the full framebuffer.
 *
 *  Copyright 2011 - 2019 Advanced Micro Devices, Inc. (unpublished)
 *
