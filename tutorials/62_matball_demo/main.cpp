@@ -66,9 +66,7 @@ int main()
 	CHECK(rprContextSetScene(context, scene));
 
 	// Create framebuffer to store rendering result
-	rpr_framebuffer_desc desc;
-	desc.fb_width = 1000;
-	desc.fb_height = 1000;
+	rpr_framebuffer_desc desc = { 1000, 1000 };
 
 	// 4 component 32-bit float value each
 	rpr_framebuffer_format fmt = { 4, RPR_COMPONENT_TYPE_FLOAT32 };

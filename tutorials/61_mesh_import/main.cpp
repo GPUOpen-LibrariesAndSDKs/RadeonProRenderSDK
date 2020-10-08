@@ -69,8 +69,10 @@ int main()
 
 	// 4 component 32-bit float value each
 	rpr_framebuffer_format fmt = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
-	rpr_framebuffer frame_buffer;
+	rpr_framebuffer frame_buffer = nullptr;
+	rpr_framebuffer frame_buffer_resolved = nullptr;
 	CHECK(rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer));
+	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer_resolved) );
 
 	// Clear framebuffer to black color
 	CHECK(rprFrameBufferClear(frame_buffer));
@@ -85,11 +87,12 @@ int main()
 	// Progressively render an image
 	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
 	CHECK(rprContextRender(context));
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
 
 	std::cout << "Rendering finished.\n";
 
 	// Save the result to file
-	CHECK(rprFrameBufferSaveToFile(frame_buffer, "61.png"));
+	CHECK(rprFrameBufferSaveToFile(frame_buffer_resolved, "61.png"));
 
 	// delete the RPR objects created during the last rprsImport call.
 	CHECK(rprsDeleteListImportedObjects(nullptr));
@@ -98,6 +101,7 @@ int main()
 	CHECK(rprObjectDelete(matsys));matsys=nullptr;
 	CHECK(rprObjectDelete(scene));scene=nullptr;
 	CHECK(rprObjectDelete(frame_buffer));frame_buffer=nullptr;
+	CHECK(rprObjectDelete(frame_buffer_resolved));frame_buffer_resolved=nullptr;
 	CheckNoLeak(context);
 	CHECK(rprObjectDelete(context));context=nullptr; // Always delete the RPR Context in last.
 	return 0;

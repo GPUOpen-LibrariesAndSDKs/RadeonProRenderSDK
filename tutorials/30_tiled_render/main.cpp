@@ -102,9 +102,7 @@ void rprextMultiTileRender(sFrameBufferMetadata& meta, rpr_scene scene, rpr_cont
 	printf("  Tiled offset:       %f,%f\n", -tilesXf / 2.0f + .5f, -tilesYf / 2.0f + .5f);
 
 	//allocate the frambuffer data
-	rpr_framebuffer_desc desc;
-	desc.fb_width = meta.mTileSizeX;
-	desc.fb_height = meta.mTileSizeY;
+	rpr_framebuffer_desc desc = { meta.mTileSizeX , meta.mTileSizeY };
 	rpr_framebuffer_format fmt = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
 
 	rpr_framebuffer frame_buffer = NULL; status = rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer); CHECK(status);

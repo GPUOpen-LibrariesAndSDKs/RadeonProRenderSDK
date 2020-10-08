@@ -56,11 +56,11 @@ int main()
 	std::cout << "Context successfully created.\n";
 
 	// Create a scene
-	rpr_scene scene;
+	rpr_scene scene = nullptr;
 	CHECK( rprContextCreateScene(context, &scene) );
 
 	// Create camera
-	rpr_camera camera;
+	rpr_camera camera = nullptr;
 	{
 		CHECK( rprContextCreateCamera(context, &camera) );
 
@@ -79,14 +79,14 @@ int main()
 	CHECK( rprContextSetScene(context, scene) );
 
 	// Create framebuffer to store rendering result
-	rpr_framebuffer_desc desc;
-	desc.fb_width = 800;
-	desc.fb_height = 600;
+	rpr_framebuffer_desc desc = { 800 , 600 };
 
 	// 4 component 32-bit float value each
 	rpr_framebuffer_format fmt = {4, RPR_COMPONENT_TYPE_FLOAT32};
-	rpr_framebuffer frame_buffer;
+	rpr_framebuffer frame_buffer = nullptr;
+	rpr_framebuffer frame_buffer_resolved = nullptr;
 	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer) );
+	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer_resolved) );
 
 	// Clear framebuffer to black color
 	CHECK( rprFrameBufferClear(frame_buffer) );
@@ -100,7 +100,7 @@ int main()
 	/////////Mesh Tutorial//////////
 
 	// Create cube mesh
-	rpr_shape cube;
+	rpr_shape cube = nullptr;
 	{
 		CHECK(rprContextCreateMesh(context,
 			(rpr_float const*)&cube_data[0], 24, sizeof(vertex),
@@ -121,7 +121,7 @@ int main()
 		CHECK(rprShapeSetTransform(cube, RPR_TRUE, &m.m00));
 	}
 	// Create plane mesh
-	rpr_shape plane;
+	rpr_shape plane = nullptr;
 	{
 		CHECK(rprContextCreateMesh(context,
 			(rpr_float const*)&plane_data[0], 4, sizeof(vertex),
@@ -139,19 +139,21 @@ int main()
 	// Progressively render an image
 	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
 	CHECK( rprContextRender(context) );
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
 
 	std::cout << "Rendering finished.\n";
 
 	// Save the result to file
-	CHECK( rprFrameBufferSaveToFile(frame_buffer, "02.png") );
+	CHECK( rprFrameBufferSaveToFile(frame_buffer_resolved, "02.png") );
 
 	// Release the stuff we created
-	CHECK(rprObjectDelete(matsys));
-	CHECK(rprObjectDelete(plane));
-	CHECK(rprObjectDelete(cube));
-	CHECK(rprObjectDelete(scene));
-	CHECK(rprObjectDelete(camera));
-	CHECK(rprObjectDelete(frame_buffer));
+	CHECK(rprObjectDelete(matsys));matsys=nullptr;
+	CHECK(rprObjectDelete(plane));plane=nullptr;
+	CHECK(rprObjectDelete(cube));cube=nullptr;
+	CHECK(rprObjectDelete(scene));scene=nullptr;
+	CHECK(rprObjectDelete(camera));camera=nullptr;
+	CHECK(rprObjectDelete(frame_buffer));frame_buffer=nullptr;
+	CHECK(rprObjectDelete(frame_buffer_resolved));frame_buffer_resolved=nullptr;
 	CheckNoLeak(context);
 	CHECK(rprObjectDelete(context));context=nullptr; // Always delete the RPR Context in last.
 	return 0;

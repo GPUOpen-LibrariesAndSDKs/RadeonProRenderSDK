@@ -460,9 +460,7 @@ Context createContext(const ContextSettings settings)
 
 	CHECK(rprContextSetScene(outContext.context, outContext.scene));
 
-	rpr_framebuffer_desc desc;
-	desc.fb_width = settings.width;
-	desc.fb_height = settings.height;
+	rpr_framebuffer_desc desc = { settings.width , settings.height };
 
 	rpr_framebuffer_format fmt = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
   
@@ -487,7 +485,7 @@ Context createContext(const ContextSettings settings)
 void createAndAttachCamera(rpr_context& context, rpr_scene& scene, const CameraSettings& settings)
 {
 	// ToDo: add code to create other types of cameras
-	rpr_camera camera;
+	rpr_camera camera = nullptr;
 
 	if(settings.cameraMode & RPR_CAMERA_MODE_PERSPECTIVE)
 	{
@@ -721,7 +719,7 @@ void loadAndAttachShapes(rpr_context& context, rpr_scene& scene, rpr_material_sy
 			faceMaterialMap[matId].push_back(face);
 		}
 
-		rpr_shape t_shape;
+		rpr_shape t_shape = nullptr;
 		{
 			CHECK(rprContextCreateMesh(context,
 				(rpr_float const*)attrib.vertices.data(),
@@ -899,7 +897,7 @@ int main(int argc , char* argv[])
 	// Create and attach camerato scene
 	createAndAttachCamera(context, scene, config.cameraSettings);
 
-	rpr_material_system matsys;
+	rpr_material_system matsys = nullptr;
 	CHECK(rprContextCreateMaterialSystem(context, 0, &matsys));
 
 	// Load models from config file and attach them to scene
@@ -945,12 +943,12 @@ int main(int argc , char* argv[])
 	CHECK(rprFrameBufferSaveToFile(frameBuffer1, contextSettings.outFileName.c_str()));
 
 	// Release the stuff we created
-	rprObjectDelete( postEffectGamma );
-	rprObjectDelete( normalizationEff );
-	CHECK(rprObjectDelete(scene));
-	CHECK(rprObjectDelete(frameBuffer));
-	CHECK(rprObjectDelete(frameBuffer1));
-	CHECK(rprObjectDelete(matsys));
+	rprObjectDelete( postEffectGamma ); postEffectGamma = nullptr;
+	rprObjectDelete( normalizationEff ); normalizationEff = nullptr;
+	CHECK(rprObjectDelete(scene)); scene = nullptr;
+	CHECK(rprObjectDelete(frameBuffer)); frameBuffer = nullptr;
+	CHECK(rprObjectDelete(frameBuffer1)); frameBuffer1 = nullptr;
+	CHECK(rprObjectDelete(matsys)); matsys = nullptr;
 	for (const auto& t : garbageCollector)
 	{
 		CHECK(rprObjectDelete(t));

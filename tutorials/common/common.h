@@ -4,7 +4,7 @@
 #include <iostream>
 
 // Tahoe plugin is in maintenance mode - no new features planned.
-#if 0 
+#if 0
 #if defined(WIN32)
 #define RPR_PLUGIN_FILE_NAME "Tahoe64.dll"
 #elif defined(__LINUX__)

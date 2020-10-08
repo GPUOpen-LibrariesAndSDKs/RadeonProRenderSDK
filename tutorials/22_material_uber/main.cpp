@@ -22,7 +22,7 @@
 
 struct UPDATE_CALLBACK_DATA
 {
-	// developpers fill it as he wants
+	// developer fills it as he wants
 	// ...
 	// ...
 };

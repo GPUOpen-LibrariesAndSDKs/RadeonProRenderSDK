@@ -45,7 +45,7 @@ int main()
 	CHECK(  rprContextSetActivePlugin(context, plugins[0]) );
 
 
-	rpr_material_system matsys;
+	rpr_material_system matsys = nullptr;
 	CHECK( rprContextCreateMaterialSystem(context, 0, &matsys) );
 	// Check if it is created successfully
 	if (status != RPR_SUCCESS)
@@ -57,11 +57,11 @@ int main()
 	std::cout << "Context successfully created.\n";
 
 	// Create a scene
-	rpr_scene scene;
+	rpr_scene scene = nullptr;
 	CHECK( rprContextCreateScene(context, &scene) );
 
 	// Create cube mesh
-	rpr_shape cube;
+	rpr_shape cube = nullptr;
 	{
 		CHECK( rprContextCreateMesh(context,
 			(rpr_float const*)&cube_data[0], 24, sizeof(vertex),
@@ -109,7 +109,7 @@ int main()
 		CHECK( rprSceneAttachShape(scene, instance) );
 	}
 	// Create camera
-	rpr_camera camera;
+	rpr_camera camera = nullptr;
 	{
 		CHECK( rprContextCreateCamera(context, &camera) );
 
@@ -128,7 +128,7 @@ int main()
 	CHECK( rprContextSetScene(context, scene) );
 
 	// Create simple diffuse shader
-	rpr_material_node diffuse;
+	rpr_material_node diffuse = nullptr;
 	{
 		CHECK( rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuse) );
 
@@ -145,8 +145,10 @@ int main()
 
 	// 4 component 32-bit float value each
 	rpr_framebuffer_format fmt = {4, RPR_COMPONENT_TYPE_FLOAT32};
-	rpr_framebuffer frame_buffer;
+	rpr_framebuffer frame_buffer = nullptr;
+	rpr_framebuffer frame_buffer_resolved = nullptr;
 	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer) );
+	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer_resolved) );
 
 	// Clear framebuffer to black color
 	CHECK( rprFrameBufferClear(frame_buffer) );
@@ -181,11 +183,12 @@ int main()
 	// Progressively render an image
 	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
 	CHECK( rprContextRender(context) );
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
 
 	std::cout << "Rendering finished.\n";
 
 	// Save the result to file
-	CHECK( rprFrameBufferSaveToFile(frame_buffer, "12.png") );
+	CHECK( rprFrameBufferSaveToFile(frame_buffer_resolved, "12.png") );
 
 	// Release the stuff we created
 	CHECK(rprObjectDelete(matsys));matsys=nullptr;
@@ -197,6 +200,7 @@ int main()
 	CHECK(rprObjectDelete(scene));scene=nullptr;
 	CHECK(rprObjectDelete(camera));camera=nullptr;
 	CHECK(rprObjectDelete(frame_buffer));frame_buffer=nullptr;
+	CHECK(rprObjectDelete(frame_buffer_resolved));frame_buffer_resolved=nullptr;
 	CHECK(rprObjectDelete(img));img=nullptr;
 	CheckNoLeak(context);
 	CHECK(rprObjectDelete(context));context=nullptr; // Always delete the RPR Context in last.
