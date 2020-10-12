@@ -71,22 +71,41 @@ int main()
 		// Set transform for the light
 		CHECK(rprLightSetTransform(light, RPR_TRUE, &lightm.m00));
 		// Set light radiant power in Watts
-		CHECK(rprPointLightSetRadiantPower3f(light, 100, 100, 100));
+		CHECK(rprPointLightSetRadiantPower3f(light, 80, 80, 80));
 		// Attach the light to the scene
 		CHECK(rprSceneAttachLight(scene, light));
 	}
+
+	// Create env light
+	rpr_light env_light = nullptr;
+	rpr_image env_img = nullptr;
+	{
+		CHECK(rprContextCreateEnvironmentLight(context, &env_light));
+
+		const std::string pathImageFile = "../../Resources/Textures/envLightImage.exr";
+		CHECK(rprContextCreateImageFromFile(context, pathImageFile.c_str(), &env_img));
+		if (status == RPR_ERROR_IO_ERROR)
+		{
+			std::cout << "Error : " << pathImageFile << " not found.\n";
+			return -1;
+		}
+
+		// Set an image for the light to take the radiance values from
+		CHECK(rprEnvironmentLightSetImage(env_light, env_img));
+
+		// Set IBL as a background for the scene
+		CHECK(rprSceneAttachLight(scene, env_light));
+	}
+
 	// Create camera
 	rpr_camera camera=nullptr;
 	{
 		CHECK( rprContextCreateCamera(context, &camera) );
 
 		// Position camera in world space: 
-		// Camera position is (5,5,20)
-		// Camera aimed at (0,0,0)
-		// Camera up vector is (0,1,0)
-		CHECK( rprCameraLookAt(camera, 0, 5, 80, 0, 1, 0, 0, 1, 0) );
+		CHECK( rprCameraLookAt(camera, 5, 5, 20,  0, 0, 0,   0, 1, 0) );
 
-		CHECK( rprCameraSetFocalLength(camera, 75.f) );
+		CHECK( rprCameraSetFocalLength(camera, 10.f) );
 
 		// Set camera for the scene
 		CHECK( rprSceneSetCamera(scene, camera) );
@@ -134,8 +153,8 @@ int main()
 	{
 		CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuse));
 
-		// Set diffuse color parameter to gray
-		CHECK(rprMaterialNodeSetInputFByKey(diffuse, RPR_MATERIAL_INPUT_COLOR, 0.5f, 0.5f, 0.5f, 1.f));
+		// Set diffuse color parameter
+		CHECK(rprMaterialNodeSetInputFByKey(diffuse, RPR_MATERIAL_INPUT_COLOR, 0.5f, 1.0f, 0.5f, 1.f));
 
 		// Set shader for cube & plane meshes
 		CHECK(rprShapeSetMaterial(cube, diffuse));
@@ -161,16 +180,22 @@ int main()
 
 
 	// Progressively render an image
-	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
+	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,128));
 	CHECK( rprContextRender(context) );
 	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
 
-	///////// Framebuffer Access Tutorial //////////
+	// This can be uncommented to see the framebuffer
+	//CHECK( rprFrameBufferSaveToFile(frame_buffer_resolved, "31_temp.png") );
 
-	size_t size;
+	///////// Framebuffer Access Tutorial //////////
+	//
+	// We are going to take the  frame_buffer_resolved data,  and use it as a material texture for a plane.
+
+	size_t size = 0;
 	CHECK(rprFrameBufferGetInfo(frame_buffer_resolved, RPR_FRAMEBUFFER_DATA, 0, NULL, &size));
 	float* buffer = new float[size / sizeof(float)];
 	CHECK(rprFrameBufferGetInfo(frame_buffer_resolved, RPR_FRAMEBUFFER_DATA, size, buffer, 0));
+
 
 	//Apply this buffer as a texture
 
@@ -181,20 +206,23 @@ int main()
 		rpr_image_format format;
 		format.num_components = 4;
 		format.type = RPR_COMPONENT_TYPE_FLOAT32;
-		rpr_image_desc desc;
-		desc.image_width = 800;
-		desc.image_height = 600;
-		desc.image_row_pitch = 0;
-		desc.image_slice_pitch = 0;
-		desc.image_depth = 1;
+		rpr_image_desc desc2;
+		desc2.image_width = desc.fb_width;
+		desc2.image_height = desc.fb_height;
+		desc2.image_row_pitch = 0;
+		desc2.image_slice_pitch = 0;
+		desc2.image_depth = 0;
 	
-		CHECK(rprContextCreateImage(context, format, &desc, buffer, &img1));
+		CHECK(rprContextCreateImage(context, format, &desc2, buffer, &img1));
 		CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_IMAGE_TEXTURE, &tex));
 		// Set image data
 		CHECK(rprMaterialNodeSetInputImageDataByKey(tex, RPR_MATERIAL_INPUT_DATA, img1));
 		CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuse1));
 		// Set diffuse color parameter to gray
+		
 		CHECK(rprMaterialNodeSetInputNByKey(diffuse1, RPR_MATERIAL_INPUT_COLOR, tex));
+		//CHECK(rprMaterialNodeSetInputFByKey(diffuse1, RPR_MATERIAL_INPUT_COLOR, 1,0,0,0));
+		
 		CHECK(rprShapeSetMaterial(plane, diffuse1));
 	}
 	
@@ -202,6 +230,19 @@ int main()
 	CHECK(rprSceneDetachShape(scene, cube));
 	RadeonProRender::matrix m = RadeonProRender::rotation(RadeonProRender::float3(1, 0, 0), -PI / 2.0f);
 	CHECK(rprShapeSetTransform(plane, RPR_TRUE, &m.m00));
+
+	// set camera to point on the plane
+	CHECK( rprCameraSetFocalLength(camera, 75.f) );
+	CHECK( rprCameraLookAt(camera, 0, 0, 150,  0, 0, 0,   0, 1, 0) );
+
+	// move point light
+	RadeonProRender::matrix lightm = RadeonProRender::translation(RadeonProRender::float3(1, 1, 100));
+	CHECK(rprLightSetTransform(light, RPR_TRUE, &lightm.m00));
+	CHECK(rprPointLightSetRadiantPower3f(light, 30000, 30000, 30000));
+
+	// remove the env light
+	CHECK(rprSceneDetachLight(scene, env_light));
+
 	//Clear the buffer to render again
 	rprFrameBufferClear(frame_buffer);
 
@@ -212,6 +253,7 @@ int main()
 	std::cout << "Rendering finished.\n";
 
 	//delete buffer;
+	delete[] buffer; buffer=nullptr;
 
 	// Save the result to file
 	CHECK( rprFrameBufferSaveToFile(frame_buffer_resolved, "31.png") );
@@ -221,6 +263,8 @@ int main()
 	CHECK(rprObjectDelete(img1));img1=nullptr;
 	CHECK(rprObjectDelete(diffuse1));diffuse1=nullptr;
 	CHECK(rprObjectDelete(matsys));matsys=nullptr;
+	CHECK(rprObjectDelete(env_light));env_light=nullptr;
+	CHECK(rprObjectDelete(env_img));env_img=nullptr;
 	CHECK(rprObjectDelete(plane));plane=nullptr;
 	CHECK(rprObjectDelete(cube));cube=nullptr;
 	CHECK(rprObjectDelete(light));light=nullptr;

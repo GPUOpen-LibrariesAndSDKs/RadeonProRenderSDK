@@ -115,7 +115,7 @@ int main()
 
 		// Position camera in world space: 
 		// Camera position is (5,5,20)
-		// Camera aimed at (0,0,0)
+		// Camera aimed at (0,1,0)
 		// Camera up vector is (0,1,0)
 		CHECK( rprCameraLookAt(camera, 0, 5, 20, 0, 1, 0, 0, 1, 0) );
 
