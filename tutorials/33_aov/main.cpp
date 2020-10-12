@@ -151,11 +151,15 @@ int main()
 
 	// 4 component 32-bit float value each
 	rpr_framebuffer_format fmt = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
-	rpr_framebuffer frame_buffer, frame_buffer2 = nullptr;
+	rpr_framebuffer frame_buffer = nullptr;
 	rpr_framebuffer frame_buffer_resolved = nullptr;
+	rpr_framebuffer frame_buffer2 = nullptr;
+	rpr_framebuffer frame_buffer2_resolved = nullptr;
 	CHECK(rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer));
-	CHECK(rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer2));
 	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer_resolved) );
+	CHECK(rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer2));
+	CHECK(rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer2_resolved));
+
 
 	// Clear framebuffer to black color
 	CHECK(rprFrameBufferClear(frame_buffer));
@@ -172,12 +176,13 @@ int main()
 	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
 	CHECK( rprContextRender(context) );
 	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer2,frame_buffer2_resolved,true));
 
 	std::cout << "Rendering finished.\n";
 
 	// Save the result to file
 	CHECK( rprFrameBufferSaveToFile(frame_buffer_resolved, "33.png") );
-	CHECK( rprFrameBufferSaveToFile(frame_buffer2, "33_1.png") );
+	CHECK( rprFrameBufferSaveToFile(frame_buffer2_resolved, "33_1.png") );
 
 	// Release the stuff we created
 	CHECK(rprObjectDelete(matsys));matsys=nullptr;
@@ -189,6 +194,7 @@ int main()
 	CHECK(rprObjectDelete(camera));camera=nullptr;
 	CHECK(rprObjectDelete(frame_buffer));frame_buffer=nullptr;
 	CHECK(rprObjectDelete(frame_buffer2));frame_buffer2=nullptr;
+	CHECK(rprObjectDelete(frame_buffer2_resolved));frame_buffer2_resolved=nullptr;
 	CHECK(rprObjectDelete(frame_buffer_resolved));frame_buffer_resolved=nullptr;
 	CheckNoLeak(context);
 	CHECK(rprObjectDelete(context));context=nullptr; // Always delete the RPR Context in last.

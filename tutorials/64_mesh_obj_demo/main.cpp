@@ -851,6 +851,7 @@ void loadAndAttachShapes(rpr_context& context, rpr_scene& scene, rpr_material_sy
 				CHECK(rprMaterialNodeSetInputFByKey(t_uber, RPR_MATERIAL_INPUT_UBER_REFRACTION_ROUGHNESS, m.roughness, m.roughness, m.roughness, m.roughness));
 				CHECK(rprMaterialNodeSetInputFByKey(t_uber, RPR_MATERIAL_INPUT_UBER_REFRACTION_ABSORPTION_COLOR, m.absorptionColor.x, m.absorptionColor.y, m.absorptionColor.z, 1.f));
 				CHECK(rprMaterialNodeSetInputFByKey(t_uber, RPR_MATERIAL_INPUT_UBER_REFRACTION_ABSORPTION_DISTANCE, 0.0f, 0.0f ,0.0f , 1.f));
+				CHECK(rprMaterialNodeSetInputUByKey(t_uber, RPR_MATERIAL_INPUT_UBER_REFRACTION_CAUSTICS, 1));
 				CHECK(rprContextSetParameterByKey1u(context, RPR_CONTEXT_MAX_RECURSION, 10));
 			}
 
