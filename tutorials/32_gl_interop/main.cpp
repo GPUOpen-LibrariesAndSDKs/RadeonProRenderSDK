@@ -51,6 +51,13 @@ rpr_material_system g_matsys = NULL;
 rpr_light           g_light = NULL;
 rpr_framebuffer     g_frame_buffer_2 = NULL;
 ShaderManager       g_shader_manager;
+rpr_scene			g_scene=nullptr;
+rpr_shape			g_cube=nullptr;
+rpr_camera			g_camera=nullptr;
+rpr_material_node	g_diffuse=nullptr;
+rpr_shape			g_plane=nullptr;
+float*				g_fbdata = nullptr;
+float				g_camera_posX = 0.0;
 
 void Update()
 {
@@ -58,11 +65,44 @@ void Update()
 	glutPostRedisplay();
 }
 
+void OnKeyboardEvent(unsigned char key, int xmouse, int ymouse)
+{	
+	bool cameraMoves = false;
+	switch (key)
+	{
+		case 'w':
+		case 'z':
+		{
+			g_camera_posX += 0.5f;
+			cameraMoves = true;
+			break;
+		}
+
+		case 's':
+		{
+			g_camera_posX -= 0.5f;
+			cameraMoves = true;
+			break;
+		}
+
+		default:
+			break;
+	}
+
+	if ( cameraMoves )
+	{
+		CHECK( rprCameraLookAt(g_camera, g_camera_posX, 5, 20, 0, 1, 0, 0, 1, 0) );
+
+		// camera moved, so we need to redraw the framebuffer.
+		CHECK( rprFrameBufferClear(g_frame_buffer) );
+	}
+}
+
 void Display()
 {
 	// Render FR image into the GL texture
 	rprContextRender(g_context);
-	rprContextResolveFrameBuffer(g_context, g_frame_buffer, g_frame_buffer_2, false);//Resolve normalization postprocess
+	rprContextResolveFrameBuffer(g_context, g_frame_buffer, g_frame_buffer_2, true);
 
 	// Clear backbuffer
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -83,6 +123,16 @@ void Display()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, g_texture);
+
+
+
+	CHECK(rprFrameBufferGetInfo(g_frame_buffer_2, RPR_FRAMEBUFFER_DATA, WINDOW_WIDTH*WINDOW_HEIGHT*sizeof(float)*4, g_fbdata, NULL));
+
+	//glBindTexture(GL_TEXTURE_2D, g_texture);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA, GL_FLOAT, static_cast<const GLvoid*>(g_fbdata));         
+	//glBindTexture(GL_TEXTURE_2D, 0);
+
+
 
 	GLuint position_attr_id = glGetAttribLocation(program, "inPosition");
 	GLuint texcoord_attr_id = glGetAttribLocation(program, "inTexcoord");
@@ -163,6 +213,24 @@ void InitGraphics()
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+void OnExit()
+{
+	//// Release the stuff we created
+	std::cout <<"Release memory...\n";
+	
+	CHECK(rprObjectDelete(g_scene));g_scene=nullptr;
+	CHECK(rprObjectDelete(g_cube));g_cube=nullptr;
+	CHECK(rprObjectDelete(g_camera));g_camera=nullptr;
+	CHECK(rprObjectDelete(g_diffuse));g_diffuse=nullptr;
+	CHECK(rprObjectDelete(g_plane));g_plane=nullptr;
+	CHECK(rprObjectDelete(g_matsys));g_matsys=nullptr;
+	CHECK(rprObjectDelete(g_light));g_light=nullptr;
+	CHECK(rprObjectDelete(g_frame_buffer));g_frame_buffer=nullptr;
+	CHECK(rprObjectDelete(g_frame_buffer_2));g_frame_buffer_2=nullptr;
+	CheckNoLeak(g_context);
+	CHECK(rprObjectDelete(g_context));g_context=nullptr; // Always delete the RPR Context in last.
+	delete[] g_fbdata; g_fbdata=nullptr;
+}
 
 int main(int argc, char** argv)
 {
@@ -210,39 +278,33 @@ int main(int argc, char** argv)
 	std::cout << "Context successfully created.\n";
 
 	// Create a scene
-	rpr_scene scene=nullptr;
-	CHECK( rprContextCreateScene(g_context, &scene) );
+	CHECK( rprContextCreateScene(g_context, &g_scene) );
 
 	// Create point light
 	{
 		CHECK( rprContextCreatePointLight(g_context, &g_light) );
 		RadeonProRender::matrix lightm = RadeonProRender::translation(RadeonProRender::float3(0, 8, 2));
 		CHECK(rprLightSetTransform(g_light, RPR_TRUE, &lightm.m00));
-		CHECK( rprSceneAttachLight(scene, g_light) );
+		CHECK( rprSceneAttachLight(g_scene, g_light) );
 		CHECK(rprPointLightSetRadiantPower3f(g_light, 255, 241, 224));
 	}
 
 	// Create camera
-	rpr_camera camera=nullptr;
 	{
-		CHECK( rprContextCreateCamera(g_context, &camera) );
+		CHECK( rprContextCreateCamera(g_context, &g_camera) );
 
 		// Position camera in world space: 
-		// Camera position is (5,5,20)
-		// Camera aimed at (0,0,0)
-		// Camera up vector is (0,1,0)
-		CHECK( rprCameraLookAt(camera, 0, 5, 20, 0, 1, 0, 0, 1, 0) );
+		CHECK( rprCameraLookAt(g_camera, g_camera_posX, 5, 20, 0, 1, 0, 0, 1, 0) );
 
-		CHECK( rprCameraSetFocalLength(camera, 75.f) );
+		CHECK( rprCameraSetFocalLength(g_camera, 75.f) );
 
 		// Set camera for the scene
-		CHECK( rprSceneSetCamera(scene, camera) );
+		CHECK( rprSceneSetCamera(g_scene, g_camera) );
 	}
 	// Set scene to render for the context
-	CHECK( rprContextSetScene(g_context, scene) );
+	CHECK( rprContextSetScene(g_context, g_scene) );
 
 	// Create cube mesh
-	rpr_shape cube=nullptr;
 	{
 		CHECK(rprContextCreateMesh(g_context,
 			(rpr_float const*)&cube_data[0], 24, sizeof(vertex),
@@ -251,19 +313,18 @@ int main(int argc, char** argv)
 			(rpr_int const*)indices, sizeof(rpr_int),
 			(rpr_int const*)indices, sizeof(rpr_int),
 			(rpr_int const*)indices, sizeof(rpr_int),
-			num_face_vertices, 12, &cube));
+			num_face_vertices, 12, &g_cube));
 
 		// Add cube into the scene
-		CHECK(rprSceneAttachShape(scene, cube));
+		CHECK(rprSceneAttachShape(g_scene, g_cube));
 
 		// Create a transform: -2 unit along X axis and 1 unit up Y axis
 		RadeonProRender::matrix m = RadeonProRender::translation(RadeonProRender::float3(-2, 1, 0));
 
 		// Set the transform 
-		CHECK(rprShapeSetTransform(cube, RPR_TRUE, &m.m00));
+		CHECK(rprShapeSetTransform(g_cube, RPR_TRUE, &m.m00));
 	}
 	// Create plane mesh
-	rpr_shape plane=nullptr;
 	{
 		CHECK(rprContextCreateMesh(g_context,
 			(rpr_float const*)&plane_data[0], 4, sizeof(vertex),
@@ -272,81 +333,58 @@ int main(int argc, char** argv)
 			(rpr_int const*)indices, sizeof(rpr_int),
 			(rpr_int const*)indices, sizeof(rpr_int),
 			(rpr_int const*)indices, sizeof(rpr_int),
-			num_face_vertices, 2, &plane));
+			num_face_vertices, 2, &g_plane));
 
 		// Add plane into the scene
-		CHECK(rprSceneAttachShape(scene, plane));
+		CHECK(rprSceneAttachShape(g_scene, g_plane));
 	}
+
 	// Create simple diffuse shader
-	rpr_material_node diffuse=nullptr;
 	{
-		CHECK(rprMaterialSystemCreateNode(g_matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuse));
+		CHECK(rprMaterialSystemCreateNode(g_matsys, RPR_MATERIAL_NODE_DIFFUSE, &g_diffuse));
 
 		// Set diffuse color parameter to gray
-		CHECK(rprMaterialNodeSetInputFByKey(diffuse, RPR_MATERIAL_INPUT_COLOR, 0.5f, 0.5f, 0.5f, 1.f));
+		CHECK(rprMaterialNodeSetInputFByKey(g_diffuse, RPR_MATERIAL_INPUT_COLOR, 0.5f, 0.5f, 0.5f, 1.f));
 
 		// Set shader for cube & plane meshes
-		CHECK(rprShapeSetMaterial(cube, diffuse));
+		CHECK(rprShapeSetMaterial(g_cube, g_diffuse));
 
-		CHECK(rprShapeSetMaterial(plane, diffuse));
+		CHECK(rprShapeSetMaterial(g_plane, g_diffuse));
 	}
 
 	// Create framebuffer to store rendering result
-	rpr_framebuffer_desc desc = { 800,600 };
+	rpr_framebuffer_desc desc = { WINDOW_WIDTH,WINDOW_HEIGHT };
 
 	// 4 component 32-bit float value each
 	rpr_framebuffer_format fmt = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
 	CHECK(rprContextCreateFrameBuffer(g_context, fmt, &desc, &g_frame_buffer));
-
-	// Clear framebuffer to black color
-	CHECK(rprFrameBufferClear(g_frame_buffer));
+	CHECK(rprContextCreateFrameBuffer(g_context, fmt, &desc, &g_frame_buffer_2));
 
 	// Set framebuffer for the context
 	CHECK(rprContextSetAOV(g_context, RPR_AOV_COLOR, g_frame_buffer));
-
-	//Check 40_postprocess tutorial for thoses line
-	//need to normalize before bloom
-	rpr_post_effect normalizationEff = 0;
-	CHECK(rprContextCreatePostEffect(g_context, RPR_POST_EFFECT_NORMALIZATION, &normalizationEff));
-	CHECK(rprContextAttachPostEffect(g_context, normalizationEff));
 
 	CHECK( rprContextSetParameterByKey1u(g_context,RPR_CONTEXT_PREVIEW, 1u ) );
 
-	/////////// GL Interop Tutorial //////////
-
-	// 1/ You must init GL
-	// 2/ You must create the rpr_context with RPR_CREATION_FLAGS_ENABLE_GL_INTEROP
-	// 3/ Create a GL_TEXTURE_2D
-	// 4/ Create a FrameBuffer from GLTexture2D rprContextCreateFramebufferFromGLTexture2D from RadeonProRender_GL.h
-
-	// Create GL Interop framebuffer to store rendering result
-	CHECK(rprContextCreateFramebufferFromGLTexture2D(g_context, GL_TEXTURE_2D, 0, g_texture, &g_frame_buffer_2));
-	
-	// Clear framebuffer to black color
-	CHECK(rprFrameBufferClear(g_frame_buffer_2));
-
 	// Set framebuffer for the context
 	CHECK(rprContextSetAOV(g_context, RPR_AOV_COLOR, g_frame_buffer));
 
+	g_fbdata = new float[WINDOW_WIDTH * WINDOW_HEIGHT * 4];
+
+
+	std::cout << "Press W or S to move the camera.\n";
 
 	glutDisplayFunc(Display);
 	glutIdleFunc(Update);
+	glutKeyboardFunc(OnKeyboardEvent);
 	glutMainLoop();
 
-	//// Release the stuff we created
-	//CHECK(rprObjectDelete(matsys));matsys=nullptr;
-	//CHECK(rprObjectDelete(plane));plane=nullptr;
-	//CHECK(rprObjectDelete(cube));cube=nullptr;
-	//CHECK(rprObjectDelete(light));light=nullptr;
-	//CHECK(rprObjectDelete(diffuse));diffuse=nullptr;
-	//CHECK(rprObjectDelete(scene));scene=nullptr;
-	//CHECK(rprObjectDelete(camera));camera=nullptr;
-	//CHECK(rprObjectDelete(frame_buffer));frame_buffer=nullptr;
-	//CheckNoLeak(context);
-	//CHECK(rprObjectDelete(context));context=nullptr; // Always delete the RPR Context in last.
+
+	// this should be called when the OpenGL Application closes
+	// ( note that it may not be called, as GLUT doesn't have "Exit" callback )
+	OnExit();
+
+
 	return 0;
 }
 
 
-// Things to try in this tutorial:
-// 1) You could try to test a CPU copy with rprFrameBufferGetInfo RPR_FRAMEBUFFER_DATA and then upload it with gl call
