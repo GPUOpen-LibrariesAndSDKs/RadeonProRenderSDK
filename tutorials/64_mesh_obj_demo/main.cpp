@@ -232,6 +232,11 @@ const ContextSettings parseContextSettings(const picojson::value& config)
 		settings.creationFlags |= RPR_CREATION_FLAGS_ENABLE_CPU;
 	}
 
+
+	#if defined(USING_NORTHSTAR) && defined(__APPLE__) 
+	settings.creationFlags |= RPR_CREATION_FLAGS_ENABLE_METAL; // by default always enable Metal for MacOS
+	#endif
+
 	return settings;
 }
 

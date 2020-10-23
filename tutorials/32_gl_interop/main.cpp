@@ -58,11 +58,58 @@ rpr_material_node	g_diffuse=nullptr;
 rpr_shape			g_plane=nullptr;
 float*				g_fbdata = nullptr;
 float				g_camera_posX = 0.0;
+float				g_camera_posY = 5.0;
+int					g_lastMouseDownUpdateX = -1;
+int					g_lastMouseDownUpdateY = -1;
 
 void Update()
 {
 	// Send update event
 	glutPostRedisplay();
+}
+
+void MoveCamera()
+{
+	CHECK( rprCameraLookAt(
+		g_camera, g_camera_posX, g_camera_posY, 20, // position
+		0, 1, 0, // look at point
+		0, 1, 0  // up vector
+		) );
+
+	// camera moved, so we need to redraw the framebuffer.
+	CHECK( rprFrameBufferClear(g_frame_buffer) );
+}
+
+void OnMouseMoveEvent(int x, int y)
+{
+	g_camera_posX += (x-g_lastMouseDownUpdateX)/4;
+	g_camera_posY += (y-g_lastMouseDownUpdateY)/4;
+
+	// avoid to have a camera under the floor.
+	if ( g_camera_posY < 0.1 ) { g_camera_posY = 0.1; }
+
+	g_lastMouseDownUpdateX = x;
+	g_lastMouseDownUpdateY = y;
+
+	MoveCamera();
+	return;
+}
+
+void OnMouseEvent(int button, int state, int x, int y)
+{
+	if ( button ==  GLUT_LEFT_BUTTON )
+	{
+		if ( state == GLUT_DOWN )
+		{
+			g_lastMouseDownUpdateX = x;
+			g_lastMouseDownUpdateY = y;
+		}
+		else if ( state == GLUT_UP )
+		{
+		}
+	}
+
+	return;
 }
 
 void OnKeyboardEvent(unsigned char key, int xmouse, int ymouse)
@@ -90,12 +137,8 @@ void OnKeyboardEvent(unsigned char key, int xmouse, int ymouse)
 	}
 
 	if ( cameraMoves )
-	{
-		CHECK( rprCameraLookAt(g_camera, g_camera_posX, 5, 20, 0, 1, 0, 0, 1, 0) );
-
-		// camera moved, so we need to redraw the framebuffer.
-		CHECK( rprFrameBufferClear(g_frame_buffer) );
-	}
+		MoveCamera();
+	
 }
 
 void Display()
@@ -268,7 +311,12 @@ int main(int argc, char** argv)
 	size_t pluginCount = sizeof(plugins) / sizeof(plugins[0]);
 
 	// Create context using a single GPU 
-	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, NULL, NULL, &g_context));
+	status = rprCreateContext(RPR_API_VERSION, plugins, pluginCount, g_ContextCreationFlags 
+		#ifndef USING_NORTHSTAR   // note that for Northstar, we don't need the GL_INTEROP flag
+		| RPR_CREATION_FLAGS_ENABLE_GL_INTEROP
+		#endif
+		, NULL, NULL, &g_context);
+	CHECK(status);
 
 	// Set active plugin.
 	CHECK( rprContextSetActivePlugin(g_context, plugins[0]) );
@@ -294,7 +342,7 @@ int main(int argc, char** argv)
 		CHECK( rprContextCreateCamera(g_context, &g_camera) );
 
 		// Position camera in world space: 
-		CHECK( rprCameraLookAt(g_camera, g_camera_posX, 5, 20, 0, 1, 0, 0, 1, 0) );
+		CHECK( rprCameraLookAt(g_camera, g_camera_posX, g_camera_posY, 20, 0, 1, 0, 0, 1, 0) );
 
 		CHECK( rprCameraSetFocalLength(g_camera, 75.f) );
 
@@ -376,6 +424,8 @@ int main(int argc, char** argv)
 	glutDisplayFunc(Display);
 	glutIdleFunc(Update);
 	glutKeyboardFunc(OnKeyboardEvent);
+	glutMouseFunc(OnMouseEvent);
+	glutMotionFunc(OnMouseMoveEvent);
 	glutMainLoop();
 
 

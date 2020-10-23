@@ -26,6 +26,19 @@
 #endif
 
 
+// creation flags used by most of the Demo.
+// examples:
+// RPR_CREATION_FLAGS_ENABLE_GPU0 <- use the first GPU
+// RPR_CREATION_FLAGS_ENABLE_CPU <- use the first CPU only
+// RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_CPU <- use the first CPU+GPU
+// RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GPU1 <-- use 2 GPU
+const rpr_creation_flags g_ContextCreationFlags = RPR_CREATION_FLAGS_ENABLE_GPU0
+	#if defined(USING_NORTHSTAR) && defined(__APPLE__)
+	| RPR_CREATION_FLAGS_ENABLE_METAL // by default always enable Metal for MacOS
+	#endif
+	;
+
+
 // Structure to describe vertex layout
 struct vertex
 {
