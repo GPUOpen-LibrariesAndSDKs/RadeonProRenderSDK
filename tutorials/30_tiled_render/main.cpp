@@ -102,7 +102,7 @@ void rprextMultiTileRender(sFrameBufferMetadata& meta, rpr_scene scene, rpr_cont
 	printf("  Tiled offset:       %f,%f\n", -tilesXf / 2.0f + .5f, -tilesYf / 2.0f + .5f);
 
 	//allocate the frambuffer data
-	rpr_framebuffer_desc desc = { meta.mTileSizeX , meta.mTileSizeY };
+	rpr_framebuffer_desc desc = { (rpr_uint)meta.mTileSizeX , (rpr_uint)meta.mTileSizeY };
 	rpr_framebuffer_format fmt = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
 
 	rpr_framebuffer frame_buffer = NULL; status = rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer); CHECK(status);
@@ -203,7 +203,7 @@ int main()
 	size_t pluginCount = sizeof(plugins) / sizeof(plugins[0]);
 
 	// Create context using a single GPU 
-	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, RPR_CREATION_FLAGS_ENABLE_GPU0, NULL, NULL, &context) );
+	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, g_ContextCreationFlags, NULL, NULL, &context) );
 
 	// Set active plugin.
 	CHECK(  rprContextSetActivePlugin(context, plugins[0]) );

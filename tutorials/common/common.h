@@ -3,6 +3,15 @@
 #include <assert.h> 
 #include <iostream>
 
+// creation flags used by most of the Demo.
+// examples:
+// RPR_CREATION_FLAGS_ENABLE_GPU0 <- use the first GPU
+// RPR_CREATION_FLAGS_ENABLE_CPU <- use the first CPU only
+// RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_CPU <- use the first CPU+GPU
+// RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GPU1 <-- use 2 GPU
+rpr_creation_flags g_ContextCreationFlags = RPR_CREATION_FLAGS_ENABLE_GPU0;
+
+
 // Tahoe plugin is in maintenance mode - no new features planned.
 #if 0
 #if defined(WIN32)
@@ -21,6 +30,7 @@
 #define RPR_PLUGIN_FILE_NAME "libNorthstar64.so"
 #elif defined(__APPLE__)
 #define RPR_PLUGIN_FILE_NAME "libNorthstar64.dylib"
+g_ContextCreationFlags |= RPR_CREATION_FLAGS_ENABLE_METAL; // by default always enable Metal for MacOS
 #endif
 #define USING_NORTHSTAR
 #endif

@@ -35,7 +35,7 @@ int main()
 
 	// Create context using a single GPU 
 	// note that multiple GPUs can be enabled for example with RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GPU1
-	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, RPR_CREATION_FLAGS_ENABLE_GPU0, NULL, NULL, &context) );
+	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, g_ContextCreationFlags, NULL, NULL, &context) );
 
 	// Set active plugin.
 	CHECK(  rprContextSetActivePlugin(context, plugins[0]) );

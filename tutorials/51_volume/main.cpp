@@ -43,7 +43,7 @@ int main()
 	size_t pluginCount = sizeof(plugins) / sizeof(plugins[0]);
 
 	// Create context using a single GPU 
-	 status  = rprCreateContext(RPR_API_VERSION, plugins, pluginCount, RPR_CREATION_FLAGS_ENABLE_GPU0, NULL, NULL, &context);
+	 status  = rprCreateContext(RPR_API_VERSION, plugins, pluginCount, g_ContextCreationFlags, NULL, NULL, &context);
 
 	// Set active plugin.
 	CHECK(  rprContextSetActivePlugin(context, plugins[0]) );

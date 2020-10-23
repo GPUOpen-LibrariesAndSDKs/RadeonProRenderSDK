@@ -311,7 +311,12 @@ int main(int argc, char** argv)
 	size_t pluginCount = sizeof(plugins) / sizeof(plugins[0]);
 
 	// Create context using a single GPU 
-	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, NULL, NULL, &g_context));
+	status = rprCreateContext(RPR_API_VERSION, plugins, pluginCount, g_ContextCreationFlags 
+		#ifndef USING_NORTHSTAR   // note that for Northstar, we don't need the GL_INTEROP flag
+		| RPR_CREATION_FLAGS_ENABLE_GL_INTEROP
+		#endif
+		, NULL, NULL, &g_context);
+	CHECK(status);
 
 	// Set active plugin.
 	CHECK( rprContextSetActivePlugin(g_context, plugins[0]) );
