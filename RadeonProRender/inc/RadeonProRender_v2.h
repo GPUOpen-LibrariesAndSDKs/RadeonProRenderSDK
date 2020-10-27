@@ -5,7 +5,7 @@
 *
 *  Description    Radeon ProRender Interface header
 *
-*  Copyright 2019 Advanced Micro Devices, Inc.
+*  Copyright 2020 Advanced Micro Devices, Inc.
 *
 *  All rights reserved.  This notice is intended as a precaution against
 *  inadvertent publication and does not imply publication or any waiver
@@ -77,9 +77,9 @@ typedef rpr_uint rpr_environment_override;
 
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 1 
-#define RPR_VERSION_REVISION 6 
-#define RPR_VERSION_BUILD 0xca39c79b 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200106 
+#define RPR_VERSION_REVISION 7 
+#define RPR_VERSION_BUILD 0xe80516f7 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200107 
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
 #define RPR_API_VERSION_MINOR RPR_VERSION_BUILD 
 #define RPR_OBJECT_NAME 0x777777 
@@ -309,6 +309,22 @@ typedef enum // rpr_context_info
 	RPR_CONTEXT_RENDER_UPDATE_CALLBACK_DATA = 0x16F ,
 	RPR_CONTEXT_COMPILE_CALLBACK_FUNC = 0x601 ,
 	RPR_CONTEXT_COMPILE_CALLBACK_DATA = 0x602 ,
+	RPR_CONTEXT_TEXTURE_CACHE_PATH = 0x170 ,
+	RPR_CONTEXT_OCIO_CONFIG_PATH = 0x171 ,
+	RPR_CONTEXT_OCIO_RENDERING_COLOR_SPACE = 0x172 ,
+	RPR_CONTEXT_CONTOUR_USE_OBJECTID = 0x173 ,
+	RPR_CONTEXT_CONTOUR_USE_MATERIALID = 0x174 ,
+	RPR_CONTEXT_CONTOUR_USE_NORMAL = 0x175 ,
+	RPR_CONTEXT_CONTOUR_NORMAL_THRESHOLD = 0x176 ,
+	RPR_CONTEXT_CONTOUR_LINEWIDTH_OBJECTID = 0x177 ,
+	RPR_CONTEXT_CONTOUR_LINEWIDTH_MATERIALID = 0x178 ,
+	RPR_CONTEXT_CONTOUR_LINEWIDTH_NORMAL = 0x179 ,
+	RPR_CONTEXT_CONTOUR_ANTIALIASING = 0x17A ,
+	RPR_CONTEXT_CONTOUR_DEBUG_ENABLED = 0x17F ,
+	RPR_CONTEXT_GPUINTEGRATOR = 0x17B ,
+	RPR_CONTEXT_CPUINTEGRATOR = 0x17C ,
+	RPR_CONTEXT_BEAUTY_MOTION_BLUR = 0x17D ,
+	RPR_CONTEXT_CAUSTICS_REDUCTION = 0x17E ,
 	RPR_CONTEXT_NAME = RPR_OBJECT_NAME,
 	RPR_CONTEXT_UNIQUE_ID = RPR_OBJECT_UNIQUE_ID,
 	RPR_CONTEXT_CUSTOM_PTR = RPR_OBJECT_CUSTOM_PTR,
@@ -409,6 +425,10 @@ typedef enum // rpr_shape_info
 	RPR_SHAPE_PER_VERTEX_VALUE3 = 0x427,
 	RPR_SHAPE_REFLECTION_CATCHER_FLAG = 0x428 ,
 	RPR_SHAPE_OBJECT_ID = 0x429 ,
+	RPR_SHAPE_SUBDIVISION_AUTO_RATIO_CAP = 0x42A ,
+	RPR_SHAPE_MOTION_TRANSFORMS_COUNT = 0x42B ,
+	RPR_SHAPE_MOTION_TRANSFORMS = 0x42C ,
+	RPR_SHAPE_CONTOUR_IGNORE = 0x42D ,
 	RPR_SHAPE_NAME = RPR_OBJECT_NAME,
 	RPR_SHAPE_UNIQUE_ID = RPR_OBJECT_UNIQUE_ID,
 	RPR_SHAPE_CUSTOM_PTR = RPR_OBJECT_CUSTOM_PTR,
@@ -751,6 +771,9 @@ typedef enum // rpr_material_node_input
 	RPR_MATERIAL_INPUT_OCTAVES = 0x3d ,
 	RPR_MATERIAL_INPUT_LACUNARITY = 0x3e ,
 	RPR_MATERIAL_INPUT_DIMINISH = 0x3f ,
+	RPR_MATERIAL_INPUT_WRAP_U = 0x40 ,
+	RPR_MATERIAL_INPUT_WRAP_V = 0x41 ,
+	RPR_MATERIAL_INPUT_WRAP_W = 0x42 ,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR = 0x910,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT = 0x927,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -1005,7 +1028,6 @@ typedef enum // rpr_image_wrap_type
 	RPR_IMAGE_WRAP_TYPE_REPEAT = 0x1 ,
 	RPR_IMAGE_WRAP_TYPE_MIRRORED_REPEAT = 0x2 ,
 	RPR_IMAGE_WRAP_TYPE_CLAMP_TO_EDGE = 0x3 ,
-/* #define RPR_IMAGE_WRAP_TYPE_CLAMP_TO_BORDER 0x4  - removed in 1.310  because same that RPR_IMAGE_WRAP_TYPE_CLAMP_ZERO */
 	RPR_IMAGE_WRAP_TYPE_CLAMP_ZERO = 0x5 ,
 	RPR_IMAGE_WRAP_TYPE_CLAMP_ONE = 0x6 ,
 } rpr_image_wrap_type ;
@@ -1806,7 +1828,10 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
 
 
     /** @brief
-    *
+    * 
+    * this is DEPRECATED in the Northstar plugin.
+    * In this plugin, the wrapping is done inside the RPR_MATERIAL_NODE_IMAGE_TEXTURE owning the image, 
+    * example: rprMaterialNodeSetInputUByKey(materialNodeTexture, RPR_MATERIAL_INPUT_WRAP_U, RPR_IMAGE_WRAP_TYPE_REPEAT);
     *
     *  @param  image       The image to set wrap for
     *  @param  type
@@ -1888,6 +1913,20 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
     *  @return             RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprShapeSetSubdivisionFactor(rpr_shape shape, rpr_uint factor);
+
+
+    /** @brief Enable or Disable the auto ratio cap for subdivision
+    *
+    * autoRatioCap is a value from 0.0 to 1.0.
+    * autoRatioCap=1.0 means very large polygons, less tessellation. as it goes to 0.0, it does more tessellation.
+    * This value is ratio of the largest edge in the screen.
+    * Example: If you want to make an edge 10 pixels on 1080p, you need to set 10/1080.
+    *
+    *  @param  shape           The shape to set
+    *  @param  autoRatioCap    0.0 to 1.0
+    *  @return                 RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprShapeSetSubdivisionAutoRatioCap(rpr_shape shape, rpr_float autoRatioCap);
 
 
     /** @brief
@@ -2009,38 +2048,42 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
   extern RPR_API_ENTRY rpr_status rprShapeSetVolumeMaterial(rpr_shape shape, rpr_material_node node);
 
 
-    /** @brief Set shape linear motion
-    *
-    *  @param  shape       The shape to set linear motion for
-    *  @param  x           X component of a motion vector
-    *  @param  y           Y component of a motion vector
-    *  @param  z           Z component of a motion vector
-    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    /* DEPRECATED - will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
+    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
     */
   extern RPR_API_ENTRY rpr_status rprShapeSetLinearMotion(rpr_shape shape, rpr_float x, rpr_float y, rpr_float z);
 
 
-    /** @brief Set angular linear motion
-    *
-    *  @param  shape       The shape to set linear motion for
-    *  @param  x           X component of the rotation axis
-    *  @param  y           Y component of the rotation axis
-    *  @param  z           Z component of the rotation axis
-    *  @param  w           W rotation angle in radians
-    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    /* DEPRECATED, will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
+    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
     */
   extern RPR_API_ENTRY rpr_status rprShapeSetAngularMotion(rpr_shape shape, rpr_float x, rpr_float y, rpr_float z, rpr_float w);
 
 
-    /** @brief Set scale linear motion
-    *
-    *  @param  shape       The shape to set linear motion for
-    *  @param  x           X component of the scale
-    *  @param  y           Y component of the scale
-    *  @param  z           Z component of the scale
-    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    /* DEPRECATED, will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
+    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
     */
   extern RPR_API_ENTRY rpr_status rprShapeSetScaleMotion(rpr_shape shape, rpr_float x, rpr_float y, rpr_float z);
+
+
+    /* Number of motion matrices (set with rprShapeSetMotionTransform) to use.
+    *  Set  transformCount=0  if you don't use Motion.
+    *  For the moment, if you use motion in Northstar, only transformCount=1 is supported.
+    *  example: to create a motion from matA to matB:
+    *      rprShapeSetTransform(shape, false, matA) // matrix at time=0
+    *      rprShapeSetMotionTransform(shape, false, matB, 1) // matrix at time=1
+    *      rprShapeSetMotionTransformCount(shape,1) // use 1 motion matrix
+    */
+  extern RPR_API_ENTRY rpr_status rprShapeSetMotionTransformCount(rpr_shape shape, rpr_uint transformCount);
+
+
+    /* For Motion effect, set the transform of shape at different time index.
+    * 'transform' is an array of 16 rpr_float values (row-major form).
+    *  timeIndex=1 is shape position at camera exposure = 1.0
+    *  For the moment, in Nortstar plugin only timeIndex=1 is implemented
+    *  You also have to call  rprShapeSetMotionTransformCount, to define the number of indices to use.
+    */
+  extern RPR_API_ENTRY rpr_status rprShapeSetMotionTransform(rpr_shape shape, rpr_bool transpose, rpr_float const * transform, rpr_uint timeIndex);
 
 
     /** @brief Set visibility flag
@@ -2124,6 +2167,16 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
     *  @return                   RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprShapeSetReflectionCatcher(rpr_shape shape, rpr_bool reflectionCatcher);
+
+
+    /** @brief Set 1 if ignore shape in the Contour rendering flag.
+    *   ( This flag is used only if Contour is enabled )
+    *
+    *  @param  shape             The shape to set
+    *  @param  ignoreInContour   0 or 1.
+    *  @return                   RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprShapeSetContourIgnore(rpr_shape shape, rpr_bool ignoreInContour);
 
 
       /**

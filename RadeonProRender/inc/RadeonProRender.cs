@@ -5,7 +5,7 @@
 *
 *  Description    Radeon ProRender Interface header
 *
-*  Copyright 2019 Advanced Micro Devices, Inc.
+*  Copyright 2020 Advanced Micro Devices, Inc.
 *
 *  All rights reserved.  This notice is intended as a precaution against
 *  inadvertent publication and does not imply publication or any waiver
@@ -310,6 +310,22 @@ RENDER_UPDATE_CALLBACK_FUNC = 0x16E ,
 RENDER_UPDATE_CALLBACK_DATA = 0x16F ,
 COMPILE_CALLBACK_FUNC = 0x601 ,
 COMPILE_CALLBACK_DATA = 0x602 ,
+TEXTURE_CACHE_PATH = 0x170 ,
+OCIO_CONFIG_PATH = 0x171 ,
+OCIO_RENDERING_COLOR_SPACE = 0x172 ,
+CONTOUR_USE_OBJECTID = 0x173 ,
+CONTOUR_USE_MATERIALID = 0x174 ,
+CONTOUR_USE_NORMAL = 0x175 ,
+CONTOUR_NORMAL_THRESHOLD = 0x176 ,
+CONTOUR_LINEWIDTH_OBJECTID = 0x177 ,
+CONTOUR_LINEWIDTH_MATERIALID = 0x178 ,
+CONTOUR_LINEWIDTH_NORMAL = 0x179 ,
+CONTOUR_ANTIALIASING = 0x17A ,
+CONTOUR_DEBUG_ENABLED = 0x17F ,
+GPUINTEGRATOR = 0x17B ,
+CPUINTEGRATOR = 0x17C ,
+BEAUTY_MOTION_BLUR = 0x17D ,
+CAUSTICS_REDUCTION = 0x17E ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -410,6 +426,10 @@ PER_VERTEX_VALUE2 = 0x426,
 PER_VERTEX_VALUE3 = 0x427,
 REFLECTION_CATCHER_FLAG = 0x428 ,
 OBJECT_ID = 0x429 ,
+SUBDIVISION_AUTO_RATIO_CAP = 0x42A ,
+MOTION_TRANSFORMS_COUNT = 0x42B ,
+MOTION_TRANSFORMS = 0x42C ,
+CONTOUR_IGNORE = 0x42D ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -752,6 +772,9 @@ INTERIOR = 0x3c ,
 OCTAVES = 0x3d ,
 LACUNARITY = 0x3e ,
 DIMINISH = 0x3f ,
+WRAP_U = 0x40 ,
+WRAP_V = 0x41 ,
+WRAP_W = 0x42 ,
 UBER_DIFFUSE_COLOR = 0x910,
 UBER_DIFFUSE_WEIGHT = 0x927,
 UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -1006,7 +1029,6 @@ public enum ImageWrapType : int
 REPEAT = 0x1 ,
 MIRRORED_REPEAT = 0x2 ,
 CLAMP_TO_EDGE = 0x3 ,
-/* #define RPR_IMAGE_WRAP_TYPE_CLAMP_TO_BORDER 0x4  - removed in 1.310  because same that RPR_IMAGE_WRAP_TYPE_CLAMP_ZERO */
 CLAMP_ZERO = 0x5 ,
 CLAMP_ONE = 0x6 ,
 }
@@ -1128,9 +1150,9 @@ VISIBILITY_LIGHT = 0x421 ,
 }
 public const int RPR_VERSION_MAJOR = 2 ;
 public const int RPR_VERSION_MINOR = 1 ;
-public const int RPR_VERSION_REVISION = 6 ;
-public const int RPR_VERSION_BUILD = 0xca39c79b ;
-public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200106 ;
+public const int RPR_VERSION_REVISION = 7 ;
+public const int RPR_VERSION_BUILD = 0xe80516f7 ;
+public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200107 ;
 // Deprecated version naming - will be removed in the future :
 
 public const int RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -2028,7 +2050,10 @@ return rprImageGetInfo(image, image_info, size, data, out size_ret);
 }
 
     /** @brief
-    *
+    * 
+    * this is DEPRECATED in the Northstar plugin.
+    * In this plugin, the wrapping is done inside the RPR_MATERIAL_NODE_IMAGE_TEXTURE owning the image, 
+    * example: rprMaterialNodeSetInputUByKey(materialNodeTexture, RPR_MATERIAL_INPUT_WRAP_U, RPR_IMAGE_WRAP_TYPE_REPEAT);
     *
     *  @param  image       The image to set wrap for
     *  @param  type
@@ -2147,6 +2172,24 @@ return rprShapeSetVertexValue(in_shape, setIndex, indices, values, indicesCount)
 public static Status ShapeSetSubdivisionFactor(IntPtr shape, uint factor)
 {
 return rprShapeSetSubdivisionFactor(shape, factor);
+}
+
+    /** @brief Enable or Disable the auto ratio cap for subdivision
+    *
+    * autoRatioCap is a value from 0.0 to 1.0.
+    * autoRatioCap=1.0 means very large polygons, less tessellation. as it goes to 0.0, it does more tessellation.
+    * This value is ratio of the largest edge in the screen.
+    * Example: If you want to make an edge 10 pixels on 1080p, you need to set 10/1080.
+    *
+    *  @param  shape           The shape to set
+    *  @param  autoRatioCap    0.0 to 1.0
+    *  @return                 RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprShapeSetSubdivisionAutoRatioCap(IntPtr shape, float autoRatioCap);
+public static Status ShapeSetSubdivisionAutoRatioCap(IntPtr shape, float autoRatioCap)
+{
+return rprShapeSetSubdivisionAutoRatioCap(shape, autoRatioCap);
 }
 
     /** @brief
@@ -2316,13 +2359,8 @@ public static Status ShapeSetVolumeMaterial(IntPtr shape, IntPtr node)
 return rprShapeSetVolumeMaterial(shape, node);
 }
 
-    /** @brief Set shape linear motion
-    *
-    *  @param  shape       The shape to set linear motion for
-    *  @param  x           X component of a motion vector
-    *  @param  y           Y component of a motion vector
-    *  @param  z           Z component of a motion vector
-    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    /* DEPRECATED - will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
+    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
     */
   
 [DllImport(dllName)] static extern Status rprShapeSetLinearMotion(IntPtr shape, float x, float y, float z);
@@ -2331,14 +2369,8 @@ public static Status ShapeSetLinearMotion(IntPtr shape, float x, float y, float 
 return rprShapeSetLinearMotion(shape, x, y, z);
 }
 
-    /** @brief Set angular linear motion
-    *
-    *  @param  shape       The shape to set linear motion for
-    *  @param  x           X component of the rotation axis
-    *  @param  y           Y component of the rotation axis
-    *  @param  z           Z component of the rotation axis
-    *  @param  w           W rotation angle in radians
-    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    /* DEPRECATED, will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
+    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
     */
   
 [DllImport(dllName)] static extern Status rprShapeSetAngularMotion(IntPtr shape, float x, float y, float z, float w);
@@ -2347,19 +2379,42 @@ public static Status ShapeSetAngularMotion(IntPtr shape, float x, float y, float
 return rprShapeSetAngularMotion(shape, x, y, z, w);
 }
 
-    /** @brief Set scale linear motion
-    *
-    *  @param  shape       The shape to set linear motion for
-    *  @param  x           X component of the scale
-    *  @param  y           Y component of the scale
-    *  @param  z           Z component of the scale
-    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    /* DEPRECATED, will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
+    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
     */
   
 [DllImport(dllName)] static extern Status rprShapeSetScaleMotion(IntPtr shape, float x, float y, float z);
 public static Status ShapeSetScaleMotion(IntPtr shape, float x, float y, float z)
 {
 return rprShapeSetScaleMotion(shape, x, y, z);
+}
+
+    /* Number of motion matrices (set with rprShapeSetMotionTransform) to use.
+    *  Set  transformCount=0  if you don't use Motion.
+    *  For the moment, if you use motion in Northstar, only transformCount=1 is supported.
+    *  example: to create a motion from matA to matB:
+    *      rprShapeSetTransform(shape, false, matA) // matrix at time=0
+    *      rprShapeSetMotionTransform(shape, false, matB, 1) // matrix at time=1
+    *      rprShapeSetMotionTransformCount(shape,1) // use 1 motion matrix
+    */
+  
+[DllImport(dllName)] static extern Status rprShapeSetMotionTransformCount(IntPtr shape, uint transformCount);
+public static Status ShapeSetMotionTransformCount(IntPtr shape, uint transformCount)
+{
+return rprShapeSetMotionTransformCount(shape, transformCount);
+}
+
+    /* For Motion effect, set the transform of shape at different time index.
+    * 'transform' is an array of 16 rpr_float values (row-major form).
+    *  timeIndex=1 is shape position at camera exposure = 1.0
+    *  For the moment, in Nortstar plugin only timeIndex=1 is implemented
+    *  You also have to call  rprShapeSetMotionTransformCount, to define the number of indices to use.
+    */
+  
+[DllImport(dllName)] static extern Status rprShapeSetMotionTransform(IntPtr shape, bool transpose, IntPtr transform, uint timeIndex);
+public static Status ShapeSetMotionTransform(IntPtr shape, bool transpose, IntPtr transform, uint timeIndex)
+{
+return rprShapeSetMotionTransform(shape, transpose, transform, timeIndex);
 }
 
     /** @brief Set visibility flag
@@ -2471,6 +2526,20 @@ return rprShapeSetShadowCatcher(shape, shadowCatcher);
 public static Status ShapeSetReflectionCatcher(IntPtr shape, bool reflectionCatcher)
 {
 return rprShapeSetReflectionCatcher(shape, reflectionCatcher);
+}
+
+    /** @brief Set 1 if ignore shape in the Contour rendering flag.
+    *   ( This flag is used only if Contour is enabled )
+    *
+    *  @param  shape             The shape to set
+    *  @param  ignoreInContour   0 or 1.
+    *  @return                   RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprShapeSetContourIgnore(IntPtr shape, bool ignoreInContour);
+public static Status ShapeSetContourIgnore(IntPtr shape, bool ignoreInContour)
+{
+return rprShapeSetContourIgnore(shape, ignoreInContour);
 }
 
       /**

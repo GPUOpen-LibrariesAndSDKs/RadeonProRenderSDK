@@ -5,7 +5,7 @@
 *
 *  Description    Radeon ProRender OpenCL Interop header
 *
-*  Copyright 2011 - 2019 Advanced Micro Devices, Inc.
+*  Copyright 2011 - 2020 Advanced Micro Devices, Inc.
 *
 *  All rights reserved.  This notice is intended as a precaution against
 *  inadvertent publication and does not imply publication or any waiver

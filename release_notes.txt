@@ -3,6 +3,43 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.01.7 - 27 October 2020
+
+-- RESOLVED TICKETS for NORTHSTAR:
+RPRNEXT-141 - Curve + HWI
+RPRNEXT-391 - Secondary UV support
+RPRNEXT-170 - Implement Velocity AOV
+RPRNEXT-389 - Triplanar UV node
+RPRNEXT-132 - Bump map
+RPRNEXT-400 - Avoid string matching in a loop for contour parameters
+RPRNEXT-386 - Artifacts for contour extraction without antialiasing
+RPRNEXT-404 - CPU LPE AOV is too bright
+RPRNEXT-325 - Thin refraction passes through AOVs like transparent closure
+RPRNEXT-407 - Edge watertight intersector
+RPRNEXT-405 - Let user choose a directory for texture cache
+RPRNEXT-365 - Radius parameter doesn't work
+RPRNEXT-280 - API expose for auto cap subdivision level 
+RPRNEXT-397 - Fix VNDF importance sampling
+RPRNEXT-410 - [Solidworks] Shadow and reflection catcher plane doesn't disappear in composition
+RPRNEXT-271 - refraction difference from 1.0
+RPRNEXT-361 - Shadow is blurry
+RPRNEXT-419 - Crash on white house textures
+RPRNEXT-417 - Navi GPU can't render "White House" by RE team
+RPRNEXT-408 - LPE memory reduction
+RPRNEXT-424 - Rpr curve test failure
+RPRNEXT-430 - Texture Wrap mode
+RPRNEXT-420 - OOC on white house render different image from in core
+RPRNEXT-441 - Render artifacts on car
+RPRNEXT-443 - OpenColorIO error handling is not proper
+RPRNEXT-392 - Output colored contours for each feature for debug
+RPRNEXT-425 - huge texture problem
+RPRNEXT-437 - Crash when number of iterations set to 32 with LPE
+RPRNEXT-447 - Preview mode (down res render)
+
+-- KNOWN ISSUES:
+	same LPE/AOV issue than 2.01.6
+
+################################################################################################################
 RPR SDK 2.01.6 - 08 October 2020
 
 -- RESOLVED TICKETS for NORTHSTAR:

@@ -19,6 +19,8 @@
 #ifndef __RADEONPRORENDER_VK_H
 #define __RADEONPRORENDER_VK_H
 
+#include "RadeonProRender.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -83,9 +85,9 @@ typedef rpr_int(*rprVkDynamicMeshModified_func)(rpr_shape mesh); // Notify rpr t
  */
 struct VkInteropInfo
 {
-    uint32_t instance_count; ///< Amount of vulkan instances
-    uint32_t main_instance_index; ///< Index of main vulkan instance in instances array
-    uint32_t frames_in_flight; ///< Number of frames in flight
+    rpr_uint instance_count; ///< Amount of vulkan instances
+    rpr_uint main_instance_index; ///< Index of main vulkan instance in instances array
+    rpr_uint frames_in_flight; ///< Number of frames in flight
     // VkSemaphore-s signaling that framebuffers are released (by the number of frames in flight)
     void* framebuffers_release_semaphores;
 
