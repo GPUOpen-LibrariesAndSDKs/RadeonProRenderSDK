@@ -92,6 +92,7 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_ENABLE_RAYTRACE_REFLECTION 0x102A // turn on ray-trace reflection in custom quality
 #define RPR_CONTEXT_ENABLE_RAYTRACE_REFRACTION 0x102B // turn on ray-trace refraction in custom quality
 #define RPR_CONTEXT_GLOBAL_ILLUMINATION_MODE 0x102C // change global illumination mode in custom quality
+#define RPR_CONTEXT_PT_DENOISE_ENABLED 0x102D // enable/disable integrated denoiser for PT
 
 /* Traversal modes */
 #define RPR_HYBRID_TRAVERSAL_STATIC_TLAS_SEPARATE 0x1 ///< Use a separate acceleration structure for static objects
