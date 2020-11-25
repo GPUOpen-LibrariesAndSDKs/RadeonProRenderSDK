@@ -39,9 +39,9 @@ extern "C" {
 
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 1 
-#define RPR_VERSION_REVISION 7 
-#define RPR_VERSION_BUILD 0xe80516f7 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200107 
+#define RPR_VERSION_REVISION 8 
+#define RPR_VERSION_BUILD 0x396e4257 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200108 
 
 // Deprecated version naming - will be removed in the future :
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
@@ -860,6 +860,7 @@ extern "C" {
 #define RPR_AOV_LPE_6 0x26 
 #define RPR_AOV_LPE_7 0x27 
 #define RPR_AOV_LPE_8 0x28 
+#define RPR_AOV_CAMERA_NORMAL 0x29 
 /*rpr_post_effect_type*/
 #define RPR_POST_EFFECT_TONE_MAP 0x0 
 #define RPR_POST_EFFECT_WHITE_BALANCE 0x1 

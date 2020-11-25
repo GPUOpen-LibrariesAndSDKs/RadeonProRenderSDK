@@ -77,9 +77,9 @@ typedef rpr_uint rpr_environment_override;
 
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 1 
-#define RPR_VERSION_REVISION 7 
-#define RPR_VERSION_BUILD 0xe80516f7 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200107 
+#define RPR_VERSION_REVISION 8 
+#define RPR_VERSION_BUILD 0x396e4257 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200108 
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
 #define RPR_API_VERSION_MINOR RPR_VERSION_BUILD 
 #define RPR_OBJECT_NAME 0x777777 
@@ -987,6 +987,7 @@ typedef enum // rpr_aov
 	RPR_AOV_LPE_6 = 0x26 ,
 	RPR_AOV_LPE_7 = 0x27 ,
 	RPR_AOV_LPE_8 = 0x28 ,
+	RPR_AOV_CAMERA_NORMAL = 0x29 ,
 } rpr_aov ;
 
 typedef enum // rpr_post_effect_type
