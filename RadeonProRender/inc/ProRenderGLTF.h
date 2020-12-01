@@ -31,6 +31,10 @@ extern "C" {
 #define RPRGLTF_EXPORTFLAG_COPY_IMAGES_USING_OBJECTNAME (1 << 2) 
 // if flag enabled, export lights with both RPR and KHR extensions.
 #define RPRGLTF_EXPORTFLAG_KHR_LIGHT (1 << 3) 
+// if flag enabled, the Exporter may try to create images matching the GLTF PBR material spec.
+//                  For example, it takes both Metallic and Roughness images from RPR, and combine them into a single PbrMetallicRoughness.
+//					This process should improve the rendering of the GLTF on non-RPR renderer. But it will slow-down the export process as it needs to process & generate new images.
+#define RPRGLTF_EXPORTFLAG_BUILD_STD_PBR_IMAGES (1 << 4) 
 
 //
 // import flags :
@@ -120,6 +124,9 @@ rprGLTF_AssignParentGroupToGroup("head", "body");
 the groups with no parent will be at the root of the scene.
 the call order of  rprGLTF_AssignShapeToGroup  and  rprGLTF_AssignParentGroupToGroup  doesn't matter
 
+Note that for rprGLTF_SetTransformGroup and rprGLTF_GetTransformGroup, matrixComponents is an array of 10 floats in the following order: 
+       0-2:Translation, 3-6:RotationQuaternion,  7-9:Scale
+
 then, call rprExportToGLTF. Internally this will export the hierarchy to the GLTF, and clean the group list for next export.
 
 -- Usage for Import
@@ -140,6 +147,7 @@ extern int rprGLTF_AssignCameraToGroup(rpr_camera camera, const rpr_char* groupN
 extern int rprGLTF_AssignLightToGroup(rpr_light light, const rpr_char* groupName);
 extern int rprGLTF_AssignParentGroupToGroup(const rpr_char* groupChild, const rpr_char* groupParent);
 extern int rprGLTF_SetTransformGroup(const rpr_char* groupChild, const float* matrixComponents);
+extern int rprGLTF_GetTransformGroup(const rpr_char * groupChild, float * matrixComponents);
 extern int rprGLTF_GetParentGroupFromShape(rpr_shape shape, size_t size, rpr_char* groupName, size_t* size_ret);
 extern int rprGLTF_GetParentGroupFromCamera(rpr_camera camera, size_t size, rpr_char* groupName, size_t* size_ret);
 extern int rprGLTF_GetParentGroupFromLight(rpr_light light, size_t size, rpr_char* groupName, size_t* size_ret);

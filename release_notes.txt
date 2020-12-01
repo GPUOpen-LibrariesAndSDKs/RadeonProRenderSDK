@@ -3,6 +3,36 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.01.8 - 01 December 2020
+
+-- RESOLVED TICKETS for NORTHSTAR:
+RPRNEXT-433 - Connecting to light for transmission direction fails.
+RPRNEXT-442 - transparency png map no longer works in northstar
+RPRNEXT-434 - Enhance Northstar UnitTest
+RPRNEXT-383 - Implement explicit texture cache
+RPRNEXT-398 - Set line width by float number
+RPRNEXT-311 - Principled material loose reflection if reflection weight = 0 under metalness mode
+RPRNEXT-457 - LPE doesn't work for bathroom, market scene
+RPRNEXT-458 - Reduce the size of LpePathSet for lpe
+RPRNEXT-380 - Shadow + reflection catcher surface can't be seen behind volume
+RPRNEXT-462 - Store integrator name in options
+RPRNEXT-41  - Cryptomatte
+RPRNEXT-438 - irregular checker material ?
+RPRNEXT-467 - Artifact on cpu at ALI car scene
+RPRNEXT-468 - CPU-GPU difference at ALI car scene
+RPRNEXT-440 - Northstar Render is broken with ReflectionCatcher after env light is changed
+RPRNEXT-480 - Store textures in gamma colorspace
+RPRNEXT-448 - Shading normal in camera space
+RPRNEXT-459 - PathDataLpeInitKernel takes too long
+RPRNEXT-490 - Improve the performance of resolve()
+RPRNEXT-464 - CPU GPU difference on AOV_DIRECT_REFLECT
+RPRNEXT-493 - Crash on rendering with DDS
+RPRNEXT-492 - Black render after switching integrator
+RPRNEXT-239 - Strange Green Tint Texture Color
+RPRNEXT-495 - Add no compression option for texture
+
+
+################################################################################################################
 RPR SDK 2.01.7 - 27 October 2020
 
 -- RESOLVED TICKETS for NORTHSTAR:

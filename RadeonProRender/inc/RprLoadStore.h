@@ -43,6 +43,13 @@ extern "C" {
 *          If the file path is not found, then data from RPR is used to export the image.
 *          Advantage of using this flag is that we ensure to attach the original image files into the RPRS, instead of using an image compressed/modified by RPR.
 *          For Unicode, you can encode the name with UTF-8
+*  
+*  RPRLOADSTORE_EXPORTFLAG_USE_IMAGE_CACHE : If enabled Exporter tries to use the native image cache compiled by Northstar during rendering.
+*                                            ( Those cache files are usually in the cache folder, named *.ns.bin", 1 file per rpr_image )
+*                                            If the cache file is found, export uses this cached data in priority and ignores COMPRESS_IMAGE_LEVEL_1, COMPRESS_IMAGE_LEVEL_2, EMBED_FILE_IMAGES_USING_OBJECTNAME for this image only.
+*                                            If the cache file doesn't exist, it does a classic image export.
+*                                            Advantages: Export and Import will be faster as we directly manage compiled image.
+*                                            Drawbacks: image parameters (like color space) can't be changed in an imported RPRS file that used this flag.
 *
 */
 #define RPRLOADSTORE_EXPORTFLAG_EXTERNALFILES (1 << 0) 
@@ -51,6 +58,7 @@ extern "C" {
 #define RPRLOADSTORE_EXPORTFLAG_COMPRESS_FLOAT_TO_HALF_NORMALS (1 << 3) 
 #define RPRLOADSTORE_EXPORTFLAG_COMPRESS_FLOAT_TO_HALF_UV (1 << 4) 
 #define RPRLOADSTORE_EXPORTFLAG_EMBED_FILE_IMAGES_USING_OBJECTNAME (1 << 5) 
+#define RPRLOADSTORE_EXPORTFLAG_USE_IMAGE_CACHE (1 << 6) 
 
 
 /** 
@@ -87,6 +95,16 @@ extern RPR_API_ENTRY rpr_status rprsImport(char const * rprsFileName, rpr_contex
 extern RPR_API_ENTRY rpr_status rprsxImport(char const * rprsFileName, rpr_context context, void * contextX__NOT_USED_ANYMORE, rpr_material_system materialSystem, rpr_scene * scene, bool useAlreadyExistingScene);
 extern RPR_API_ENTRY rpr_status rprsImportFromData(rpr_uchar const * data, size_t dataSize, rpr_context context, rpr_material_system materialSystem, rpr_scene * scene, bool useAlreadyExistingScene);
 extern RPR_API_ENTRY rpr_status rprsxImportFromData(rpr_uchar const * data, size_t dataSize, rpr_context context, void * contextX__NOT_USED_ANYMORE, rpr_material_system materialSystem, rpr_scene * scene, bool useAlreadyExistingScene);
+
+
+/** 
+*
+* if 'rprsFileName' is embedding some OCIO configuration, then we need to unpack them before render.
+* This operation is NOT done inside rprsImport, so it should be called before or after rprsImport.
+* This function also sets the RPR context RPR_CONTEXT_OCIO_CONFIG_PATH parameter to 'basePath'.  rprsImport doesn't set this parameter.
+*
+*/
+extern RPR_API_ENTRY rpr_status rprsBuildOCIOFiles(char const * rprsFileName, rpr_context context, char const * basePath);
 
 
 /** 

@@ -265,15 +265,20 @@ enum LogScope {
 };
 
 struct LoaderContext {
-    std::vector<mx::Element const*> refElements;
     mx::Document const* mtlxDocument;
     rpr_material_system rprMatSys;
 
-    std::unique_ptr<MtlxNodeGraphNode> globalNodeGraphNode;
+    std::unique_ptr<MtlxNodeGraphNode> globalNodeGraph;
     Node* GetGlobalNode(mx::Node* mtlxNode);
+
+    std::map<std::string, std::unique_ptr<MtlxNodeGraphNode>> freeStandingNodeGraphs;
+    MtlxNodeGraphNode* GetFreeStandingNodeGraph(mx::NodeGraphPtr const& nodeGraph);
 
     std::map<std::string, std::unique_ptr<Node>> geomNodes;
     Node* GetGeomNode(mx::GeomPropDef* geomPropDef);
+
+    template <typename T>
+    bool ConnectToGlobalOutput(T* input, Node* node);
 
     mx::FileSearchPath searchPath;
     std::string fileprefix;
@@ -299,15 +304,6 @@ struct LoaderContext {
         ~ScopeGuard();
     };
     ScopeGuard EnterScope(LogScope logScope, mx::Element const* scopeElement);
-
-    struct RefOverrideGuard {
-        LoaderContext* ctx;
-        std::vector<mx::Element const*> previousRefElement;
-
-        RefOverrideGuard(LoaderContext* ctx,  std::vector<mx::Element const*> overRefElements);
-        ~RefOverrideGuard();
-    };
-    RefOverrideGuard OverrideRef(std::vector<mx::Element const*> overRefElements);
 
     std::string ResolveFile(std::string const& filename);
     std::string FindFile(std::string const& filename);
@@ -445,7 +441,7 @@ private:
         mx::OutputPtr upstreamNodeOutput;
 
         mx::NodePtr downstreamNode;
-        mx::InputPtr downstreamInput;
+        mx::ElementPtr downstreamInput;
     };
     Node* _CreateSubNode(mx::NodePtr const& mtlxNode, std::vector<PendingConnection>* pendingConnections, LoaderContext* context);
 
@@ -453,13 +449,31 @@ private:
         mx::NodePtr subNode;
         mx::ElementPtr input;
     };
-    std::map<std::string, InterfaceSocket> _interfaceSockets;
+    std::map<std::string, std::vector<InterfaceSocket>> _interfaceSockets;
 
-    struct InterfaceSocketQuery {
-        Node* node = nullptr;
-        mx::Element* inputElement = nullptr;
+    struct InterfaceSocketsQuery {
+        template <typename F>
+        void ForEach(LoaderContext* context, F&& f) {
+            if (_sockets) {
+                for (auto& socket : *_sockets) {
+                    auto nodeIt = _nodeGraphNode->subNodes.find(socket.subNode->getName());
+                    if (nodeIt != _nodeGraphNode->subNodes.end()) {
+                        context->Log(" %s:%s\n", nodeIt->first.c_str(), socket.input->getName().c_str());
+
+                        f(nodeIt->second.get(), socket.input.get());
+                    }
+                }
+            }
+        }
+
+        explicit operator bool() const { return _sockets; }
+
+        MtlxNodeGraphNode* _nodeGraphNode;
+        std::vector<InterfaceSocket>* _sockets;
     };
-    InterfaceSocketQuery GetInterfaceSocket(mx::Element* inputElement);
+
+    InterfaceSocketsQuery _GetInterfaceSockets(mx::Element* inputElement);
+    InterfaceSocketsQuery _GetInterfaceSockets(std::string const& interfaceName);
 };
 
 //------------------------------------------------------------------------------
@@ -481,7 +495,7 @@ mx::OutputPtr GetOutput(mx::InterfaceElement const* interfaceElement, mx::PortEl
     //
     if (interfaceElement->getType() == mx::MULTI_OUTPUT_TYPE_STRING) {
         auto& targetOutputName = portElement->getOutputString();
-        if (!targetOutputName.empty()) {
+        if (targetOutputName.empty()) {
             LOG_ERROR(context, "invalid port element structure: output should be specified when connecting to multioutput element - port: %s, interface: %s\n", portElement->asString().c_str(), interfaceElement->asString().c_str());
             return nullptr;
         }
@@ -495,15 +509,6 @@ mx::OutputPtr GetOutput(mx::InterfaceElement const* interfaceElement, mx::PortEl
     }
 
     return GetFirst<mx::Output>(interfaceElement);
-}
-
-mx::NodeDefPtr GetNodeDef(mx::Element const* element) {
-    if (auto shaderRef = element->asA<mx::ShaderRef>()) {
-        return shaderRef->getNodeDef();
-    } else if (auto node = element->asA<mx::Node>()) {
-        return node->getNodeDef();
-    }
-    return nullptr;
 }
 
 template <typename T>
@@ -581,19 +586,6 @@ LoaderContext::ScopeGuard LoaderContext::EnterScope(LogScope logScope, mx::Eleme
     return ScopeGuard(this, logScope, scopeElement);
 }
 
-LoaderContext::RefOverrideGuard::RefOverrideGuard(LoaderContext* ctx, std::vector<mx::Element const*> overRefElements)
-    : ctx(ctx), previousRefElement(std::move(ctx->refElements)) {
-    ctx->refElements = std::move(overRefElements);
-}
-
-LoaderContext::RefOverrideGuard::~RefOverrideGuard() {
-    ctx->refElements = std::move(previousRefElement);
-}
-
-LoaderContext::RefOverrideGuard LoaderContext::OverrideRef(std::vector<mx::Element const*> overRefElements) {
-    return RefOverrideGuard(this, std::move(overRefElements));
-}
-
 std::string LoaderContext::ResolveFile(std::string const& filename) {
     if (fileprefix.empty()) {
         return FindFile(filename);
@@ -611,13 +603,71 @@ std::string LoaderContext::FindFile(std::string const& filename) {
 }
 
 Node* LoaderContext::GetGlobalNode(mx::Node* node) {
-    if (!globalNodeGraphNode) {
+    if (!globalNodeGraph) {
         auto docGraph = mtlxDocument->getSelf()->asA<mx::Document>();
-        globalNodeGraphNode = std::make_unique<MtlxNodeGraphNode>(docGraph, MtlxNodeGraphNode::LAZY_INIT);
+        globalNodeGraph = std::make_unique<MtlxNodeGraphNode>(docGraph, MtlxNodeGraphNode::LAZY_INIT);
     }
 
     auto scope = EnterScope(LSGlobal, mtlxDocument);
-    return globalNodeGraphNode->GetSubNode(node->getName(), this);
+    return globalNodeGraph->GetSubNode(node->getName(), this);
+}
+
+MtlxNodeGraphNode* LoaderContext::GetFreeStandingNodeGraph(mx::NodeGraphPtr const& nodeGraph) {
+    auto it = freeStandingNodeGraphs.find(nodeGraph->getName());
+    if (it == freeStandingNodeGraphs.end()) {
+        MtlxNodeGraphNode::Ptr nodeGraphNode;
+        try {
+            nodeGraphNode = std::make_unique<MtlxNodeGraphNode>(nodeGraph, this);
+        } catch (MtlxNodeGraphNode::NoOutputsError& e) {
+            // Store nullptr nodeGraph in freeStandingNodeGraphs to not fall into the same failure
+        }
+        it = freeStandingNodeGraphs.emplace(nodeGraph->getName(), std::move(nodeGraphNode)).first;
+    }
+
+    return it->second.get();
+}
+
+template <typename T>
+bool LoaderContext::ConnectToGlobalOutput(T* input, Node* node) {
+    auto& outputName = input->getOutputString();
+    if (outputName.empty()) {
+        return false;
+    }
+
+    // The output attribute may point to the output of some free-standing node graph or free-standing output
+    //
+    auto& nodeGraphName = input->getAttribute(mx::PortElement::NODE_GRAPH_ATTRIBUTE);
+    if (!nodeGraphName.empty()) {
+        if (auto nodeGraph = mtlxDocument->getNodeGraph(nodeGraphName)) {
+            if (auto nodeGraphOutput = nodeGraph->getOutput(outputName)) {
+                if (auto freeStandingNodeGraphNode = GetFreeStandingNodeGraph(nodeGraph)) {
+                    Log("Bindinput %s: %s:%s (nodegraph)\n", input->getName().c_str(), nodeGraphName.c_str(), outputName.c_str());
+
+                    return freeStandingNodeGraphNode->Connect(nodeGraphOutput.get(), node, input, this) == RPR_SUCCESS;
+                }
+            }
+        }
+    } else {
+        // A global output is an output that is defined globally in mtlxDocument
+        //
+        if (auto globalOutput = mtlxDocument->getOutput(outputName)) {
+            // Such outputs point to a globally instantiated nodes
+            //
+            if (auto mtlxGlobalNode = globalOutput->getConnectedNode()) {
+                if (auto mxtlGlobalNodeDef = mtlxGlobalNode->getNodeDef()) {
+                    if (auto mtlxGlobalNodeOutput = GetOutput(mxtlGlobalNodeDef.get(), globalOutput.get(), this)) {
+                        if (auto globalNode = GetGlobalNode(mtlxGlobalNode.get())) {
+                            Log("Bindinput %s: %s (output)\n", input->getName().c_str(), outputName.c_str());
+
+                            return globalNode->Connect(mtlxGlobalNodeOutput.get(), node, input, this) == RPR_SUCCESS;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
 }
 
 Node* LoaderContext::GetGeomNode(mx::GeomPropDef* geomPropDef) {
@@ -763,6 +813,16 @@ Node::Ptr Node::Create(mx::Node* mtlxNode, LoaderContext* context) {
     } else if (mtlxNode->getCategory() == "normal") {
         rprMaterialSystemCreateNode(context->rprMatSys, RPR_MATERIAL_NODE_INPUT_LOOKUP, &rprNode);
         rprMaterialNodeSetInputUByKey(rprNode, RPR_MATERIAL_INPUT_VALUE, RPR_MATERIAL_NODE_LOOKUP_N);
+    } else if (mtlxNode->getCategory() == "sqrt") {
+        rprMaterialSystemCreateNode(context->rprMatSys, RPR_MATERIAL_NODE_ARITHMETIC, &rprNode);
+        rprMaterialNodeSetInputUByKey(rprNode, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_POW);
+        rprMaterialNodeSetInputFByKey(rprNode, RPR_MATERIAL_INPUT_COLOR1, 0.5f, 0.5f, 0.5f, 1.0f);
+        static Mtlx2Rpr::Node s_sqrtMapping = {
+            RPR_MATERIAL_NODE_ARITHMETIC, {
+                {"in", RPR_MATERIAL_INPUT_COLOR0}
+            }
+        };
+        rprNodeMapping = &s_sqrtMapping;
     } else if (mtlxNode->getCategory() == "image") {
         return std::make_unique<RprImageNode>(context);
     } else if (mtlxNode->getCategory() == "swizzle") {
@@ -823,7 +883,6 @@ Node::Ptr Node::Create(mx::Node* mtlxNode, LoaderContext* context) {
                 if (auto nodeDef = mtlxNode->getNodeDef()) {
                     if (auto implementation = nodeDef->getImplementation()) {
                         if (auto nodeGraph = implementation->asA<mx::NodeGraph>()) {
-                            auto overRef = context->OverrideRef({});
                             try {
                                 return std::make_unique<MtlxNodeGraphNode>(std::move(nodeGraph), context);
                             } catch (MtlxNodeGraphNode::NoOutputsError& e) {
@@ -1029,19 +1088,9 @@ Node* MtlxNodeGraphNode::_CreateSubNode(
 
         // ValueElement is a common base type
         //
-        auto nodeDefInputElement = nodeDefChild->asA<mx::ValueElement>();
-        if (!nodeDefInputElement) {
+        auto inputElement = nodeDefChild->asA<mx::ValueElement>();
+        if (!inputElement) {
             continue;
-        }
-
-        auto inputElement = nodeDefInputElement;
-
-        // mtlxNode may override one of the inputs/parameters defined in nodeDef.
-        //
-        if (auto mtlxNodeChild = mtlxNode->getChild(inputElement->getName())) {
-            if (auto mtlxNodeInputElement = mtlxNodeChild->asA<mx::ValueElement>()) {
-                inputElement = std::move(mtlxNodeInputElement);
-            }
         }
 
         context->Log("%s %s\n", inputElement->getCategory().c_str(), inputElement->getName().c_str());
@@ -1049,46 +1098,43 @@ Node* MtlxNodeGraphNode::_CreateSubNode(
 
         // An element that provides a value for the current input
         //
-        mx::ValueElementPtr valueElement;
+        auto valueElement = inputElement;
 
-        // If this input has an interface name then shaderRef might have overridden the default value
+        // mtlxNode may override one of the inputs/parameters defined in nodeDef.
         //
-        auto& interfaceName = inputElement->getInterfaceName();
-        if (!interfaceName.empty()) {
-            InterfaceSocket interfaceSocket;
-            interfaceSocket.input = inputElement;
-            interfaceSocket.subNode = mtlxNode;
-            _interfaceSockets.emplace(interfaceName, interfaceSocket);
-
-            for (auto& refElement : context->refElements) {
-                if (auto refChild = refElement->getChild(interfaceName)) {
-                    if (auto refValueElement = refChild->asA<mx::ValueElement>()) {
-                        valueElement = std::move(refValueElement);
-                        break;
+        if (auto mtlxNodeChild = mtlxNode->getChild(valueElement->getName())) {
+            if (auto mtlxNodeInputElement = mtlxNodeChild->asA<mx::ValueElement>()) {
+                auto& interfaceName = mtlxNodeInputElement->getInterfaceName();
+                if (!interfaceName.empty()) {
+                    // If this input has an interface name then the instantiator of this node might override this value later,
+                    // this input will be referenced by the interface name, so we map this name to a particular input socket
+                    //
+                    _interfaceSockets[interfaceName].push_back({mtlxNode, valueElement});
+                    //
+                    // For now, get value from a nodeDef of the current nodeGraph
+                    //
+                    if (auto nodeGraph = mtlxGraph->asA<mx::NodeGraph>()) {
+                        if (auto nodeGraphDef = nodeGraph->getNodeDef()) {
+                            if (auto nodeGraphDefInput = nodeGraphDef->getInput(interfaceName)) {
+                                valueElement = nodeGraphDefInput;
+                            }
+                        }
                     }
+                } else {
+                    valueElement = std::move(mtlxNodeInputElement);
                 }
             }
-
-            if (!valueElement) {
-                // Otherwise, get the default value from a node definition
-                //
-                valueElement = nodeDefInputElement;
-            }
-        } else {
-            valueElement = inputElement;
         }
 
         rpr_status status = RPR_SUCCESS;
 
-        // A value element may be of three different types Input, BindInput, Parameter.
-        // They all have their specific ways to specify an input value but also a common one -
-        // `value` attribute that specifies a uniform value, this has the least precedence.
-
-        // If a value element is of Input type, it can specify its value through:
-        //  1) `nodename` attribute - an input connection to the node of the current graph
-        //  2) `value` attribute - a uniform value
+        // A input element may be of different types: Input or Parameter (removed in 1.38).
+        //
+        // If an input element is of Input type, it can specify its value through:
         //
         if (auto input = valueElement->asA<mx::Input>()) {
+            // `nodename` attribute - an input connection to the node of the current graph
+            //
             auto& nodeName = input->getNodeName();
             if (!nodeName.empty()) {
                 context->Log("nodename: %s\n", nodeName.c_str());
@@ -1108,14 +1154,14 @@ Node* MtlxNodeGraphNode::_CreateSubNode(
                 //
                 auto upstreamNodeIt = subNodes.find(mtlxUpstreamNode->getName());
                 if (upstreamNodeIt != subNodes.end()) {
-                    status = upstreamNodeIt->second->Connect(mtlxUpstreamNodeOutput.get(), node, input.get(), context);
+                    status = upstreamNodeIt->second->Connect(mtlxUpstreamNodeOutput.get(), node, inputElement.get(), context);
                 } else {
                     // Otherwise, postpone the connection process until the upstream node is created
                     //
                     pendingConnections->emplace_back();
                     auto& pendingConnection = pendingConnections->back();
                     pendingConnection.downstreamNode = mtlxNode;
-                    pendingConnection.downstreamInput = std::move(input);
+                    pendingConnection.downstreamInput = std::move(inputElement);
                     pendingConnection.upstreamNode = std::move(mtlxUpstreamNode);
                     pendingConnection.upstreamNodeOutput = std::move(mtlxUpstreamNodeOutput);
                 }
@@ -1125,77 +1171,14 @@ Node* MtlxNodeGraphNode::_CreateSubNode(
                 }
             }
 
-        // If a value element is of BindInput type, it can specify its value through:
-        //  1) `output` attribute - the name of the nodegraph output
-        //  2) `value` attribute - a uniform value
-        //
-        } else if (auto bindInput = valueElement->asA<mx::BindInput>()) {
-            auto& outputName = bindInput->getOutputString();
-            if (!outputName.empty()) {
-
-                // The output attribute may point to the output of some node graph or free-standing (global) output
-                //
-                auto& nodeGraphName = bindInput->getNodeGraphString();
-                if (!nodeGraphName.empty()) {
-                    if (auto nodeGraph = context->mtlxDocument->getNodeGraph(nodeGraphName)) {
-                        if (auto nodeGraphOutput = nodeGraph->getOutput(outputName)) {
-                            // We instantiate this node graph in the current node.
-                            //
-                            auto subNodeIt = subNodes.find(nodeGraph->getName());
-                            if (subNodeIt != subNodes.end()) {
-                                status = subNodeIt->second->Connect(nodeGraphOutput.get(), this, bindInput.get(), context);
-                            } else {
-                                try {
-                                    auto overRef = context->OverrideRef({});
-                                    auto subNode = std::make_unique<MtlxNodeGraphNode>(std::move(nodeGraph), context);
-                                    status = subNode->Connect(nodeGraphOutput.get(), this, bindInput.get(), context);
-                                    if (status == RPR_SUCCESS) {
-                                        subNodes[valueElement->getName()] = std::move(subNode);
-                                    }
-                                } catch (MtlxNodeGraphNode::NoOutputsError&) {
-                                    LOG_ERROR(context, "binded nodegraph %s has no outputs\n", nodeGraph->getName().c_str());
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    // A global output is an output that is defined globally in mtlxDocument
-                    //
-                    if (auto globalOutput = context->mtlxDocument->getOutput(outputName)) {
-                        // Such outputs point to a globally instantiated nodes
-                        //
-                        if (auto mtlxGlobalNode = globalOutput->getConnectedNode()) {
-                            if (auto mxtlGlobalNodeDef = mtlxGlobalNode->getNodeDef()) {
-                                if (auto mtlxGlobalNodeOutput = GetOutput(mxtlGlobalNodeDef.get(), globalOutput.get(), context)) {
-                                    auto overRef = context->OverrideRef({mtlxGlobalNode.get()});
-                                    if (auto globalNode = context->GetGlobalNode(mtlxGlobalNode.get())) {
-                                        status = globalNode->Connect(mtlxGlobalNodeOutput.get(), this, bindInput.get(), context);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (status == RPR_SUCCESS) {
-                    continue;
-                }
-            }
-        }
-
-        // If we get here then the input value was not set yet, check `value` attribute.
-        //
-        auto& valueStr = valueElement->getValueString();
-        if (!valueStr.empty()) {
-            context->Log("%s\n", valueStr.c_str());
-
-            status = node->SetInput(inputElement.get(), valueStr, valueElement->getType(), context);
-            if (status == RPR_SUCCESS) {
+            // `output`[&`nodegraph`] attribute[s] - an input connection to a freestanding output[/nodegraph]
+            //
+            if (context->ConnectToGlobalOutput(input.get(), node)) {
                 continue;
             }
-        }
 
-        if (auto input = valueElement->asA<mx::Input>()) {
+            // `defaultgeomprop` attribute - an intrinsic geometric property
+            //
             auto& defaultGeomProp = input->getDefaultGeomPropString();
             if (!defaultGeomProp.empty()) {
                 if (auto geomPropDef = context->mtlxDocument->getGeomPropDef(defaultGeomProp)) {
@@ -1206,6 +1189,18 @@ Node* MtlxNodeGraphNode::_CreateSubNode(
                     LOG_ERROR(context, "Unkown defaultgeomprop: %s\n", defaultGeomProp.c_str());
                 }
 
+                continue;
+            }
+        }
+
+        // `value` attribute - a uniform value
+        //
+        auto& valueStr = valueElement->getValueString();
+        if (!valueStr.empty()) {
+            context->Log("%s\n", valueStr.c_str());
+
+            status = node->SetInput(inputElement.get(), valueStr, valueElement->getType(), context);
+            if (status == RPR_SUCCESS) {
                 continue;
             }
         }
@@ -1232,37 +1227,39 @@ rpr_status MtlxNodeGraphNode::Connect(mx::Element* outputElement, Node* downstre
     return RPR_ERROR_INVALID_PARAMETER;
 }
 
-MtlxNodeGraphNode::InterfaceSocketQuery MtlxNodeGraphNode::GetInterfaceSocket(mx::Element* inputElement) {
-    auto interfaceSocketIt = _interfaceSockets.end();
+MtlxNodeGraphNode::InterfaceSocketsQuery MtlxNodeGraphNode::_GetInterfaceSockets(mx::Element* inputElement) {
     if (auto valueElement = inputElement->asA<mx::ValueElement>()) {
         auto& interfaceName = valueElement->getInterfaceName();
         if (!interfaceName.empty()) {
-            interfaceSocketIt = _interfaceSockets.find(interfaceName);
+            if (auto query = _GetInterfaceSockets(interfaceName)) {
+                return query;
+            }
         }
     }
 
-    if (interfaceSocketIt == _interfaceSockets.end()) {
-        interfaceSocketIt = _interfaceSockets.find(inputElement->getName());
-    }
+    return _GetInterfaceSockets(inputElement->getName());
+}
 
-    if (interfaceSocketIt != _interfaceSockets.end()) {
-        auto& interfaceSocket = interfaceSocketIt->second;
-        auto subNodeIt = subNodes.find(interfaceSocket.subNode->getName());
-        if (subNodeIt != subNodes.end()) {
-            InterfaceSocketQuery query;
-            query.node = subNodeIt->second.get();
-            query.inputElement = interfaceSocket.input.get();
-            return query;
-        }
+MtlxNodeGraphNode::InterfaceSocketsQuery MtlxNodeGraphNode::_GetInterfaceSockets(std::string const& interfaceName) {
+    auto it = _interfaceSockets.find(interfaceName);
+    if (it == _interfaceSockets.end()) {
+        return {};
     }
-
-    return {};
+    return {this, &it->second};
 }
 
 rpr_status MtlxNodeGraphNode::SetInput(mx::Element* inputElement, rpr_material_node inputNode, LoaderContext* context) {
-    auto socket = GetInterfaceSocket(inputElement);
-    if (socket.node && socket.inputElement) {
-        return socket.node->SetInput(socket.inputElement, inputNode, context);
+    if (auto sockets = _GetInterfaceSockets(inputElement)) {
+        rpr_status status = RPR_SUCCESS;
+        sockets.ForEach(context,
+            [&](Node* socketNode, mx::Element* socketInputElement) {
+                auto setInputStatus = socketNode->SetInput(socketInputElement, inputNode, context);
+                if (setInputStatus != RPR_SUCCESS) {
+                    status = setInputStatus;
+                }
+            }
+        );
+        return status;
     }
 
     LOG_ERROR(context, "failed to set %s input for %s: no such interface socket\n", inputElement->getName().c_str(), mtlxGraph->getName().c_str());
@@ -1270,9 +1267,17 @@ rpr_status MtlxNodeGraphNode::SetInput(mx::Element* inputElement, rpr_material_n
 }
 
 rpr_status MtlxNodeGraphNode::SetInput(mx::Element* inputElement, std::string const& value, std::string const& valueType, LoaderContext* context) {
-    auto socket = GetInterfaceSocket(inputElement);
-    if (socket.node && socket.inputElement) {
-        return socket.node->SetInput(socket.inputElement, value, valueType, context);
+    if (auto sockets = _GetInterfaceSockets(inputElement)) {
+        rpr_status status = RPR_SUCCESS;
+        sockets.ForEach(context,
+            [&](Node* socketNode, mx::Element* socketInputElement) {
+                auto setInputStatus = socketNode->SetInput(socketInputElement, value, valueType, context);
+                if (setInputStatus != RPR_SUCCESS) {
+                    status = setInputStatus;
+                }
+            }
+        );
+        return status;
     }
 
     LOG_ERROR(context, "failed to set %s input for %s: no such interface socket\n", inputElement->getName().c_str(), mtlxGraph->getName().c_str());
@@ -1447,14 +1452,7 @@ bool IsRenderableType(std::string const& mtlxTypeString) {
     return mtlxType != RPRMtlxLoader::kOutputNone;
 }
 
-mx::OutputPtr CreateOutput(mx::ElementPtr parent, std::string const& name, std::string const& type) {
-    auto output = std::make_shared<mx::Output>(std::move(parent), "out");
-    output->setNodeName(name);
-    output->setType(type);
-    return output;
-}
-
-// F must be a function with bool(mx::OutputPtr const&, mx::Element const& refElement) signature.
+// F must be a function with bool(mx::OutputPtr const&, mx::ShaderRefPtr const& shaderRef) signature.
 // Returned boolean controls whether ForEachOutput should continue traversing
 template <typename F>
 void ForEachOutput(mx::ElementPtr const& element, F&& func) {
@@ -1487,13 +1485,22 @@ void ForEachOutput(mx::ElementPtr const& element, F&& func) {
     } else if (auto output = element->asA<mx::Output>()) {
         func(output, nullptr);
     } else if (auto node = element->asA<mx::Node>()) {
+        auto processShaderNode = [&func](mx::NodePtr const& shaderNode) {
+            auto referenceOutput = std::make_shared<mx::Output>(shaderNode->getParent(), "out");
+            referenceOutput->setNodeName(shaderNode->getName());
+            referenceOutput->setType(shaderNode->getType());
+            return func(referenceOutput, nullptr);
+        };
+
         auto& nodeType = node->getType();
         if (nodeType == "material") {
             for (auto& shaderType : {"surfaceshader", "displacementshader"}) {
                 if (auto shader = node->getInput(shaderType)) {
-                    if (auto shaderNodeElement = element->getParent()->getChild(shader->getNodeName())) {
+                    if (mx::ElementPtr shaderNodeElement = element->getParent()->getChild(shader->getNodeName())) {
                         if (auto shaderNode = shaderNodeElement->asA<mx::Node>()) {
-                            ForEachOutput(shaderNode, func);
+                            if (!processShaderNode(shaderNode)) {
+                                return;
+                            }
                         }
                     }
                 }
@@ -1501,30 +1508,8 @@ void ForEachOutput(mx::ElementPtr const& element, F&& func) {
         } else if (
             nodeType == "surfaceshader" ||
             nodeType == "displacementshader") {
-            if (auto nodeDef = node->getNodeDef()) {
-                if (IsSupportedTarget(nodeDef->getTarget())) {
-                    if (auto impl = nodeDef->getImplementation()) {
-                        if (auto nodeGraph = impl->asA<mx::NodeGraph>()) {
-                            for (auto& child : nodeGraph->getChildren()) {
-                                if (auto output = child->asA<mx::Output>()) {
-                                    auto virtualOutput = CreateOutput(node->getParent(), node->getName(), nodeType);
-                                    if (!func(virtualOutput, node)) {
-                                        return;
-                                    }
-
-                                    break;
-                                }
-                            }
-                        }
-                    } else if (nodeDef->getName() == "ND_displacement_float") {
-                        if (auto output = GetFirst<mx::Output>(nodeDef.get())) {
-                            auto virtualOutput = CreateOutput(node->getParent(), node->getName(), nodeType);
-                            if (!func(virtualOutput, node)) {
-                                return;
-                            }
-                        }
-                    }
-                }
+            if (!processShaderNode(node)) {
+                return;
             }
         }
     }
@@ -1533,7 +1518,7 @@ void ForEachOutput(mx::ElementPtr const& element, F&& func) {
 bool IsMaterialHasRenderableOutputs(mx::MaterialPtr const& material) {
     bool hasRenderableOutput = false;
     ForEachOutput(material,
-        [&hasRenderableOutput](mx::OutputPtr const& output, mx::ElementPtr const&) {
+        [&hasRenderableOutput](mx::OutputPtr const& output, mx::ShaderRefPtr const&) {
         if (IsRenderableType(output->getType())) {
             hasRenderableOutput = true;
         }
@@ -1647,17 +1632,17 @@ void TraverseNode(Node* node, F&& cb) {
 
 struct GraphNodesKey {
     mx::GraphElement const* nodeGraph;
-    mx::Element const* refElement;
+    mx::ShaderRef const* shaderRef;
 
     struct Hash {
         size_t operator()(GraphNodesKey const& key) const {
-            return GetHash(key.nodeGraph) ^ GetHash(key.refElement);
+            return GetHash(key.nodeGraph) ^ GetHash(key.shaderRef);
         }
     };
 
     bool operator==(GraphNodesKey const& rhs) const {
         return nodeGraph == rhs.nodeGraph &&
-               refElement == rhs.refElement;
+               shaderRef == rhs.shaderRef;
     }
 };
 struct GraphNodesValue {
@@ -1677,11 +1662,16 @@ void TraverseGraphNodes(GraphNodes const& graphNodes, LoaderContext* ctx, F&& cb
             TraverseNode(entry.second.wrapNode.get(), cb);
         }
     }
-    if (ctx->globalNodeGraphNode) {
-        TraverseNode(ctx->globalNodeGraphNode.get(), cb);
+    if (ctx->globalNodeGraph) {
+        TraverseNode(ctx->globalNodeGraph.get(), cb);
     }
     for (auto& entry : ctx->geomNodes) {
         TraverseNode(entry.second.get(), cb);
+    }
+    for (auto& entry : ctx->freeStandingNodeGraphs) {
+        if (entry.second) {
+            TraverseNode(entry.second.get(), cb);
+        }
     }
 }
 
@@ -1708,7 +1698,7 @@ RPRMtlxLoader::RenderableElements RPRMtlxLoader::GetRenderableElements(mx::Docum
             processedElements.insert(mtlxElement.get());
 
             bool elementOutputTypes[kOutputsTotal] = {};
-            ForEachOutput(mtlxElement, [&elementOutputTypes](mx::OutputPtr const& output, mx::ElementPtr const&) {
+            ForEachOutput(mtlxElement, [&elementOutputTypes](mx::OutputPtr const& output, mx::ShaderRefPtr const&) {
                 auto outputType = ToOutputType(output->getType());
                 if (outputType != kOutputNone) {
                     elementOutputTypes[outputType] = true;
@@ -1752,8 +1742,8 @@ RPRMtlxLoader::Result RPRMtlxLoader::Load(
                 return;
             }
 
-            ForEachOutput(element, [this, outputType](mx::OutputPtr const& output, mx::ElementPtr const& refElement) {
-                _Add(outputType, output, refElement);
+            ForEachOutput(element, [this, outputType](mx::OutputPtr const& output, mx::ShaderRefPtr const& shaderRef) {
+                _Add(outputType, output, shaderRef);
 
                 // Keep iterating until we find renderable element
                 return !Exists(outputType);
@@ -1782,12 +1772,12 @@ RPRMtlxLoader::Result RPRMtlxLoader::Load(
 
         struct Element {
             mx::OutputPtr output;
-            mx::ElementPtr refElement;
+            mx::ShaderRefPtr shaderRef;
         };
         Element const& Get(RPRMtlxLoader::OutputType type) const { return _elements[type]; }
 
     private:
-        void _Add(RPRMtlxLoader::OutputType outputType, mx::OutputPtr const& output, mx::ElementPtr const& refElement) {
+        void _Add(RPRMtlxLoader::OutputType outputType, mx::OutputPtr const& output, mx::ShaderRefPtr const& shaderRef) {
             // Validate output type
             //
             auto actualOutputType = ToOutputType(output->getType());
@@ -1801,9 +1791,9 @@ RPRMtlxLoader::Result RPRMtlxLoader::Load(
                     return;
                 }
 
-                uint8_t outputTypeBit = 1u << outputType;
+                uint8_t outputTypeBit = 1u << actualOutputType;
                 if ((_activeElementsBits & outputTypeBit) == 0) {
-                    _elements[outputType] = {output, refElement};
+                    _elements[actualOutputType] = {output, shaderRef};
                     _activeElementsBits |= outputTypeBit;
                 }
             }
@@ -1867,15 +1857,11 @@ RPRMtlxLoader::Result RPRMtlxLoader::Load(
         }
 
         mx::ConstGraphElementPtr nodeGraph;
-        if (element.refElement) {
-            if (auto shaderRef = element.refElement->asA<mx::ShaderRef>()) {
-                if (auto nodeDef = shaderRef->getNodeDef()) {
-                    if (auto impl = nodeDef->getImplementation()) {
-                        nodeGraph = impl->asA<mx::NodeGraph>();
-                    }
+        if (element.shaderRef) {
+            if (auto nodeDef = element.shaderRef->getNodeDef()) {
+                if (auto impl = nodeDef->getImplementation()) {
+                    nodeGraph = impl->asA<mx::NodeGraph>();
                 }
-            } else if (auto node = element.refElement->asA<mx::Node>()) {
-                nodeGraph = node->getParent()->asA<mx::GraphElement>();
             }
         } else {
             nodeGraph = element.output->getParent()->asA<mx::GraphElement>();
@@ -1884,7 +1870,7 @@ RPRMtlxLoader::Result RPRMtlxLoader::Load(
             continue;
         }
 
-        GraphNodesKey graphNodesKey{nodeGraph.get(), element.refElement.get()};
+        GraphNodesKey graphNodesKey{nodeGraph.get(), element.shaderRef.get()};
         graphNodes[graphNodesKey].outputTypes.push_back(outputType);
     }
 
@@ -1901,18 +1887,27 @@ RPRMtlxLoader::Result RPRMtlxLoader::Load(
         try {
             auto nodeGraph = entry.first.nodeGraph->getSelf()->asA<mx::GraphElement>();
 
-            // Elements that may override interface inputs of the nodeGraph.
-            //
-            std::vector<mx::Element const*> referenceElements;
-            if (entry.first.refElement) {
-                referenceElements.push_back(entry.first.refElement);
-                if (auto nodeDef = GetNodeDef(entry.first.refElement)) {
-                    referenceElements.push_back(nodeDef.get());
-                }
-            }
-            auto overRef = ctx.OverrideRef(std::move(referenceElements));
-
             entry.second.node = std::make_unique<MtlxNodeGraphNode>(nodeGraph, requiredOutputs, &ctx);
+
+            if (entry.first.shaderRef) {
+                ForEachChildrenOfType<mx::BindInput>(entry.first.shaderRef,
+                    []() { return false; },
+                    [&ctx, node=entry.second.node.get()](mx::BindInputPtr const& bindInput) {
+                        if (ctx.ConnectToGlobalOutput(bindInput.get(), node)) {
+                            return;
+                        }
+
+                        auto& valueStr = bindInput->getValueString();
+                        if (!valueStr.empty()) {
+                            auto& type = bindInput->getType();
+
+                            ctx.Log("Bindinput %s: %s (%s)\n", bindInput->getName().c_str(), valueStr.c_str(), type.c_str());
+
+                            node->SetInput(bindInput.get(), valueStr, type, &ctx);
+                        }
+                    }
+                );
+            }
         } catch (MtlxNodeGraphNode::NoOutputsError&) {
             continue;
         }
@@ -1949,7 +1944,7 @@ RPRMtlxLoader::Result RPRMtlxLoader::Load(
                     }
                 }
 
-                if (rprOutput) {
+                if (rprOutput && rprOutput->rprNode) {
                     auto outputType = entry.second.outputTypes[i];
                     rprOutputs[outputType] = rprOutput;
                     hasAnyOutput = true;

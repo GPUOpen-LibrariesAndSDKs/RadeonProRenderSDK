@@ -77,9 +77,9 @@ typedef rpr_uint rpr_environment_override;
 
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 1 
-#define RPR_VERSION_REVISION 7 
-#define RPR_VERSION_BUILD 0xe80516f7 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200107 
+#define RPR_VERSION_REVISION 8 
+#define RPR_VERSION_BUILD 0x3f5410b0 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200108 
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
 #define RPR_API_VERSION_MINOR RPR_VERSION_BUILD 
 #define RPR_OBJECT_NAME 0x777777 
@@ -373,6 +373,7 @@ typedef enum // rpr_image_info
 	RPR_IMAGE_GAMMA_FROM_FILE = 0x30A ,
 	RPR_IMAGE_UDIM = 0x30B ,
 	RPR_IMAGE_OCIO_COLORSPACE = 0x30C ,
+	RPR_IMAGE_INTERNAL_COMPRESSION = 0x30D ,
 	RPR_IMAGE_NAME = RPR_OBJECT_NAME,
 	RPR_IMAGE_UNIQUE_ID = RPR_OBJECT_UNIQUE_ID,
 	RPR_IMAGE_CUSTOM_PTR = RPR_OBJECT_CUSTOM_PTR,
@@ -987,6 +988,13 @@ typedef enum // rpr_aov
 	RPR_AOV_LPE_6 = 0x26 ,
 	RPR_AOV_LPE_7 = 0x27 ,
 	RPR_AOV_LPE_8 = 0x28 ,
+	RPR_AOV_CAMERA_NORMAL = 0x29 ,
+	RPR_AOV_CRYPTOMATTE_MAT0 = 0x30,
+	RPR_AOV_CRYPTOMATTE_MAT1 = 0x31,
+	RPR_AOV_CRYPTOMATTE_MAT2 = 0x32,
+	RPR_AOV_CRYPTOMATTE_OBJ0 = 0x38,
+	RPR_AOV_CRYPTOMATTE_OBJ1 = 0x39,
+	RPR_AOV_CRYPTOMATTE_OBJ2 = 0x3a,
 } rpr_aov ;
 
 typedef enum // rpr_post_effect_type
@@ -1838,6 +1846,17 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
     *  @return             RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprImageSetWrap(rpr_image image, rpr_image_wrap_type type);
+
+
+    /** @brief
+    * 
+    * ( Northstar-only feature )
+    * By default, images are compressed by the Northstar renderer.
+    * Setting 'compressionEnabled'=0 will disable the compression for the images.
+    * For better performance, it's advised to only disable it for textures that need it.
+    *
+    */
+  extern RPR_API_ENTRY rpr_status rprImageSetInternalCompression(rpr_image image, rpr_uint compressionEnabled);
 
 
     /** @brief Set the OCIO Color Space

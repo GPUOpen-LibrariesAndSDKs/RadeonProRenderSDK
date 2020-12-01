@@ -100,7 +100,7 @@ public:
             delete[] result->imageNodes;
         }
 
-        std::memset(result, 0, sizeof(*result));
+        *result = Result{};
     }
 
 private:

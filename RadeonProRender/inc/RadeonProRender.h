@@ -39,9 +39,9 @@ extern "C" {
 
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 1 
-#define RPR_VERSION_REVISION 7 
-#define RPR_VERSION_BUILD 0xe80516f7 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200107 
+#define RPR_VERSION_REVISION 8 
+#define RPR_VERSION_BUILD 0x3f5410b0 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200108 
 
 // Deprecated version naming - will be removed in the future :
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
@@ -312,6 +312,7 @@ extern "C" {
 #define RPR_IMAGE_GAMMA_FROM_FILE 0x30A 
 #define RPR_IMAGE_UDIM 0x30B 
 #define RPR_IMAGE_OCIO_COLORSPACE 0x30C 
+#define RPR_IMAGE_INTERNAL_COMPRESSION 0x30D 
 #define RPR_IMAGE_NAME RPR_OBJECT_NAME
 #define RPR_IMAGE_UNIQUE_ID RPR_OBJECT_UNIQUE_ID
 #define RPR_IMAGE_CUSTOM_PTR RPR_OBJECT_CUSTOM_PTR
@@ -860,6 +861,13 @@ extern "C" {
 #define RPR_AOV_LPE_6 0x26 
 #define RPR_AOV_LPE_7 0x27 
 #define RPR_AOV_LPE_8 0x28 
+#define RPR_AOV_CAMERA_NORMAL 0x29 
+#define RPR_AOV_CRYPTOMATTE_MAT0 0x30
+#define RPR_AOV_CRYPTOMATTE_MAT1 0x31
+#define RPR_AOV_CRYPTOMATTE_MAT2 0x32
+#define RPR_AOV_CRYPTOMATTE_OBJ0 0x38
+#define RPR_AOV_CRYPTOMATTE_OBJ1 0x39
+#define RPR_AOV_CRYPTOMATTE_OBJ2 0x3a
 /*rpr_post_effect_type*/
 #define RPR_POST_EFFECT_TONE_MAP 0x0 
 #define RPR_POST_EFFECT_WHITE_BALANCE 0x1 
@@ -1773,6 +1781,17 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
     *  @return             RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprImageSetWrap(rpr_image image, rpr_image_wrap_type type);
+
+
+    /** @brief
+    * 
+    * ( Northstar-only feature )
+    * By default, images are compressed by the Northstar renderer.
+    * Setting 'compressionEnabled'=0 will disable the compression for the images.
+    * For better performance, it's advised to only disable it for textures that need it.
+    *
+    */
+  extern RPR_API_ENTRY rpr_status rprImageSetInternalCompression(rpr_image image, rpr_uint compressionEnabled);
 
 
     /** @brief Set the OCIO Color Space

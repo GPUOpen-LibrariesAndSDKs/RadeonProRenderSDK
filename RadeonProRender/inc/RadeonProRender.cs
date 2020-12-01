@@ -374,6 +374,7 @@ MIP_COUNT = 0x309 ,
 GAMMA_FROM_FILE = 0x30A ,
 UDIM = 0x30B ,
 OCIO_COLORSPACE = 0x30C ,
+INTERNAL_COMPRESSION = 0x30D ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -988,6 +989,13 @@ LPE_5 = 0x25 ,
 LPE_6 = 0x26 ,
 LPE_7 = 0x27 ,
 LPE_8 = 0x28 ,
+CAMERA_NORMAL = 0x29 ,
+CRYPTOMATTE_MAT0 = 0x30,
+CRYPTOMATTE_MAT1 = 0x31,
+CRYPTOMATTE_MAT2 = 0x32,
+CRYPTOMATTE_OBJ0 = 0x38,
+CRYPTOMATTE_OBJ1 = 0x39,
+CRYPTOMATTE_OBJ2 = 0x3a,
 }
 /*rpr_post_effect_type*/
 public enum PostEffectType : int
@@ -1150,9 +1158,9 @@ VISIBILITY_LIGHT = 0x421 ,
 }
 public const int RPR_VERSION_MAJOR = 2 ;
 public const int RPR_VERSION_MINOR = 1 ;
-public const int RPR_VERSION_REVISION = 7 ;
-public const int RPR_VERSION_BUILD = 0xe80516f7 ;
-public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200107 ;
+public const int RPR_VERSION_REVISION = 8 ;
+public const int RPR_VERSION_BUILD = 0x3f5410b0 ;
+public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200108 ;
 // Deprecated version naming - will be removed in the future :
 
 public const int RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -2064,6 +2072,21 @@ return rprImageGetInfo(image, image_info, size, data, out size_ret);
 public static Status ImageSetWrap(IntPtr image, ImageWrapType type)
 {
 return rprImageSetWrap(image, type);
+}
+
+    /** @brief
+    * 
+    * ( Northstar-only feature )
+    * By default, images are compressed by the Northstar renderer.
+    * Setting 'compressionEnabled'=0 will disable the compression for the images.
+    * For better performance, it's advised to only disable it for textures that need it.
+    *
+    */
+  
+[DllImport(dllName)] static extern Status rprImageSetInternalCompression(IntPtr image, uint compressionEnabled);
+public static Status ImageSetInternalCompression(IntPtr image, uint compressionEnabled)
+{
+return rprImageSetInternalCompression(image, compressionEnabled);
 }
 
     /** @brief Set the OCIO Color Space

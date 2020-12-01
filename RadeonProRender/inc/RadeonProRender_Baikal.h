@@ -20,6 +20,21 @@ extern "C" {
 #define RPR_UBER_MATERIAL_LAYER_REFRACTION      (1<<5)
 #define RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL  (1<<6)
 
+
+/*rpr_material_node_arithmetic_operation*/
+#define RPR_MATERIAL_NODE_OP_CEIL 0x102a
+#define RPR_MATERIAL_NODE_OP_ROUND 0x102b
+#define RPR_MATERIAL_NODE_OP_SIGN 0x102c
+#define RPR_MATERIAL_NODE_OP_SQRT 0x102f
+#define RPR_MATERIAL_NODE_OP_LOG2 0x1030
+#define RPR_MATERIAL_NODE_OP_LOG10 0x1031
+#define RPR_MATERIAL_NODE_OP_TRUNCATE 0x1032
+#define RPR_MATERIAL_NODE_OP_SHUFFLE 0x1033
+#define RPR_MATERIAL_NODE_OP_SHUFFLE2 0x1034
+#define RPR_MATERIAL_NODE_OP_CLAMP 0x1035
+#define RPR_MATERIAL_NODE_OP_SATURATE 0x1036
+#define RPR_MATERIAL_NODE_OP_IF 0x1037
+
 /*rpr_material_node_arithmetic_operation*/
 #define RPR_MATERIAL_NODE_OP_SAMPLER 0x1000
 #define RPR_MATERIAL_NODE_OP_SAMPLER_BUMPMAP 0x1001
@@ -92,6 +107,7 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_ENABLE_RAYTRACE_REFLECTION 0x102A // turn on ray-trace reflection in custom quality
 #define RPR_CONTEXT_ENABLE_RAYTRACE_REFRACTION 0x102B // turn on ray-trace refraction in custom quality
 #define RPR_CONTEXT_GLOBAL_ILLUMINATION_MODE 0x102C // change global illumination mode in custom quality
+#define RPR_CONTEXT_PT_DENOISE_ENABLED 0x102D // enable/disable integrated denoiser for PT
 
 /* Traversal modes */
 #define RPR_HYBRID_TRAVERSAL_STATIC_TLAS_SEPARATE 0x1 ///< Use a separate acceleration structure for static objects
@@ -128,7 +144,8 @@ struct RPRHybridKernelsPathInfo
 
 // rprMeshGetInfo extension
 #define RPR_MESH_IS_DYNAMIC_MESH 0x519
-#define RPR_MESH_AABB 0x520
+#define RPR_MESH_LOCAL_AABB 0x520
+#define RPR_MESH_WORLD_AABB 0x521
 
 /**
  * Sets directional light shadow splits count for for rasterization renderer.
@@ -174,6 +191,44 @@ typedef rpr_int (*rprContextFlushFrameBuffers_func)(rpr_context in_context);
  */
 typedef rpr_int(*rprShapeSetLightmapChartIndex_func)(rpr_shape shape, rpr_int chart_index);
 #define RPR_SHAPE_SET_LIGHTMAP_CHART_INDEX_FUNC_NAME "rprShapeSetLightmapChartIndex"
+
+/**
+ * Create a editable triangle mesh.
+ *
+ * Mesh becomes editable if the set of indices for all vertex components are similar. With editable
+ * meshes rprMeshUpdate can be used to update the mesh content. You may still need to use rprContextCreateMesh
+ * and modifications, since this function does not support non-triangle meshes.
+ *
+ * @param  num_vertices         Number of vertices provided.
+ * @param  max_vertices         Maximum number of vertices mesh may contain.
+ * @param  positions            Pointer to position data (each position is described with 3 rpr_float numbers).
+ * @param  positions_stride     Number of bytes between the beginnings of two successive position entries.
+ * @param  normals              Pointer to normal data (each normal is described with 3 rpr_float numbers), can be NULL.
+ * @param  normals_stride       Number of bytes between the beginnings of two successive normal entries.
+ * @param  uvs0                 Pointer to first UV set data (each texcoord is described with 2 rpr_float numbers), can be NULL.
+ * @param  uv0s_stride          Number of bytes between the beginnings of two successive texcoord entries in the first UV set array.
+ * @param  uvs1                 Pointer to second UV set data (each texcoord is described with 2 rpr_float numbers), can be NULL.
+ * @param  uv1s_stride          Number of bytes between the beginnings of two successive texcoord entries in the second UV set array.
+ * @param  attribute_count      Number of attributes pre vertex.
+ * @param  attribute_components Number of components of each vertex attribute (type of every component is rpr_float).
+ * @param  vertex_attributes    Pointer to array of vertex attributes data (each attribute described with coresponding number of rpr_float values).
+ * @param  attribute_strides    Pointer to array of numbers of bytes between the beginnings of two successive vertex attributes entries.
+ * @param  num_indices          Number of indices provided.
+ * @param  max_indices          Maximum number of indices mesh may contain.
+ * @param  indices              Pointer to index data (each index is described with rpr_int number).
+ * @param  mesh_properties      Properties of the mesh.
+ * @param  out_mesh             Pointer to mesh object.
+ * @return                      RPR_SUCCESS in case of success, error code otherwise
+ */
+typedef rpr_status (*rprContextCreateMeshEditable_func)(rpr_context context,
+    size_t num_vertices, size_t max_vertices,
+    rpr_float const* positions, rpr_int positions_stride, rpr_float const* normals, rpr_int normals_stride,
+    rpr_float const* uvs0, rpr_int uv0s_stride, rpr_float const* uvs1, rpr_int uv1s_stride,
+    rpr_int attribute_count, rpr_int const* attribute_components, rpr_float const** vertex_attributes, rpr_int const* attribute_strides,
+    size_t num_indices, size_t max_indices, rpr_int const* indices,
+    rpr_mesh_info const* mesh_properties,
+    rpr_shape* out_mesh);
+#define RPR_CONTEXT_CREATE_MESH_EDITABLE_FUNC_NAME "rprContextCreateMeshEditable"
 
 struct DataChange
 {
