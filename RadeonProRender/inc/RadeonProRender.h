@@ -40,7 +40,7 @@ extern "C" {
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 1 
 #define RPR_VERSION_REVISION 8 
-#define RPR_VERSION_BUILD 0x3f5410b0 
+#define RPR_VERSION_BUILD 0xe4e458ab 
 #define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200108 
 
 // Deprecated version naming - will be removed in the future :
@@ -266,6 +266,9 @@ extern "C" {
 #define RPR_CONTEXT_CPUINTEGRATOR 0x17C 
 #define RPR_CONTEXT_BEAUTY_MOTION_BLUR 0x17D 
 #define RPR_CONTEXT_CAUSTICS_REDUCTION 0x17E 
+#define RPR_CONTEXT_DEEP_SUBPIXEL_MERGE_Z_THRESHOLD 0x180 
+#define RPR_CONTEXT_DEEP_GPU_ALLOCATION_LEVEL 0x181 
+#define RPR_CONTEXT_DEEP_COLOR_ENABLED 0x182 
 #define RPR_CONTEXT_NAME RPR_OBJECT_NAME
 #define RPR_CONTEXT_UNIQUE_ID RPR_OBJECT_UNIQUE_ID
 #define RPR_CONTEXT_CUSTOM_PTR RPR_OBJECT_CUSTOM_PTR
@@ -428,6 +431,7 @@ extern "C" {
     
 #define RPR_SPOT_LIGHT_RADIANT_POWER 0x80B 
 #define RPR_SPOT_LIGHT_CONE_SHAPE 0x80C 
+#define RPR_SPOT_LIGHT_IMAGE 0x80D 
 
     
 #define RPR_ENVIRONMENT_LIGHT_IMAGE 0x80F 
@@ -486,7 +490,8 @@ extern "C" {
 #define RPR_COMPONENT_TYPE_UINT8 0x1 
 #define RPR_COMPONENT_TYPE_FLOAT16 0x2
 #define RPR_COMPONENT_TYPE_FLOAT32 0x3
-#define RPR_COMPONENT_TYPE_UNKNOWN 0x4
+#define RPR_COMPONENT_TYPE_DEEP 0x4
+#define RPR_COMPONENT_TYPE_UNKNOWN 0x5
 /*rpr_buffer_element_type*/
 #define RPR_BUFFER_ELEMENT_TYPE_INT32 0x1 
 #define RPR_BUFFER_ELEMENT_TYPE_FLOAT32 0x2 
@@ -868,6 +873,7 @@ extern "C" {
 #define RPR_AOV_CRYPTOMATTE_OBJ0 0x38
 #define RPR_AOV_CRYPTOMATTE_OBJ1 0x39
 #define RPR_AOV_CRYPTOMATTE_OBJ2 0x3a
+#define RPR_AOV_DEEP_COLOR 0x3b
 /*rpr_post_effect_type*/
 #define RPR_POST_EFFECT_TONE_MAP 0x0 
 #define RPR_POST_EFFECT_WHITE_BALANCE 0x1 
@@ -1264,6 +1270,20 @@ typedef _rpr_ies_image_desc rpr_ies_image_desc;
     *  @return                 RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprContextSetAOVindexLookup(rpr_context context, rpr_int key, rpr_float colorR, rpr_float colorG, rpr_float colorB, rpr_float colorA);
+
+
+    /** @brief call a batch of rprContextSetAOVindexLookup
+    *
+    * example:
+    * rprContextSetAOVindicesLookup(ctx, 2, 3, table);
+    * is equivalent to call :
+    * rprContextSetAOVindexLookup(ctx, 2, table[0], table[1], table[2],  table[3]);
+    * rprContextSetAOVindexLookup(ctx, 3, table[4], table[5], table[6],  table[7]);
+    * rprContextSetAOVindexLookup(ctx, 4, table[8], table[9], table[10], table[11]);
+    * 
+    * Depending on the plugin, rprContextSetAOVindicesLookup could be faster than calling several rprContextSetAOVindexLookup.
+    */
+  extern RPR_API_ENTRY rpr_status rprContextSetAOVindicesLookup(rpr_context context, rpr_int keyOffset, rpr_int keyCount, rpr_float const * colorRGBA);
 
 
     /** @brief Set the scene
@@ -2317,6 +2337,13 @@ extern RPR_API_ENTRY rpr_status rprContextCreateDiskLight(rpr_context context, r
     *  @return   RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprSpotLightSetRadiantPower3f(rpr_light light, rpr_float r, rpr_float g, rpr_float b);
+
+
+    /** @brief turn this spot-light into a textured light.
+    *
+    * 'img' can be NULL to disable textured.
+    */
+  extern RPR_API_ENTRY rpr_status rprSpotLightSetImage(rpr_light light, rpr_image img);
 extern RPR_API_ENTRY rpr_status rprSphereLightSetRadiantPower3f(rpr_light light, rpr_float r, rpr_float g, rpr_float b);
 extern RPR_API_ENTRY rpr_status rprSphereLightSetRadius(rpr_light light, rpr_float angle);
 extern RPR_API_ENTRY rpr_status rprDiskLightSetRadiantPower3f(rpr_light light, rpr_float r, rpr_float g, rpr_float b);
@@ -2433,18 +2460,18 @@ extern RPR_API_ENTRY rpr_status rprDiskLightSetAngle(rpr_light light, rpr_float 
       * Sets/Gets environment override on IBL
       *
       * This function sets overrides for different parts of IBL.
-      * override argument can take following values:
+      * overrideType argument can take following values:
       * @li RPR_ENVIRONMENT_LIGHT_OVERRIDE_REFLECTION
       * @li RPR_ENVIRONMENT_LIGHT_OVERRIDE_REFRACTION
       * @li RPR_ENVIRONMENT_LIGHT_OVERRIDE_TRANSPARENCY
       * @li RPR_ENVIRONMENT_LIGHT_OVERRIDE_BACKGROUND
       *
       * @param in_ibl image based light created with rprContextCreateEnvironmentLight
-      * @param override override parameter
+      * @param overrideType override parameter
       * @param in_iblOverride image based light created with rprContextCreateEnvironmentLight
       */
-  extern RPR_API_ENTRY rpr_status rprEnvironmentLightSetEnvironmentLightOverride(rpr_light in_ibl, rpr_environment_override override, rpr_light in_iblOverride);
-extern RPR_API_ENTRY rpr_status rprEnvironmentLightGetEnvironmentLightOverride(rpr_light in_ibl, rpr_environment_override override, rpr_light* out_iblOverride);
+  extern RPR_API_ENTRY rpr_status rprEnvironmentLightSetEnvironmentLightOverride(rpr_light in_ibl, rpr_environment_override overrideType, rpr_light in_iblOverride);
+extern RPR_API_ENTRY rpr_status rprEnvironmentLightGetEnvironmentLightOverride(rpr_light in_ibl, rpr_environment_override overrideType, rpr_light* out_iblOverride);
 
 /* rpr_light - sky */
     /** @brief Create sky light

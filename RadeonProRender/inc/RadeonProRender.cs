@@ -326,6 +326,9 @@ GPUINTEGRATOR = 0x17B ,
 CPUINTEGRATOR = 0x17C ,
 BEAUTY_MOTION_BLUR = 0x17D ,
 CAUSTICS_REDUCTION = 0x17E ,
+DEEP_SUBPIXEL_MERGE_Z_THRESHOLD = 0x180 ,
+DEEP_GPU_ALLOCATION_LEVEL = 0x181 ,
+DEEP_COLOR_ENABLED = 0x182 ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -505,6 +508,7 @@ DIRECTIONAL_LIGHT_SHADOW_SOFTNESS_ANGLE = 0x80A ,
 /* rpr_light_info - spot light */
 SPOT_LIGHT_RADIANT_POWER = 0x80B ,
 SPOT_LIGHT_CONE_SHAPE = 0x80C ,
+SPOT_LIGHT_IMAGE = 0x80D ,
 /* rpr_light_info - environment light */
 ENVIRONMENT_LIGHT_IMAGE = 0x80F ,
 ENVIRONMENT_LIGHT_INTENSITY_SCALE = 0x810 ,
@@ -560,7 +564,8 @@ public enum ComponentType : int
 UINT8 = 0x1 ,
 FLOAT16 = 0x2,
 FLOAT32 = 0x3,
-UNKNOWN = 0x4,
+DEEP = 0x4,
+UNKNOWN = 0x5,
 }
 /*rpr_buffer_element_type*/
 public enum BufferElementType : int
@@ -996,6 +1001,7 @@ CRYPTOMATTE_MAT2 = 0x32,
 CRYPTOMATTE_OBJ0 = 0x38,
 CRYPTOMATTE_OBJ1 = 0x39,
 CRYPTOMATTE_OBJ2 = 0x3a,
+DEEP_COLOR = 0x3b,
 }
 /*rpr_post_effect_type*/
 public enum PostEffectType : int
@@ -1159,7 +1165,7 @@ VISIBILITY_LIGHT = 0x421 ,
 public const int RPR_VERSION_MAJOR = 2 ;
 public const int RPR_VERSION_MINOR = 1 ;
 public const int RPR_VERSION_REVISION = 8 ;
-public const int RPR_VERSION_BUILD = 0x3f5410b0 ;
+public const int RPR_VERSION_BUILD = 0xe4e458ab ;
 public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200108 ;
 // Deprecated version naming - will be removed in the future :
 
@@ -1345,6 +1351,24 @@ return rprFrameBufferSetLPE(frame_buffer, lpe);
 public static Status ContextSetAOVindexLookup(IntPtr context, int key, float colorR, float colorG, float colorB, float colorA)
 {
 return rprContextSetAOVindexLookup(context, key, colorR, colorG, colorB, colorA);
+}
+
+    /** @brief call a batch of rprContextSetAOVindexLookup
+    *
+    * example:
+    * rprContextSetAOVindicesLookup(ctx, 2, 3, table);
+    * is equivalent to call :
+    * rprContextSetAOVindexLookup(ctx, 2, table[0], table[1], table[2],  table[3]);
+    * rprContextSetAOVindexLookup(ctx, 3, table[4], table[5], table[6],  table[7]);
+    * rprContextSetAOVindexLookup(ctx, 4, table[8], table[9], table[10], table[11]);
+    * 
+    * Depending on the plugin, rprContextSetAOVindicesLookup could be faster than calling several rprContextSetAOVindexLookup.
+    */
+  
+[DllImport(dllName)] static extern Status rprContextSetAOVindicesLookup(IntPtr context, int keyOffset, int keyCount, IntPtr colorRGBA);
+public static Status ContextSetAOVindicesLookup(IntPtr context, int keyOffset, int keyCount, IntPtr colorRGBA)
+{
+return rprContextSetAOVindicesLookup(context, keyOffset, keyCount, colorRGBA);
 }
 
     /** @brief Set the scene
@@ -2817,6 +2841,17 @@ public static Status SpotLightSetRadiantPower3f(IntPtr light, float r, float g, 
 {
 return rprSpotLightSetRadiantPower3f(light, r, g, b);
 }
+
+    /** @brief turn this spot-light into a textured light.
+    *
+    * 'img' can be NULL to disable textured.
+    */
+  
+[DllImport(dllName)] static extern Status rprSpotLightSetImage(IntPtr light, IntPtr img);
+public static Status SpotLightSetImage(IntPtr light, IntPtr img)
+{
+return rprSpotLightSetImage(light, img);
+}
 [DllImport(dllName)] static extern Status rprSphereLightSetRadiantPower3f(IntPtr light, float r, float g, float b);
 public static Status SphereLightSetRadiantPower3f(IntPtr light, float r, float g, float b)
 {
@@ -2990,26 +3025,26 @@ return rprEnvironmentLightDetachPortal(scene, env_light, portal);
       * Sets/Gets environment override on IBL
       *
       * This function sets overrides for different parts of IBL.
-      * override argument can take following values:
+      * overrideType argument can take following values:
       * @li RPR_ENVIRONMENT_LIGHT_OVERRIDE_REFLECTION
       * @li RPR_ENVIRONMENT_LIGHT_OVERRIDE_REFRACTION
       * @li RPR_ENVIRONMENT_LIGHT_OVERRIDE_TRANSPARENCY
       * @li RPR_ENVIRONMENT_LIGHT_OVERRIDE_BACKGROUND
       *
       * @param in_ibl image based light created with rprContextCreateEnvironmentLight
-      * @param override override parameter
+      * @param overrideType override parameter
       * @param in_iblOverride image based light created with rprContextCreateEnvironmentLight
       */
   
-[DllImport(dllName)] static extern Status rprEnvironmentLightSetEnvironmentLightOverride(IntPtr in_ibl, uint override, IntPtr in_iblOverride);
-public static Status EnvironmentLightSetEnvironmentLightOverride(IntPtr in_ibl, uint override, IntPtr in_iblOverride)
+[DllImport(dllName)] static extern Status rprEnvironmentLightSetEnvironmentLightOverride(IntPtr in_ibl, uint overrideType, IntPtr in_iblOverride);
+public static Status EnvironmentLightSetEnvironmentLightOverride(IntPtr in_ibl, uint overrideType, IntPtr in_iblOverride)
 {
-return rprEnvironmentLightSetEnvironmentLightOverride(in_ibl, override, in_iblOverride);
+return rprEnvironmentLightSetEnvironmentLightOverride(in_ibl, overrideType, in_iblOverride);
 }
-[DllImport(dllName)] static extern Status rprEnvironmentLightGetEnvironmentLightOverride(IntPtr in_ibl, uint override, out IntPtr out_iblOverride);
-public static Status EnvironmentLightGetEnvironmentLightOverride(IntPtr in_ibl, uint override, out IntPtr out_iblOverride)
+[DllImport(dllName)] static extern Status rprEnvironmentLightGetEnvironmentLightOverride(IntPtr in_ibl, uint overrideType, out IntPtr out_iblOverride);
+public static Status EnvironmentLightGetEnvironmentLightOverride(IntPtr in_ibl, uint overrideType, out IntPtr out_iblOverride)
 {
-return rprEnvironmentLightGetEnvironmentLightOverride(in_ibl, override, out out_iblOverride);
+return rprEnvironmentLightGetEnvironmentLightOverride(in_ibl, overrideType, out out_iblOverride);
 }
 /* rpr_light - sky */
 
