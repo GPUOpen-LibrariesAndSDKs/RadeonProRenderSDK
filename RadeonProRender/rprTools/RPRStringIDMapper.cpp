@@ -292,6 +292,9 @@ RPRStringIDMapper::RPRStringIDMapper()
 	MACRO_LINK_STR_ID("cpuintegrator",RPR_CONTEXT_CPUINTEGRATOR);
 	MACRO_LINK_STR_ID("beautymotionblur",RPR_CONTEXT_BEAUTY_MOTION_BLUR);
 	MACRO_LINK_STR_ID("causticsreduction",RPR_CONTEXT_CAUSTICS_REDUCTION);
+	MACRO_LINK_STR_ID("deep.subpixelmergezthreshold", RPR_CONTEXT_DEEP_SUBPIXEL_MERGE_Z_THRESHOLD);
+	MACRO_LINK_STR_ID("deep.gpuallocationlevel", RPR_CONTEXT_DEEP_GPU_ALLOCATION_LEVEL);
+	MACRO_LINK_STR_ID("deep.colorenabled", RPR_CONTEXT_DEEP_COLOR_ENABLED);
 	#undef MACRO_LINK_STR_ID
 	#define MACRO_LINK_STR_ID(s,i)  m_RPRMaterialType_string_to_id[s]=i;  m_RPRMaterialType_id_to_string[i]=s  ;
 
