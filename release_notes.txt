@@ -3,6 +3,43 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.01.9 - 13 January 2021
+
+-- RESOLVED TICKETS for NORTHSTAR:
+RPRNEXT-360 - Area light casts shadow
+RPRNEXT-484 - Render mode "preview" produces square artifacts for future iterations in long term
+RPRNEXT-403 - Shape random is not consistent
+RPRNEXT-503 - Contour is not rendered when switching integrator to gpucontour after scene creation on NV card
+RPRNEXT-504 - Overflow texture offset on CPU
+RPRNEXT-505 - wrong memory reservation on compile
+RPRNEXT-500 - Crash on Maya IPR with LPE AOV
+RPRNEXT-510 - NSplit management fails on 8GB GPU with mercedes scenes
+RPRNEXT-512 - Add backdoor to disable texture compression for all textures
+RPRNEXT-520 - Texture is blurry (out of core logic issue)
+RPRNEXT-422 - RPR Material Library - wrong Brass Standard
+RPRNEXT-518 - Uncompressed textures are not exported as cache
+RPRNEXT-522 - Add integrator selection on config for unittest
+RPRNEXT-498 - Noise material node
+RPRNEXT-523 - BVH 32bit offset overflow
+RPRNEXT-530 - Adaptive sampling, Variance AOV
+RPRNEXT-526 - Add a context parameter to disable texture compression
+RPRNEXT-519 - Spiral artifacts with CPU + GPU
+RPRNEXT-529 - HWI kernel freeze on white house scene
+RPRNEXT-532 - opacity aov doesn't take max depth into account
+RPRNEXT-429 - Crash after setting displacement material
+RPRNEXT-511 - Fireflies on mercedes scenes
+RPRNEXT-536 - Cryptomatte doesn't work on macOS
+RPRNEXT-533 - Cryptomatte with Russian roulette
+RPRNEXT-540 - Buffer allocation during rendering
+RPRNEXT-543 - Variance AOV breaks other AOVs
+RPRNEXT-545 - Implement INPUT_P_LOCAL
+RPRNEXT-546 - world extent is wrong
+RPRNEXT-534 - Render layer implementation
+RPRNEXT-555 - Depth AOV artifacts 
+RPRNEXT-539 - Spot Lights softness not working correct with Core 2.1.9 beta
+
+
+################################################################################################################
 RPR SDK 2.01.8 - 01 December 2020
 
 -- RESOLVED TICKETS for NORTHSTAR:

@@ -15,7 +15,8 @@
 \*****************************************************************************/
 #include "RadeonProRender.h"
 #include "Math/mathutils.h"
-#include "RprLoadStore.h"//For Export
+#include "RprLoadStore.h" //For Export to RPRS ( native RPR file format )
+#include "ProRenderGLTF.h" //For Export to GLTF
 #include "../common/common.h"
 
 #include <cassert>
@@ -25,7 +26,7 @@
 int main()
 {
 	//	enable Radeon ProRender API trace
-	//	set this before any fr API calls
+	//	set this before any RPR API calls
 	//	frContextSetParameter1u(0,RPR_CONTEXT_TRACING_ENABLED,1);
 
 	std::cout << "Radeon ProRender SDK simple rendering tutorial.\n";
@@ -165,9 +166,11 @@ int main()
 	}
 
 
-	/////////Mesh Export//////////
+	///////// Mesh Export to RPRS ( native RPR file format ) //////////
 	CHECK(rprsxExport("cube_floor.rprs", context, nullptr, scene, 0, 0, 0, 0, 0, 0, 0));
 
+	///////// Mesh Export to GLTF //////////
+	CHECK(rprExportToGLTF("cube_floor.gltf", context, nullptr, &scene, 1, 0));
 
 	// Progressively render an image
 	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));

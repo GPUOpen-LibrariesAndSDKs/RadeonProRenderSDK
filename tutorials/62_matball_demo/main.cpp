@@ -26,7 +26,7 @@ const int nbIterations = 300;
 int main()
 {
 	//	enable Radeon ProRender API trace
-	//	set this before any fr API calls
+	//	set this before any RPR API calls
 	//	frContextSetParameter1u(0,RPR_CONTEXT_TRACING_ENABLED,1);
 
 	std::cout << "Radeon ProRender SDK matball scene rendering tutorial.\n";

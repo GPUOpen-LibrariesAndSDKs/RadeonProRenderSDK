@@ -43,6 +43,7 @@ solution "Tutorials"
 		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\Tahoe64.dll\" \".\\Bin\\\"")
 		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\Northstar64.dll\" \".\\Bin\\\"")
 		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\Hybrid.dll\" \".\\Bin\\\"")
+		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\ProRenderGLTF.dll\" \".\\Bin\\\"")
 	end
 
     configuration "Debug"

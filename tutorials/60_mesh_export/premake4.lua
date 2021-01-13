@@ -7,7 +7,7 @@ project "60_mesh_export"
     buildoptions "-std=c++11"
 
 	configuration {"x64"}
-	links {"RadeonProRender64", "RprLoadStore64"}
+	links {"RadeonProRender64", "RprLoadStore64", "ProRenderGLTF"}
 	
     configuration {"x64", "Debug"}
         targetdir "../Bin"
