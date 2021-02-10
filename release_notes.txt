@@ -3,6 +3,43 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.02.0 - 10 February 2021
+
+-- RESOLVED TICKETS for NORTHSTAR:
+RPRNEXT-583 - Fix firefly on a lamp scene
+RPRNEXT-581 - Fix access violation on UDIM texture
+RPRNEXT-579 - Firefly on LPE
+RPRNEXT-576 - Shading normal precision improvement
+RPRNEXT-569 - Improved vertex normal precision
+RPRNEXT-566 - Fix random noise in Microfacet Anisotropic
+RPRNEXT-565 - Fix wrong normal flipping in Fresnel node
+RPRNEXT-564 - Fix lost texture detail in tiled rendering
+RPRNEXT-563 - Improved adaptive sampling termination condition
+RPRNEXT-560 - Avoid multiple compilation due to AOV_BUF_SIZE
+RPRNEXT-558 - Disabled non physical BRDF blending
+RPRNEXT-556 - Remove buffer allocations  done during rendering
+RPRNEXT-554 - Edge darkening artifacts for backscatter
+RPRNEXT-545 - Implement RPR_MATERIAL_NODE_LOOKUP_P_LOCAL
+RPRNEXT-539 - Fix broken spot Lights softness with Core 2.1.9 beta
+RPRNEXT-482 - Fix crash when rendering big geometry (out of core)
+RPRNEXT-421 - Alleviate black-patch artifacts caused by shading normals for reflections
+RPRNEXT-418 - Improve NDF for a grazing halfvector
+RPRNEXT-542 - Implement deformation motion blur
+
+-- RPR API CHANGE:
+User-Texture has been improved in Northstar: We can now define the code for CPU rendering through a callback ( instead of GPU-only before this release ), and have any textures we want ( instead of 4 limit before this release )
+those 8 constants:
+RPR_MATERIAL_NODE_USER_TEXTURE_0, RPR_MATERIAL_NODE_USER_TEXTURE_1, RPR_MATERIAL_NODE_USER_TEXTURE_2, RPR_MATERIAL_NODE_USER_TEXTURE_3
+RPR_CONTEXT_USER_TEXTURE_0, RPR_CONTEXT_USER_TEXTURE_1, RPR_CONTEXT_USER_TEXTURE_2, RPR_CONTEXT_USER_TEXTURE_3 
+are now deprecated, and replaced by new API: rprContextSetUserTexture/rprContextGetUserTexture.
+There is a description in the header file on how to use this new API.
+
+For Northstar, rprShapeSetLayerMask is now deprecated. the bit-mask Render layer has been replaced by strings.
+new functions:
+rprShapeAttachRenderLayer/rprShapeDetachRenderLayer -> set a Render Layer  on a shape. The API user can choose any name he wants.
+rprContextAttachRenderLayer/rprContextDetachRenderLayer -> add/remove a Render Layer name to the final rendering.
+
+################################################################################################################
 RPR SDK 2.01.9 - 13 January 2021
 
 -- RESOLVED TICKETS for NORTHSTAR:

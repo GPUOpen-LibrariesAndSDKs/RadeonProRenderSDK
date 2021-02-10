@@ -35,6 +35,41 @@ extern "C" {
 #define RPR_MATERIAL_NODE_OP_SATURATE 0x1036
 #define RPR_MATERIAL_NODE_OP_IF 0x1037
 
+#define RPR_MATERIAL_NODE_OP_SELECT_0000 0x1038
+#define RPR_MATERIAL_NODE_OP_SELECT_0001 0x1039
+#define RPR_MATERIAL_NODE_OP_SELECT_0010 0x103a
+#define RPR_MATERIAL_NODE_OP_SELECT_0011 0x103b
+#define RPR_MATERIAL_NODE_OP_SELECT_0100 0x103c
+#define RPR_MATERIAL_NODE_OP_SELECT_0101 0x103d
+#define RPR_MATERIAL_NODE_OP_SELECT_0110 0x103e
+#define RPR_MATERIAL_NODE_OP_SELECT_0111 0x103f
+#define RPR_MATERIAL_NODE_OP_SELECT_1000 0x1040
+#define RPR_MATERIAL_NODE_OP_SELECT_1001 0x1041
+#define RPR_MATERIAL_NODE_OP_SELECT_1010 0x1042
+#define RPR_MATERIAL_NODE_OP_SELECT_1011 0x1043
+#define RPR_MATERIAL_NODE_OP_SELECT_1100 0x1044
+#define RPR_MATERIAL_NODE_OP_SELECT_1101 0x1045
+#define RPR_MATERIAL_NODE_OP_SELECT_1110 0x1046
+#define RPR_MATERIAL_NODE_OP_SELECT_1111 0x1047
+
+#define RPR_MATERIAL_NODE_OP_APPEND_0_0 0x1048
+#define RPR_MATERIAL_NODE_OP_APPEND_0_1 0x1049
+#define RPR_MATERIAL_NODE_OP_APPEND_0_2 0x104a
+#define RPR_MATERIAL_NODE_OP_APPEND_0_3 0x104b
+#define RPR_MATERIAL_NODE_OP_APPEND_0_4 0x104c
+#define RPR_MATERIAL_NODE_OP_APPEND_1_0 0x104d
+#define RPR_MATERIAL_NODE_OP_APPEND_1_1 0x104e
+#define RPR_MATERIAL_NODE_OP_APPEND_1_2 0x104f
+#define RPR_MATERIAL_NODE_OP_APPEND_1_3 0x1050
+#define RPR_MATERIAL_NODE_OP_APPEND_2_0 0x1051
+#define RPR_MATERIAL_NODE_OP_APPEND_2_1 0x1052
+#define RPR_MATERIAL_NODE_OP_APPEND_2_2 0x1053
+#define RPR_MATERIAL_NODE_OP_APPEND_3_0 0x1054
+#define RPR_MATERIAL_NODE_OP_APPEND_3_1 0x1055
+#define RPR_MATERIAL_NODE_OP_APPEND_4_0 0x1056
+
+#define RPR_MATERIAL_NODE_OP_FRACT 0x1057
+
 /*rpr_material_node_arithmetic_operation*/
 #define RPR_MATERIAL_NODE_OP_SAMPLER 0x1000
 #define RPR_MATERIAL_NODE_OP_SAMPLER_BUMPMAP 0x1001
@@ -108,7 +143,7 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_ENABLE_RAYTRACE_REFLECTION 0x102A // turn on ray-trace reflection in custom quality
 #define RPR_CONTEXT_ENABLE_RAYTRACE_REFRACTION 0x102B // turn on ray-trace refraction in custom quality
 #define RPR_CONTEXT_GLOBAL_ILLUMINATION_MODE 0x102C // change global illumination mode in custom quality
-#define RPR_CONTEXT_PT_DENOISE_ENABLED 0x102D // enable/disable integrated denoiser for PT
+#define RPR_CONTEXT_PT_DENOISER 0x102D // Sets denoiser type.
 
 /* Traversal modes */
 #define RPR_HYBRID_TRAVERSAL_STATIC_TLAS_SEPARATE 0x1 ///< Use a separate acceleration structure for static objects
@@ -147,6 +182,11 @@ struct RPRHybridKernelsPathInfo
 #define RPR_MESH_IS_DYNAMIC_MESH 0x519
 #define RPR_MESH_LOCAL_AABB 0x520
 #define RPR_MESH_WORLD_AABB 0x521
+
+/* Denoisers */
+#define RPR_DENOISER_NONE 0u
+#define RPR_DENOISER_SVGF 1u
+#define RPR_DENOISER_ASVGF 2u
 
 /**
  * Sets directional light shadow splits count for for rasterization renderer.
@@ -254,6 +294,46 @@ struct ShapeTransform
 
 typedef rpr_int (*rprShapeSetTransformBatch_func)(const ShapeTransform *transforms, size_t transform_count);
 #define RPR_SHAPE_SET_TRANSFORM_BATCH_FUNC_NAME "rprShapeSetTransformBatch"
+
+// Extends rpr_component_type
+typedef enum
+{
+    RPR_FORMAT_BC1_UNORM =      0x1000,
+    RPR_FORMAT_BC1_UNORM_SRGB = 0x1001,
+    RPR_FORMAT_BC2_UNORM  =     0x1002,
+    RPR_FORMAT_BC2_UNORM_SRGB = 0x1003,
+    RPR_FORMAT_BC3_UNORM =      0x1004,
+    RPR_FORMAT_BC3_UNORM_SRGB = 0x1005,
+    RPR_FORMAT_BC4_UNORM =      0x1006,
+    RPR_FORMAT_BC4_SNORM =      0x1007,
+    RPR_FORMAT_BC5_UNORM =      0x1008,
+    RPR_FORMAT_BC5_SNORM =      0x1009,
+    RPR_FORMAT_BC6H_SF16 =      0x1010,
+    RPR_FORMAT_BC6H_UF16 =      0x1011,
+    RPR_FORMAT_BC7_UNORM =      0x1012,
+    RPR_FORMAT_BC7_UNORM_SRGB = 0x1013,
+} rpr_compressed_format ;
+
+typedef struct //rpr_comressed_image_desc
+{
+    rpr_uint image_width;
+    rpr_uint image_height;
+    rpr_uint mip_count;
+} rpr_comressed_image_desc;
+
+/**
+ * Create compressed image from memory.
+ *
+ * This function exist, because rprContextCreateImage() doesn't know about compression, blocks, etc.
+ * It is unclear how to calculate block size inside rprContextCreateImage() without knowledge about concrete compressed format.
+ * 
+ * @param  format       Compressed format.
+ * @param  image_desc   Some image info.
+ * @param  mip_data     Array of pointers to each mip data (length is image_desc->mip_count).
+ * @param  data_size    Array of data size for each mip (length is image_desc->mip_count).
+ */
+typedef rpr_int(*rprContextCreateCompressedImage_func)(rpr_context context, rpr_compressed_format format, const rpr_comressed_image_desc* image_desc, const void** mip_data, const size_t* data_size, rpr_image* out_image);
+#define RPR_CONTEXT_CREATE_COMPRESSED_IMAGE "rprContextCreateCompressedImage"
 
 #ifdef __cplusplus
 }

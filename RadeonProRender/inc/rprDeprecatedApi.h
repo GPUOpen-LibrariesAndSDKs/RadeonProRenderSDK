@@ -245,6 +245,7 @@ extern RPR_API_ENTRY rpr_status rprDirectionalLightSetShadowSoftness(rpr_light l
 // name was changed for clarification
 #define RPR_AOV_MATERIAL_IDX RPR_AOV_MATERIAL_ID
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Old API FR functions

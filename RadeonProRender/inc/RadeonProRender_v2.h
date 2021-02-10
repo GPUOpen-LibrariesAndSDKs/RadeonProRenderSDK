@@ -76,16 +76,15 @@ typedef rpr_uint rpr_environment_override;
 
 
 #define RPR_VERSION_MAJOR 2 
-#define RPR_VERSION_MINOR 1 
-#define RPR_VERSION_REVISION 9 
-#define RPR_VERSION_BUILD 0x922a58ba 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200109 
+#define RPR_VERSION_MINOR 2 
+#define RPR_VERSION_REVISION 0 
+#define RPR_VERSION_BUILD 0x0efd91f0 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200200 
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
 #define RPR_API_VERSION_MINOR RPR_VERSION_BUILD 
 #define RPR_OBJECT_NAME 0x777777 
 #define RPR_OBJECT_UNIQUE_ID 0x777778 
 #define RPR_OBJECT_CUSTOM_PTR 0x777779 
-#define RPR_CONTEXT_MAX 0x170 
 #define RPR_INSTANCE_PARENT_SHAPE 0x1601 
 #define RPR_FALSE 0u
 #define RPR_TRUE 1u
@@ -326,6 +325,7 @@ typedef enum // rpr_context_info
 	RPR_CONTEXT_BEAUTY_MOTION_BLUR = 0x17D ,
 	RPR_CONTEXT_CAUSTICS_REDUCTION = 0x17E ,
 	RPR_CONTEXT_GPU_MEMORY_LIMIT = 0x180 ,
+	RPR_CONTEXT_RENDER_LAYER_LIST = 0x181 ,
 	RPR_CONTEXT_NAME = RPR_OBJECT_NAME,
 	RPR_CONTEXT_UNIQUE_ID = RPR_OBJECT_UNIQUE_ID,
 	RPR_CONTEXT_CUSTOM_PTR = RPR_OBJECT_CUSTOM_PTR,
@@ -431,6 +431,7 @@ typedef enum // rpr_shape_info
 	RPR_SHAPE_MOTION_TRANSFORMS_COUNT = 0x42B ,
 	RPR_SHAPE_MOTION_TRANSFORMS = 0x42C ,
 	RPR_SHAPE_CONTOUR_IGNORE = 0x42D ,
+	RPR_SHAPE_RENDER_LAYER_LIST = 0x42E ,
 	RPR_SHAPE_NAME = RPR_OBJECT_NAME,
 	RPR_SHAPE_UNIQUE_ID = RPR_OBJECT_UNIQUE_ID,
 	RPR_SHAPE_CUSTOM_PTR = RPR_OBJECT_CUSTOM_PTR,
@@ -461,6 +462,7 @@ typedef enum // rpr_mesh_info
 	RPR_MESH_UV2_STRIDE = 0x516 ,
 	RPR_MESH_UV2_INDEX_STRIDE = 0x517 ,
 	RPR_MESH_UV_DIM = 0x518 ,
+	RPR_MESH_MOTION_DIMENSION = 0x519 ,
 } rpr_mesh_info ;
 
 typedef enum // rpr_scene_info
@@ -683,6 +685,7 @@ typedef enum // rpr_material_node_type
 	RPR_MATERIAL_NODE_TRANSFORM = 0x2c,
 	RPR_MATERIAL_NODE_RGB_TO_HSV = 0x2d,
 	RPR_MATERIAL_NODE_HSV_TO_RGB = 0x2e,
+	RPR_MATERIAL_NODE_USER_TEXTURE = 0x2f,
 
 	// MaterialX materials
 	RPR_MATERIAL_NODE_MATX_DIFFUSE_BRDF = 0x1000,
@@ -777,6 +780,17 @@ typedef enum // rpr_material_node_input
 	RPR_MATERIAL_INPUT_WRAP_U = 0x40 ,
 	RPR_MATERIAL_INPUT_WRAP_V = 0x41 ,
 	RPR_MATERIAL_INPUT_WRAP_W = 0x42 ,
+	RPR_MATERIAL_INPUT_5 = 0x43 ,
+	RPR_MATERIAL_INPUT_6 = 0x44 ,
+	RPR_MATERIAL_INPUT_7 = 0x45 ,
+	RPR_MATERIAL_INPUT_8 = 0x46 ,
+	RPR_MATERIAL_INPUT_9 = 0x47 ,
+	RPR_MATERIAL_INPUT_10 = 0x48 ,
+	RPR_MATERIAL_INPUT_11 = 0x49 ,
+	RPR_MATERIAL_INPUT_12 = 0x4a ,
+	RPR_MATERIAL_INPUT_13 = 0x4b ,
+	RPR_MATERIAL_INPUT_14 = 0x4c ,
+	RPR_MATERIAL_INPUT_15 = 0x4d ,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR = 0x910,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT = 0x927,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -997,6 +1011,18 @@ typedef enum // rpr_aov
 	RPR_AOV_CRYPTOMATTE_OBJ0 = 0x38,
 	RPR_AOV_CRYPTOMATTE_OBJ1 = 0x39,
 	RPR_AOV_CRYPTOMATTE_OBJ2 = 0x3a,
+	RPR_AOV_LIGHT_GROUP4 = 0x50 ,
+	RPR_AOV_LIGHT_GROUP5 = 0x51 ,
+	RPR_AOV_LIGHT_GROUP6 = 0x52 ,
+	RPR_AOV_LIGHT_GROUP7 = 0x53 ,
+	RPR_AOV_LIGHT_GROUP8 = 0x54 ,
+	RPR_AOV_LIGHT_GROUP9 = 0x55 ,
+	RPR_AOV_LIGHT_GROUP10 = 0x56 ,
+	RPR_AOV_LIGHT_GROUP11 = 0x57 ,
+	RPR_AOV_LIGHT_GROUP12 = 0x58 ,
+	RPR_AOV_LIGHT_GROUP13 = 0x59 ,
+	RPR_AOV_LIGHT_GROUP14 = 0x5a ,
+	RPR_AOV_LIGHT_GROUP15 = 0x5b ,
 } rpr_aov ;
 
 typedef enum // rpr_post_effect_type
@@ -1307,6 +1333,24 @@ typedef struct //rpr_ies_image_desc
   extern RPR_API_ENTRY rpr_status rprContextSetAOV(rpr_context context, rpr_aov aov, rpr_framebuffer frame_buffer);
 
 
+    /** @brief
+    *
+    *  @param  context               The context to set 
+    *  @param  renderLayerString   Render layer name to attach
+    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprContextAttachRenderLayer(rpr_context context, rpr_char const * renderLayerString);
+
+
+    /** @brief
+    *
+    *  @param  context               The context to set 
+    *  @param  renderLayerString   Render layer name to detach
+    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprContextDetachRenderLayer(rpr_context context, rpr_char const * renderLayerString);
+
+
     /** @brief Set a LPE ( Light Path Expression ) to a framebuffer.
     *          Note that this framebuffer should also be assigned to a LPE AOV:  RPR_AOV_LPE_0 , RPR_AOV_LPE_1 ....
     *
@@ -1345,6 +1389,36 @@ typedef struct //rpr_ies_image_desc
     * Depending on the plugin, rprContextSetAOVindicesLookup could be faster than calling several rprContextSetAOVindexLookup.
     */
   extern RPR_API_ENTRY rpr_status rprContextSetAOVindicesLookup(rpr_context context, rpr_int keyOffset, rpr_int keyCount, rpr_float const * colorRGBA);
+
+
+    /**
+    * API user can create its own procedural texture.
+    * The API needs both a GPU code ( OpenCL string code ) and a CPU code ( callback )
+    * (API function supported by Northstar only)
+    *
+    * example:  
+    *      #define DEFINE_FUNC(FUNCNAME, FUNC) FUNC; const std::string g_str_##FUNCNAME = #FUNC;
+    *      DEFINE_FUNC( RprCustomMatA ,   void RprCustomMatA(float* a, float* b, float* c, float* d, float* e, float* f, float* valueOut){   valueOut[0]=0.0;  valueOut[1]=sin(d[0]*3.14159);  valueOut[2]=0.0;  }   );
+    *      rprContextSetUserTexture(context, 3, g_str_RprCustomMatA.c_str(), RprCustomMatA); // use slot 3
+    *      // create material based on slot 3 :
+    *      rpr_material_node matUserTex3; rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_USER_TEXTURE, & matUserTex3);
+    *      rprMaterialNodeSetInputUByKey(matUserTex3, RPR_MATERIAL_INPUT_OP, 3 ); // bind matUserTex3 to slot 3
+    *      rprMaterialNodeSetInputNByKey(matUserTex3, RPR_MATERIAL_INPUT_4, paramInput ); // bind 'paramInput' to the 'e' argument of 'RprCustomMatA'
+    *
+    * Notes:
+    * - If only the GPU is used, a nullptr can be given to 'cpuCode'.
+    * - RPR_MATERIAL_NODE_USER_TEXTURE_0...RPR_MATERIAL_NODE_USER_TEXTURE_3   ,    RPR_CONTEXT_USER_TEXTURE_0...RPR_CONTEXT_USER_TEXTURE_3  are deprecated and should only be used with the old Tahoe plugin.
+    * - When exporting the RPR scene to RPRS or GLTF, the CPU callback pointer will be lost in the imported scene.
+    *
+    */
+  extern RPR_API_ENTRY rpr_status rprContextSetUserTexture(rpr_context context, rpr_int index, rpr_char const * gpuCode, void * cpuCode);
+
+
+    /**
+    * get the gpuCode string set by rprContextSetUserTexture.
+    * (API function supported by Northstar only)
+    */
+  extern RPR_API_ENTRY rpr_status rprContextGetUserTexture(rpr_context context, rpr_int index, size_t bufferSizeByte, void * buffer, size_t * size_ret);
 
 
     /** @brief Set the scene
@@ -1976,6 +2050,24 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
 
     /** @brief
     *
+    *  @param  shape               The shape to set 
+    *  @param  renderLayerString   Render layer name to attach
+    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprShapeAttachRenderLayer(rpr_shape shape, rpr_char const * renderLayerString);
+
+
+    /** @brief
+    *
+    *  @param  shape               The shape to set 
+    *  @param  renderLayerString   Render layer name to detach
+    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprShapeDetachRenderLayer(rpr_shape shape, rpr_char const * renderLayerString);
+
+
+    /** @brief
+    *
     *
     *  @param  shape       The shape to set subdivision for
     *  @param  type
@@ -2044,6 +2136,10 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
     *  @param  shape       The shape to set
     *  @param  layerMask   The render mask
     *  @return             RPR_SUCCESS in case of success, error code otherwise
+    *
+    * WARNING: this function is deprecated and will be removed in the future, 
+    *          use   rprShapeAttachRenderLayer/rprShapeDetachRenderLayer   and   rprContextAttachRenderLayer/rprContextDetachRenderLayer   instead
+    *
     */
   extern RPR_API_ENTRY rpr_status rprShapeSetLayerMask(rpr_shape shape, rpr_uint layerMask);
 
@@ -2242,7 +2338,7 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
   extern RPR_API_ENTRY rpr_status rprLightSetTransform(rpr_light light, rpr_bool transpose, rpr_float const * transform);
 
 
-    /** @brief Set light group ID. This parameter can be used with RPR_AOV_LIGHT_GROUP0, RPR_AOV_LIGHT_GROUP1, RPR_AOV_LIGHT_GROUP2, RPR_AOV_LIGHT_GROUP3
+    /** @brief Set light group ID. This parameter can be used with RPR_AOV_LIGHT_GROUP0, RPR_AOV_LIGHT_GROUP1, ...
     *
     *  @param  light       The light to set transform for
     *  @param  groupId     -1 to remove the group.  or a value between 0 and 3.

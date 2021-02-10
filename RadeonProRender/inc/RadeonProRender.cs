@@ -327,6 +327,7 @@ CPUINTEGRATOR = 0x17C ,
 BEAUTY_MOTION_BLUR = 0x17D ,
 CAUSTICS_REDUCTION = 0x17E ,
 GPU_MEMORY_LIMIT = 0x180 ,
+RENDER_LAYER_LIST = 0x181 ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -432,6 +433,7 @@ SUBDIVISION_AUTO_RATIO_CAP = 0x42A ,
 MOTION_TRANSFORMS_COUNT = 0x42B ,
 MOTION_TRANSFORMS = 0x42C ,
 CONTOUR_IGNORE = 0x42D ,
+RENDER_LAYER_LIST = 0x42E ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -462,6 +464,7 @@ UV2_INDEX_ARRAY = 0x515 ,
 UV2_STRIDE = 0x516 ,
 UV2_INDEX_STRIDE = 0x517 ,
 UV_DIM = 0x518 ,
+MOTION_DIMENSION = 0x519 ,
 }
 /*rpr_scene_info*/
 public enum Scene : int
@@ -684,6 +687,7 @@ UBERV2 = 0x2b,
 TRANSFORM = 0x2c,
 RGB_TO_HSV = 0x2d,
 HSV_TO_RGB = 0x2e,
+USER_TEXTURE = 0x2f,
 
 	// MaterialX materials
 MATX_DIFFUSE_BRDF = 0x1000,
@@ -778,6 +782,17 @@ DIMINISH = 0x3f ,
 WRAP_U = 0x40 ,
 WRAP_V = 0x41 ,
 WRAP_W = 0x42 ,
+INDEX5 = 0x43 ,
+INDEX6 = 0x44 ,
+INDEX7 = 0x45 ,
+INDEX8 = 0x46 ,
+INDEX9 = 0x47 ,
+INDEX10 = 0x48 ,
+INDEX11 = 0x49 ,
+INDEX12 = 0x4a ,
+INDEX13 = 0x4b ,
+INDEX14 = 0x4c ,
+INDEX15 = 0x4d ,
 UBER_DIFFUSE_COLOR = 0x910,
 UBER_DIFFUSE_WEIGHT = 0x927,
 UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -998,6 +1013,18 @@ CRYPTOMATTE_MAT2 = 0x32,
 CRYPTOMATTE_OBJ0 = 0x38,
 CRYPTOMATTE_OBJ1 = 0x39,
 CRYPTOMATTE_OBJ2 = 0x3a,
+LIGHT_GROUP4 = 0x50 ,
+LIGHT_GROUP5 = 0x51 ,
+LIGHT_GROUP6 = 0x52 ,
+LIGHT_GROUP7 = 0x53 ,
+LIGHT_GROUP8 = 0x54 ,
+LIGHT_GROUP9 = 0x55 ,
+LIGHT_GROUP10 = 0x56 ,
+LIGHT_GROUP11 = 0x57 ,
+LIGHT_GROUP12 = 0x58 ,
+LIGHT_GROUP13 = 0x59 ,
+LIGHT_GROUP14 = 0x5a ,
+LIGHT_GROUP15 = 0x5b ,
 }
 /*rpr_post_effect_type*/
 public enum PostEffectType : int
@@ -1159,10 +1186,10 @@ VISIBILITY_GLOSSY_REFRACTION = 0x420 ,
 VISIBILITY_LIGHT = 0x421 ,
 }
 public const int RPR_VERSION_MAJOR = 2 ;
-public const int RPR_VERSION_MINOR = 1 ;
-public const int RPR_VERSION_REVISION = 9 ;
-public const int RPR_VERSION_BUILD = 0x922a58ba ;
-public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200109 ;
+public const int RPR_VERSION_MINOR = 2 ;
+public const int RPR_VERSION_REVISION = 0 ;
+public const int RPR_VERSION_BUILD = 0x0efd91f0 ;
+public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200200 ;
 // Deprecated version naming - will be removed in the future :
 
 public const int RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -1172,7 +1199,6 @@ public const int RPR_OBJECT_UNIQUE_ID = 0x777778 ;
 public const int RPR_OBJECT_CUSTOM_PTR = 0x777779 ;
 /* last of the RPR_CONTEXT_* */
   
-public const int RPR_CONTEXT_MAX = 0x170 ;
 // RPR_PARAMETER_NAME_STRING 0x1202   not used anymore  you can only set/get parameters using  RPR_CONTEXT_*
 
 
@@ -1315,6 +1341,32 @@ public static Status ContextSetAOV(IntPtr context, Aov aov, IntPtr frame_buffer)
 return rprContextSetAOV(context, aov, frame_buffer);
 }
 
+    /** @brief
+    *
+    *  @param  context               The context to set 
+    *  @param  renderLayerString   Render layer name to attach
+    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprContextAttachRenderLayer(IntPtr context, string renderLayerString);
+public static Status ContextAttachRenderLayer(IntPtr context, string renderLayerString)
+{
+return rprContextAttachRenderLayer(context, renderLayerString);
+}
+
+    /** @brief
+    *
+    *  @param  context               The context to set 
+    *  @param  renderLayerString   Render layer name to detach
+    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprContextDetachRenderLayer(IntPtr context, string renderLayerString);
+public static Status ContextDetachRenderLayer(IntPtr context, string renderLayerString)
+{
+return rprContextDetachRenderLayer(context, renderLayerString);
+}
+
     /** @brief Set a LPE ( Light Path Expression ) to a framebuffer.
     *          Note that this framebuffer should also be assigned to a LPE AOV:  RPR_AOV_LPE_0 , RPR_AOV_LPE_1 ....
     *
@@ -1365,6 +1417,44 @@ return rprContextSetAOVindexLookup(context, key, colorR, colorG, colorB, colorA)
 public static Status ContextSetAOVindicesLookup(IntPtr context, int keyOffset, int keyCount, IntPtr colorRGBA)
 {
 return rprContextSetAOVindicesLookup(context, keyOffset, keyCount, colorRGBA);
+}
+
+    /**
+    * API user can create its own procedural texture.
+    * The API needs both a GPU code ( OpenCL string code ) and a CPU code ( callback )
+    * (API function supported by Northstar only)
+    *
+    * example:  
+    *      #define DEFINE_FUNC(FUNCNAME, FUNC) FUNC; const std::string g_str_##FUNCNAME = #FUNC;
+    *      DEFINE_FUNC( RprCustomMatA ,   void RprCustomMatA(float* a, float* b, float* c, float* d, float* e, float* f, float* valueOut){   valueOut[0]=0.0;  valueOut[1]=sin(d[0]*3.14159);  valueOut[2]=0.0;  }   );
+    *      rprContextSetUserTexture(context, 3, g_str_RprCustomMatA.c_str(), RprCustomMatA); // use slot 3
+    *      // create material based on slot 3 :
+    *      rpr_material_node matUserTex3; rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_USER_TEXTURE, & matUserTex3);
+    *      rprMaterialNodeSetInputUByKey(matUserTex3, RPR_MATERIAL_INPUT_OP, 3 ); // bind matUserTex3 to slot 3
+    *      rprMaterialNodeSetInputNByKey(matUserTex3, RPR_MATERIAL_INPUT_4, paramInput ); // bind 'paramInput' to the 'e' argument of 'RprCustomMatA'
+    *
+    * Notes:
+    * - If only the GPU is used, a nullptr can be given to 'cpuCode'.
+    * - RPR_MATERIAL_NODE_USER_TEXTURE_0...RPR_MATERIAL_NODE_USER_TEXTURE_3   ,    RPR_CONTEXT_USER_TEXTURE_0...RPR_CONTEXT_USER_TEXTURE_3  are deprecated and should only be used with the old Tahoe plugin.
+    * - When exporting the RPR scene to RPRS or GLTF, the CPU callback pointer will be lost in the imported scene.
+    *
+    */
+  
+[DllImport(dllName)] static extern Status rprContextSetUserTexture(IntPtr context, int index, string gpuCode, IntPtr cpuCode);
+public static Status ContextSetUserTexture(IntPtr context, int index, string gpuCode, IntPtr cpuCode)
+{
+return rprContextSetUserTexture(context, index, gpuCode, cpuCode);
+}
+
+    /**
+    * get the gpuCode string set by rprContextSetUserTexture.
+    * (API function supported by Northstar only)
+    */
+  
+[DllImport(dllName)] static extern Status rprContextGetUserTexture(IntPtr context, int index, long bufferSizeByte, IntPtr buffer, IntPtr size_ret);
+public static Status ContextGetUserTexture(IntPtr context, int index, long bufferSizeByte, IntPtr buffer, IntPtr size_ret)
+{
+return rprContextGetUserTexture(context, index, bufferSizeByte, buffer, size_ret);
 }
 
     /** @brief Set the scene
@@ -2251,6 +2341,32 @@ return rprShapeSetSubdivisionCreaseWeight(shape, factor);
 
     /** @brief
     *
+    *  @param  shape               The shape to set 
+    *  @param  renderLayerString   Render layer name to attach
+    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprShapeAttachRenderLayer(IntPtr shape, string renderLayerString);
+public static Status ShapeAttachRenderLayer(IntPtr shape, string renderLayerString)
+{
+return rprShapeAttachRenderLayer(shape, renderLayerString);
+}
+
+    /** @brief
+    *
+    *  @param  shape               The shape to set 
+    *  @param  renderLayerString   Render layer name to detach
+    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprShapeDetachRenderLayer(IntPtr shape, string renderLayerString);
+public static Status ShapeDetachRenderLayer(IntPtr shape, string renderLayerString)
+{
+return rprShapeDetachRenderLayer(shape, renderLayerString);
+}
+
+    /** @brief
+    *
     *
     *  @param  shape       The shape to set subdivision for
     *  @param  type
@@ -2343,6 +2459,10 @@ return rprShapeSetLightGroupID(shape, lightGroupID);
     *  @param  shape       The shape to set
     *  @param  layerMask   The render mask
     *  @return             RPR_SUCCESS in case of success, error code otherwise
+    *
+    * WARNING: this function is deprecated and will be removed in the future, 
+    *          use   rprShapeAttachRenderLayer/rprShapeDetachRenderLayer   and   rprContextAttachRenderLayer/rprContextDetachRenderLayer   instead
+    *
     */
   
 [DllImport(dllName)] static extern Status rprShapeSetLayerMask(IntPtr shape, uint layerMask);
@@ -2621,7 +2741,7 @@ public static Status LightSetTransform(IntPtr light, bool transpose, float[] tra
 return rprLightSetTransform(light, transpose, transform);
 }
 
-    /** @brief Set light group ID. This parameter can be used with RPR_AOV_LIGHT_GROUP0, RPR_AOV_LIGHT_GROUP1, RPR_AOV_LIGHT_GROUP2, RPR_AOV_LIGHT_GROUP3
+    /** @brief Set light group ID. This parameter can be used with RPR_AOV_LIGHT_GROUP0, RPR_AOV_LIGHT_GROUP1, ...
     *
     *  @param  light       The light to set transform for
     *  @param  groupId     -1 to remove the group.  or a value between 0 and 3.
