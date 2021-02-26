@@ -39,6 +39,8 @@ new functions:
 rprShapeAttachRenderLayer/rprShapeDetachRenderLayer -> set a Render Layer  on a shape. The API user can choose any name he wants.
 rprContextAttachRenderLayer/rprContextDetachRenderLayer -> add/remove a Render Layer name to the final rendering.
 
+For Northstar, add of deformation motion blur. The Demo "04_deformation_motion_blur" illustrates how to use it.
+
 ################################################################################################################
 RPR SDK 2.01.9 - 13 January 2021
 
