@@ -39,9 +39,9 @@ extern "C" {
 
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 2 
-#define RPR_VERSION_REVISION 0 
-#define RPR_VERSION_BUILD 0x0efd91f0 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200200 
+#define RPR_VERSION_REVISION 1 
+#define RPR_VERSION_BUILD 0x924e5459 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200201 
 
 // Deprecated version naming - will be removed in the future :
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
@@ -296,6 +296,8 @@ extern "C" {
 #define RPR_CAMERA_FAR_PLANE 0x214 
 #define RPR_CAMERA_LINEAR_MOTION 0x215 
 #define RPR_CAMERA_ANGULAR_MOTION 0x216 
+#define RPR_CAMERA_MOTION_TRANSFORMS_COUNT 0x217 
+#define RPR_CAMERA_MOTION_TRANSFORMS 0x218 
 #define RPR_CAMERA_NAME RPR_OBJECT_NAME
 #define RPR_CAMERA_UNIQUE_ID RPR_OBJECT_UNIQUE_ID
 #define RPR_CAMERA_CUSTOM_PTR RPR_OBJECT_CUSTOM_PTR
@@ -1685,20 +1687,38 @@ extern RPR_API_ENTRY rpr_status rprContextGetInternalParameterBuffer(rpr_context
   extern RPR_API_ENTRY rpr_status rprCameraSetFocalLength(rpr_camera camera, rpr_float flength);
 
 
-    /** @brief Set camera linear motion.
-    *
-    *  @return         RPR_SUCCESS in case of success, error code otherwise
+    /* 
+    *  DEPRECATED in Northstar - will be removed in the future - please use rprCameraSetMotionTransform and rprCameraSetMotionTransformCount instead.
+    *  RPR_CAMERA_LINEAR_MOTION , RPR_CAMERA_ANGULAR_MOTION are also DEPRECATED
     */
   extern RPR_API_ENTRY rpr_status rprCameraSetLinearMotion(rpr_camera camera, rpr_float x, rpr_float y, rpr_float z);
 
 
-     /** @brief Set camera angular motion.
-    *
-	* x,y,z : vector  -  w : angle in radian
-	*
-    *  @return         RPR_SUCCESS in case of success, error code otherwise
+    /* 
+    *  DEPRECATED in Northstar - will be removed in the future - please use rprCameraSetMotionTransform and rprCameraSetMotionTransformCount instead.
+    *  RPR_CAMERA_LINEAR_MOTION , RPR_CAMERA_ANGULAR_MOTION are also DEPRECATED
     */
   extern RPR_API_ENTRY rpr_status rprCameraSetAngularMotion(rpr_camera camera, rpr_float x, rpr_float y, rpr_float z, rpr_float w);
+
+
+    /* Number of motion matrices (set with rprCameraSetMotionTransform) to use.
+    *  Set  transformCount=0  if you don't use Motion.
+    *  For the moment, if you use motion in Northstar, only transformCount=1 is supported.
+    *  example: to create a motion from matA to matB:
+    *      rprCameraSetTransform(camera, false, matA) // matrix at time=0
+    *      rprCameraSetMotionTransform(camera, false, matB, 1) // matrix at time=1
+    *      rprCameraSetMotionTransformCount(camera,1) // use 1 motion matrix
+    */
+  extern RPR_API_ENTRY rpr_status rprCameraSetMotionTransformCount(rpr_camera camera, rpr_uint transformCount);
+
+
+    /* For Motion effect, set the transform of camera at different time index.
+    * 'transform' is an array of 16 rpr_float values (row-major form).
+    *  timeIndex=1 is camera position at camera exposure = 1.0
+    *  For the moment, in Nortstar plugin only timeIndex=1 is implemented
+    *  You also have to call  rprCameraSetMotionTransformCount, to define the number of indices to use.
+    */
+  extern RPR_API_ENTRY rpr_status rprCameraSetMotionTransform(rpr_camera camera, rpr_bool transpose, rpr_float const * transform, rpr_uint timeIndex);
 
 
     /** @brief Set camera focus distance

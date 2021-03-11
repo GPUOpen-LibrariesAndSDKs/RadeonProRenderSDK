@@ -34,6 +34,10 @@ extern "C" {
 #define RPR_FRAMEBUFFER_READY_VK_SEMAPHORES 0x5003
 #define RPR_FRAMEBUFFER_RELEASED_VK_SEMAPHORES 0x5004
 
+/* rpr_image_propertis */
+#define RPR_IMAGE_VK_OBJECT 0x5301
+#define RPR_IMAGE_VK_VIEW_OBJECT 0x5302
+
 // rprMeshGetInfo extension
 /* rpr_mesh_info */
 /**

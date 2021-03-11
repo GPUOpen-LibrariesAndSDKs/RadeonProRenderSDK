@@ -357,6 +357,8 @@ NEAR_PLANE = 0x213 ,
 FAR_PLANE = 0x214 ,
 LINEAR_MOTION = 0x215 ,
 ANGULAR_MOTION = 0x216 ,
+MOTION_TRANSFORMS_COUNT = 0x217 ,
+MOTION_TRANSFORMS = 0x218 ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -1187,9 +1189,9 @@ VISIBILITY_LIGHT = 0x421 ,
 }
 public const int RPR_VERSION_MAJOR = 2 ;
 public const int RPR_VERSION_MINOR = 2 ;
-public const int RPR_VERSION_REVISION = 0 ;
-public const int RPR_VERSION_BUILD = 0x0efd91f0 ;
-public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200200 ;
+public const int RPR_VERSION_REVISION = 1 ;
+public const int RPR_VERSION_BUILD = 0x924e5459 ;
+public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200201 ;
 // Deprecated version naming - will be removed in the future :
 
 public const int RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -1916,9 +1918,9 @@ public static Status CameraSetFocalLength(IntPtr camera, float flength)
 return rprCameraSetFocalLength(camera, flength);
 }
 
-    /** @brief Set camera linear motion.
-    *
-    *  @return         RPR_SUCCESS in case of success, error code otherwise
+    /* 
+    *  DEPRECATED in Northstar - will be removed in the future - please use rprCameraSetMotionTransform and rprCameraSetMotionTransformCount instead.
+    *  RPR_CAMERA_LINEAR_MOTION , RPR_CAMERA_ANGULAR_MOTION are also DEPRECATED
     */
   
 [DllImport(dllName)] static extern Status rprCameraSetLinearMotion(IntPtr camera, float x, float y, float z);
@@ -1927,17 +1929,43 @@ public static Status CameraSetLinearMotion(IntPtr camera, float x, float y, floa
 return rprCameraSetLinearMotion(camera, x, y, z);
 }
 
-     /** @brief Set camera angular motion.
-    *
-	* x,y,z : vector  -  w : angle in radian
-	*
-    *  @return         RPR_SUCCESS in case of success, error code otherwise
+    /* 
+    *  DEPRECATED in Northstar - will be removed in the future - please use rprCameraSetMotionTransform and rprCameraSetMotionTransformCount instead.
+    *  RPR_CAMERA_LINEAR_MOTION , RPR_CAMERA_ANGULAR_MOTION are also DEPRECATED
     */
   
 [DllImport(dllName)] static extern Status rprCameraSetAngularMotion(IntPtr camera, float x, float y, float z, float w);
 public static Status CameraSetAngularMotion(IntPtr camera, float x, float y, float z, float w)
 {
 return rprCameraSetAngularMotion(camera, x, y, z, w);
+}
+
+    /* Number of motion matrices (set with rprCameraSetMotionTransform) to use.
+    *  Set  transformCount=0  if you don't use Motion.
+    *  For the moment, if you use motion in Northstar, only transformCount=1 is supported.
+    *  example: to create a motion from matA to matB:
+    *      rprCameraSetTransform(camera, false, matA) // matrix at time=0
+    *      rprCameraSetMotionTransform(camera, false, matB, 1) // matrix at time=1
+    *      rprCameraSetMotionTransformCount(camera,1) // use 1 motion matrix
+    */
+  
+[DllImport(dllName)] static extern Status rprCameraSetMotionTransformCount(IntPtr camera, uint transformCount);
+public static Status CameraSetMotionTransformCount(IntPtr camera, uint transformCount)
+{
+return rprCameraSetMotionTransformCount(camera, transformCount);
+}
+
+    /* For Motion effect, set the transform of camera at different time index.
+    * 'transform' is an array of 16 rpr_float values (row-major form).
+    *  timeIndex=1 is camera position at camera exposure = 1.0
+    *  For the moment, in Nortstar plugin only timeIndex=1 is implemented
+    *  You also have to call  rprCameraSetMotionTransformCount, to define the number of indices to use.
+    */
+  
+[DllImport(dllName)] static extern Status rprCameraSetMotionTransform(IntPtr camera, bool transpose, IntPtr transform, uint timeIndex);
+public static Status CameraSetMotionTransform(IntPtr camera, bool transpose, IntPtr transform, uint timeIndex)
+{
+return rprCameraSetMotionTransform(camera, transpose, transform, timeIndex);
 }
 
     /** @brief Set camera focus distance

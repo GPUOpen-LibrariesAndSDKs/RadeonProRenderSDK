@@ -3,6 +3,30 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.02.1 - 11 March 2021
+
+-- RESOLVED TICKETS for NORTHSTAR:
+RPRNEXT-625 - (Bug)     - Fix black texels in preview mode
+RPRNEXT-617 - (Bug)     - Fix Lpe difference in CPU and GPU direct illumination
+RPRNEXT-615 - (Enhance) - Add Navi22 HW RT support
+RPRNEXT-612 - (Bug)     - Fix render layer issue with reflection rays
+RPRNEXT-608 - (Bug)     - Fix broken UVs when high subdivision level
+RPRNEXT-600 - (Enhance) - Improve rprsExport performance
+RPRNEXT-599 - (Bug)     - Fix wrong geometric normal computation on triangle
+RPRNEXT-596 - (Enhance) - Add light group aov support
+RPRNEXT-593 - (Bug)     - Fix blurred reflection issue even when roughness is close to 0
+RPRNEXT-585 - (Bug)     - Fix high mipmap LOD issue when grazing angle is close to 0
+RPRNEXT-573 - (Bug)     - Fix wrong render issue with scenes have a lot of materials
+RPRNEXT-476 - (Bug)     - Fix the crash on abortRender call at macOS
+RPRNEXT-411 - (Enhance) - Improve refraction quality
+RPRNEXT-628 - (Bug)     - Fix light leak in texture alpha scene
+RPRNEXT-527 - (Enhance) - Improve geometry compilation time
+
+-- RPR API CHANGE:
+rprCameraSetLinearMotion, rprCameraSetAngularMotion, RPR_CAMERA_LINEAR_MOTION, RPR_CAMERA_ANGULAR_MOTION are still supported but deprecated inside Northstar.
+It's recommended to use the new API: rprCameraSetMotionTransform and rprCameraSetMotionTransformCount instead.
+
+################################################################################################################
 RPR SDK 2.02.0 - 10 February 2021
 
 -- RESOLVED TICKETS for NORTHSTAR:

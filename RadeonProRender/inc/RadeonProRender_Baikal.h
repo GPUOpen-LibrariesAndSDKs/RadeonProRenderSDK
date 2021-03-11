@@ -69,6 +69,12 @@ extern "C" {
 #define RPR_MATERIAL_NODE_OP_APPEND_4_0 0x1056
 
 #define RPR_MATERIAL_NODE_OP_FRACT 0x1057
+#define RPR_MATERIAL_NODE_OP_POSITIVE_CLAMP_POW 0x1058
+#define RPR_MATERIAL_NODE_OP_STEP 0x1059
+#define RPR_MATERIAL_NODE_OP_SMOOTH_STEP 0x105a
+#define RPR_MATERIAL_NODE_OP_ATAN2 0x105b
+
+#define RPR_MATERIAL_INPUT_UBER_MATERIAL_ID_COLOR 0x1100
 
 /*rpr_material_node_arithmetic_operation*/
 #define RPR_MATERIAL_NODE_OP_SAMPLER 0x1000
@@ -76,6 +82,13 @@ extern "C" {
 #define RPR_MATERIAL_NODE_OP_CONSTANT 0x1002
 #define RPR_MATERIAL_NODE_OP_LOOKUP 0x1003
 #define RPR_MATERIAL_NODE_OP_NORMAL_MAP 0x1004
+#define RPR_MATERIAL_NODE_OP_LEAF 0x1005
+
+
+/*rpr_material_node_lookup_value*/
+#define RPR_MATERIAL_NODE_LOOKUP_VIEW_VECTOR 0x2000
+#define RPR_MATERIAL_NODE_LOOKUP_TANGENT 0x2001
+#define RPR_MATERIAL_NODE_LOOKUP_BITANGENT 0x2002
 
 /* rpr_context_properties names */
 #define RPR_CONTEXT_CREATEPROP_HYBRID_KERNELS_PATH_INFO 0x1600
@@ -144,6 +157,7 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_ENABLE_RAYTRACE_REFRACTION 0x102B // turn on ray-trace refraction in custom quality
 #define RPR_CONTEXT_GLOBAL_ILLUMINATION_MODE 0x102C // change global illumination mode in custom quality
 #define RPR_CONTEXT_PT_DENOISER 0x102D // Sets denoiser type.
+#define RPR_CONTEXT_MAX_TEXTURES 0x102E // Defines maximim textures allowed
 
 /* Traversal modes */
 #define RPR_HYBRID_TRAVERSAL_STATIC_TLAS_SEPARATE 0x1 ///< Use a separate acceleration structure for static objects
