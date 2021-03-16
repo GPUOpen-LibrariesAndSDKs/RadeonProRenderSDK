@@ -1,9 +1,10 @@
 /*****************************************************************************\
 *
-*  Module Name    simple_render.cpp
+*  Module Name    gl_interop.cpp
 *  Project        Radeon ProRender SDK rendering tutorial
 *
 *  Description    Radeon ProRender SDK tutorials 
+*                 Demo of an OpenGL window rendering RPR.
 *
 *  Copyright 2011 - 2020 Advanced Micro Devices, Inc.
 *
@@ -38,9 +39,43 @@
 
 #include <cassert>
 #include <iostream>
+#include <thread>
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
+
+
+class GuiRenderImpl
+{
+public:
+	struct Update
+	{
+		Update()
+		{
+			clear();
+			m_progress = 0.0f;
+		}
+
+		volatile int m_hasUpdate;
+		volatile int m_done;
+		volatile int m_aborted;
+		int m_camUpdated;
+		float m_progress;
+		
+		void clear()
+		{
+			m_hasUpdate = m_done = m_aborted = m_camUpdated = 0;
+		}
+	};
+	static
+	void notifyUpdate( float x, void* userData )
+	{
+		Update* demo = (Update*)userData;
+		demo->m_hasUpdate = 1;
+		demo->m_progress = x;
+	}
+};
+
 
 GLuint              g_vertex_buffer_id = NULL;
 GLuint              g_index_buffer_id = NULL;
@@ -61,11 +96,67 @@ float				g_camera_posX = 0.0;
 float				g_camera_posY = 5.0;
 int					g_lastMouseDownUpdateX = -1;
 int					g_lastMouseDownUpdateY = -1;
+GuiRenderImpl::Update g_update;
+
+
+// thread rendering 1 iteration
+void renderJob( rpr_context ctxt, GuiRenderImpl::Update* update )
+{
+	CHECK( rprContextRender( ctxt ) );
+	update->m_done = 1;
+	return;
+}
+
+
 
 void Update()
 {
-	// Send update event
-	glutPostRedisplay();
+	// clear state
+	g_update.clear();
+
+	// start the rendering thread
+	std::thread t( &renderJob, g_context, &g_update );
+
+	// wait the rendering thread
+	while( !g_update.m_done )
+	{
+		// at each update of the rendering thread
+		if( g_update.m_hasUpdate )
+		{
+			// Read the frame buffer from RPR
+			// Note that rprContextResolveFrameBuffer and rprFrameBufferGetInfo(fb,RPR_FRAMEBUFFER_DATA)  can be called asynchronous while rprContextRender is running.
+
+			CHECK( rprContextResolveFrameBuffer( g_context, g_frame_buffer, g_frame_buffer_2, false ) );
+			size_t frame_buffer_dataSize = 0;
+			CHECK( rprFrameBufferGetInfo( g_frame_buffer_2, RPR_FRAMEBUFFER_DATA, 0 , NULL , &frame_buffer_dataSize ) );
+
+			// check that the size fits with original buffer alloc
+			if ( frame_buffer_dataSize != WINDOW_WIDTH * WINDOW_HEIGHT * 4 * sizeof(float) )
+			{
+				CHECK(RPR_ERROR_INTERNAL_ERROR)
+			}
+
+			CHECK( rprFrameBufferGetInfo( g_frame_buffer_2, RPR_FRAMEBUFFER_DATA, frame_buffer_dataSize , g_fbdata , NULL ) );
+
+			// update the OpenGL texture with the new image from RPR
+			glBindTexture(GL_TEXTURE_2D, g_texture);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA, GL_FLOAT, static_cast<const GLvoid*>(g_fbdata));         
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			// clear the update flag
+			g_update.m_hasUpdate = false;
+		}
+
+		// Request a new Display call.
+		glutPostRedisplay();
+
+	}
+
+	// wait the end of the rendering thread
+	t.join();
+
+
+	return;
 }
 
 void MoveCamera()
@@ -143,9 +234,6 @@ void OnKeyboardEvent(unsigned char key, int xmouse, int ymouse)
 
 void Display()
 {
-	// Render FR image into the GL texture
-	rprContextRender(g_context);
-	rprContextResolveFrameBuffer(g_context, g_frame_buffer, g_frame_buffer_2, true);
 
 	// Clear backbuffer
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -166,16 +254,7 @@ void Display()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, g_texture);
-
-
-
-	CHECK(rprFrameBufferGetInfo(g_frame_buffer_2, RPR_FRAMEBUFFER_DATA, WINDOW_WIDTH*WINDOW_HEIGHT*sizeof(float)*4, g_fbdata, NULL));
-
-	//glBindTexture(GL_TEXTURE_2D, g_texture);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA, GL_FLOAT, static_cast<const GLvoid*>(g_fbdata));         
-	//glBindTexture(GL_TEXTURE_2D, 0);
-
-
+	//glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA, GL_FLOAT, static_cast<const GLvoid*>(g_fbdata));         
 
 	GLuint position_attr_id = glGetAttribLocation(program, "inPosition");
 	GLuint texcoord_attr_id = glGetAttribLocation(program, "inTexcoord");
@@ -277,9 +356,9 @@ void OnExit()
 
 int main(int argc, char** argv)
 {
-	//	enable firerender API trace
+	//	enable RPR API trace
 	//	set this before any RPR API calls
-	//	frContextSetParameter1u(0,RPR_CONTEXT_TRACING_ENABLED,1);
+	//	rprContextSetParameter1u(0,RPR_CONTEXT_TRACING_ENABLED,1);
 
 	//GL setup
 	{
@@ -299,12 +378,11 @@ int main(int argc, char** argv)
 		InitGraphics();
 	}
 
-	std::cout << "FireRender SDK simple rendering tutorial.\n";
-	// Indicates whether the last operation has suceeded or not
-	rpr_int status = RPR_SUCCESS;
-	// Create OpenCL context using a single GPU 
+	std::cout << "RPR SDK simple rendering tutorial.\n";
 
-	// Register Tahoe ray tracing plugin.
+	rpr_int status = RPR_SUCCESS;
+
+	// Register the plugin.
 	rpr_int tahoePluginID = rprRegisterPlugin(RPR_PLUGIN_FILE_NAME); 
 	CHECK_NE(tahoePluginID , -1)
 	rpr_int plugins[] = { tahoePluginID };
@@ -411,13 +489,21 @@ int main(int argc, char** argv)
 	// Set framebuffer for the context
 	CHECK(rprContextSetAOV(g_context, RPR_AOV_COLOR, g_frame_buffer));
 
-	CHECK( rprContextSetParameterByKey1u(g_context,RPR_CONTEXT_PREVIEW, 1u ) );
+	// this line can be added for faster RPR rendering.
+	// the higher RPR_CONTEXT_PREVIEW, the faster RPR rendering, ( but more pixelated )
+	//CHECK( rprContextSetParameterByKey1u(g_context,RPR_CONTEXT_PREVIEW, 1u ) );
 
 	// Set framebuffer for the context
 	CHECK(rprContextSetAOV(g_context, RPR_AOV_COLOR, g_frame_buffer));
 
-	g_fbdata = new float[WINDOW_WIDTH * WINDOW_HEIGHT * 4];
+	// Define the update callback.
+	// During the rprContextRender execution, RPR will call it regularly
+	// The 'CALLBACK_DATA' : 'g_update' is not used by RPR. it can be any data structure that the API user wants.
+	CHECK(rprContextSetParameterByKeyPtr(g_context, RPR_CONTEXT_RENDER_UPDATE_CALLBACK_FUNC, (void*)GuiRenderImpl::notifyUpdate));
+	CHECK(rprContextSetParameterByKeyPtr(g_context, RPR_CONTEXT_RENDER_UPDATE_CALLBACK_DATA, &g_update));
 
+	// allocate the data that will be used the read RPR framebuffer, and give it to OpenGL.
+	g_fbdata = new float[WINDOW_WIDTH * WINDOW_HEIGHT * 4];
 
 	std::cout << "Press W or S to move the camera.\n";
 
