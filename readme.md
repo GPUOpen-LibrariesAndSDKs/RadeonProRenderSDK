@@ -18,7 +18,7 @@ On Visual Studio:
 then open tutorials/Tutorials.sln
 ```
 
-On Linux:
+On Linux:  
 Dependencies on Linux for the tutorials: GLEW, GLUT, Pthread.
 ```
 > cd tutorials
