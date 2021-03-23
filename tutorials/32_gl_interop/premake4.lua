@@ -23,6 +23,7 @@ project "32_gl_interop"
     if os.istarget("linux") then
         links {"glut"}
         links {"GL"}
+	    links {"pthread"}
     end
     if os.istarget("macosx") then
          linkoptions{"-framework OpenGL", "-framework GLUT"}   
