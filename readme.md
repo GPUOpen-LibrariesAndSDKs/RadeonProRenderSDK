@@ -19,8 +19,10 @@ then open tutorials/Tutorials.sln
 ```
 
 On Linux:
+Dependencies on Linux for the tutorials: GLEW, GLUT, Pthread.
 ```
 > cd tutorials
+> sudo chmod +x ../premake5/linux64/premake5
 > ../premake5/linux64/premake5 gmake
 > make -j config=release_x64
 ```
@@ -28,6 +30,7 @@ On Linux:
 On MacOS:
 ```
 > cd tutorials
+> sudo chmod +x ../premake5/osx/premake5
 > ../premake5/osx/premake5 gmake
 > make -j config=release_x64
 ```
