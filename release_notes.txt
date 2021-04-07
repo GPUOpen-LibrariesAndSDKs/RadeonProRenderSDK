@@ -3,6 +3,32 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.02.2 - 7 April 2021
+
+-- RESOLVED TICKETS for NORTHSTAR:
+RPRNEXT-76  - (Enhancement)   - Add homogeneous volume and SSS on CPU
+RPRNEXT-190 - (Enhancement)   - Add toon shader
+RPRNEXT-435 - (Enhancement)   - Add new motion blur API for Camera
+RPRNEXT-513 - (Bug)           - Fix overflowing of lpe buffer
+RPRNEXT-547 - (Enhancement)   - Add procedural textures
+RPRNEXT-587 - (Bug)           - Fix whitish edge issue of microfacet
+RPRNEXT-607 - (Bug)           - Fix exporting materials
+RPRNEXT-624 - (Bug)           - Add automatic fix function of winding order
+RPRNEXT-627 - (Enhancement)   - Improve IBL convergence
+RPRNEXT-633 - (Bug)           - Fix wrong UV mapping to polygon
+RPRNEXT-635 - (Bug)           - Fix non-flat color in Albedo Diffuse AOV
+RPRNEXT-639 - (Bug)           - Fix IBL and background overriding through glass
+RPRNEXT-641 - (Enhancement)   - Add flag to overwrite colortable for ID AOVs in RprsRender
+RPRNEXT-643 - (Bug)           - Improve IBL update performance in IPR
+RPRNEXT-644 - (Bug)           - Fix incorrect rendering on visible light
+RPRNEXT-645 - (Bug)           - Improve microfacet rendering
+RPRNEXT-648 - (Bug)           - Fix adaptive sampling on CPU
+RPRNEXT-650 - (Bug)           - Improve microfacet refraction
+RPRNEXT-652 - (Bug)           - Fix Inconsistent rendering in IPR when IBL intensity is changed
+RPRNEXT-663 - (Bug)           - Fix per face material of instanced shapes
+issues/16   - (Bug)           - Fix: Node Input not getting removed in Northstar64
+
+################################################################################################################
 RPR SDK 2.02.1 - 11 March 2021
 
 -- RESOLVED TICKETS for NORTHSTAR:
