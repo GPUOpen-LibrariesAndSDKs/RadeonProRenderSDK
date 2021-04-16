@@ -44,6 +44,7 @@
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
+void Display();
 
 class GuiRenderImpl
 {
@@ -97,9 +98,17 @@ float				g_camera_posY = 5.0;
 int					g_lastMouseDownUpdateX = -1;
 int					g_lastMouseDownUpdateY = -1;
 GuiRenderImpl::Update g_update;
+const std::chrono::steady_clock::time_point g_invalidTime = std::chrono::time_point<std::chrono::high_resolution_clock>::max();
+int					g_benchmark_numberOfRenderIteration = 0;
+std::chrono::steady_clock::time_point g_benchmark_start = g_invalidTime;
 
 
-// thread rendering 1 iteration
+// High batch size will increase the RPR performance ( rendering iteration per second ), but lower the render feedback FPS on the OpenGL viewer.
+// Note that for better OpenGL FPS (and decreased RPR render quality), API user can also tune the `RPR_CONTEXT_PREVIEW` value.
+const int			g_batchSize = 30;
+
+
+// thread rendering 'g_batchSize' iteration(s)
 void renderJob( rpr_context ctxt, GuiRenderImpl::Update* update )
 {
 	CHECK( rprContextRender( ctxt ) );
@@ -108,9 +117,27 @@ void renderJob( rpr_context ctxt, GuiRenderImpl::Update* update )
 }
 
 
-
 void Update()
 {
+	auto timeUpdateStarts = std::chrono::high_resolution_clock::now();
+
+
+	//
+	// print render stats every ~100 iterations.
+	//
+	if ( g_benchmark_start == g_invalidTime )
+		g_benchmark_start = timeUpdateStarts;
+	if ( g_benchmark_numberOfRenderIteration >= 100 )
+	{
+		double elapsed_time_ms = std::chrono::duration<double, std::milli>(timeUpdateStarts - g_benchmark_start).count();
+		double renderPerSecond = (double)g_benchmark_numberOfRenderIteration * 1000.0 / elapsed_time_ms;
+		std::cout<<renderPerSecond<<" iterations per second."<<std::endl;
+		g_benchmark_numberOfRenderIteration = 0;
+		g_benchmark_start = timeUpdateStarts;
+
+	}
+
+
 	// clear state
 	g_update.clear();
 
@@ -146,15 +173,19 @@ void Update()
 			// clear the update flag
 			g_update.m_hasUpdate = false;
 		}
-
-		// Request a new Display call.
+	
+		// Request a new OpenGL Display call.
+		// Note from documentation: "Multiple calls to glutPostRedisplay before the next display callback opportunity generates only a single redisplay callback".
+		// So we are not actually doing the OpenGL render in this Update loop. It would be a bad design as it would stress this thread and may reduce performance of the 
+		//   `renderJob` thread which is the most important here.
 		glutPostRedisplay();
-
+	
 	}
 
 	// wait the end of the rendering thread
 	t.join();
 
+	g_benchmark_numberOfRenderIteration += g_batchSize;
 
 	return;
 }
@@ -234,7 +265,6 @@ void OnKeyboardEvent(unsigned char key, int xmouse, int ymouse)
 
 void Display()
 {
-
 	// Clear backbuffer
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -489,8 +519,9 @@ int main(int argc, char** argv)
 	// Set framebuffer for the context
 	CHECK(rprContextSetAOV(g_context, RPR_AOV_COLOR, g_frame_buffer));
 
-	// this line can be added for faster RPR rendering.
-	// the higher RPR_CONTEXT_PREVIEW, the faster RPR rendering, ( but more pixelated )
+	// This line can be added for faster RPR rendering.
+	// The higher RPR_CONTEXT_PREVIEW, the faster RPR rendering, ( but more pixelated ).
+	// 0 = disabled (defaut value)
 	//CHECK( rprContextSetParameterByKey1u(g_context,RPR_CONTEXT_PREVIEW, 1u ) );
 
 	// Set framebuffer for the context
@@ -501,6 +532,17 @@ int main(int argc, char** argv)
 	// The 'CALLBACK_DATA' : 'g_update' is not used by RPR. it can be any data structure that the API user wants.
 	CHECK(rprContextSetParameterByKeyPtr(g_context, RPR_CONTEXT_RENDER_UPDATE_CALLBACK_FUNC, (void*)GuiRenderImpl::notifyUpdate));
 	CHECK(rprContextSetParameterByKeyPtr(g_context, RPR_CONTEXT_RENDER_UPDATE_CALLBACK_DATA, &g_update));
+
+
+	// do a first rendering iteration, just for to force scene/cache building.
+	std::cout << "Cache and scene building... ";
+	CHECK(rprContextSetParameterByKey1u(g_context,RPR_CONTEXT_ITERATIONS,1));
+	CHECK( rprContextRender( g_context ) );
+	std::cout << "done\n";
+
+	// each rprContextRender call will do `g_batchSize` iterations. 
+	// Note that calling rprContextRender 1 time with RPR_CONTEXT_ITERATIONS = `g_batchSize` is faster than calling rprContextRender `g_batchSize` times with RPR_CONTEXT_ITERATIONS = 1
+	CHECK(rprContextSetParameterByKey1u(g_context,RPR_CONTEXT_ITERATIONS,g_batchSize));
 
 	// allocate the data that will be used the read RPR framebuffer, and give it to OpenGL.
 	g_fbdata = new float[WINDOW_WIDTH * WINDOW_HEIGHT * 4];
