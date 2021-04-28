@@ -98,9 +98,9 @@ float				g_camera_posY = 5.0;
 int					g_lastMouseDownUpdateX = -1;
 int					g_lastMouseDownUpdateY = -1;
 GuiRenderImpl::Update g_update;
-const std::chrono::steady_clock::time_point g_invalidTime = std::chrono::time_point<std::chrono::high_resolution_clock>::max();
+const auto g_invalidTime = std::chrono::time_point<std::chrono::high_resolution_clock>::max();
 int					g_benchmark_numberOfRenderIteration = 0;
-std::chrono::steady_clock::time_point g_benchmark_start = g_invalidTime;
+auto g_benchmark_start = g_invalidTime;
 
 
 // High batch size will increase the RPR performance ( rendering iteration per second ), but lower the render feedback FPS on the OpenGL viewer.
@@ -119,7 +119,7 @@ void renderJob( rpr_context ctxt, GuiRenderImpl::Update* update )
 
 void Update()
 {
-	auto timeUpdateStarts = std::chrono::high_resolution_clock::now();
+	const auto timeUpdateStarts = std::chrono::high_resolution_clock::now();
 
 
 	//
