@@ -32,21 +32,6 @@ RPRNEXT-634 - (Enhancement)  - Stack overflow on bvh traversal - Fixed stacked o
 RPRNEXT-553 - (Bug)          - bad motion blur on HWI - Fixed broken motion blur on Navi2x
 RPRNEXT-472 - (Bug)          - crash on missing texture - Fixed a crash from a missing texture
 RPRNEXT-328 - (Bug)          - Geometry artifacts on rough microfacet samplinig - Fixed geometry artifact on rough microfacet sampling
-RPRNEXT-689 - (Bug)          - OOC unittest fails on Vega cards
-RPRNEXT-683 - (Bug)          - W6800 speed is similar to wx9100
-RPRNEXT-672 - (Bug)          - Subdivision stretches uv
-RPRNEXT-613 - (Enhancement)  - MacOs ARM support
-RPRNEXT-603 - (Bug)          - Artifacts with multiple large textures on one material
-RPRNEXT-594 - (Enhancement)  - MIS Compensation
-RPRNEXT-548 - (Bug)          - Normal map is lost with jpg
-RPRNEXT-393 - (Enhancement)  - Use depth information to extract contour
-RPRNEXT-370 - (Bug)          - Crash after rpr_shape&rpr_material_node recreation
-RPRNEXT-660 - (Bug)          - Remove Includes that are not needed
-RPRNEXT-646 - (Enhancement)  - MIS for shadow catcher AOV
-RPRNEXT-559 - (Bug)          - Cryptomatte AOVs' color is not consistent between RprsRender and Maya
-RPRNEXT-687 - (Enhancement)  - Render layer with lights
-RPRNEXT-654 - (Bug)          - fcos for shadow catcher AOV
-RPRNEXT-636 - (Bug)          - Spiral effect on Light Groups AOVs in GPU modes
 
 ################################################################################################################
 RPR SDK 2.02.2 - 7 April 2021
