@@ -1207,9 +1207,9 @@ VISIBILITY_LIGHT = 0x421 ,
 }
 public const int RPR_VERSION_MAJOR = 2 ;
 public const int RPR_VERSION_MINOR = 2 ;
-public const int RPR_VERSION_REVISION = 2 ;
-public const int RPR_VERSION_BUILD = 0x98a26087 ;
-public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200202 ;
+public const int RPR_VERSION_REVISION = 3 ;
+public const int RPR_VERSION_BUILD = 0xa88b22f0 ;
+public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200203 ;
 // Deprecated version naming - will be removed in the future :
 
 public const int RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
