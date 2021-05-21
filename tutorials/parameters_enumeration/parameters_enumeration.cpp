@@ -5,7 +5,7 @@
 *
 *  Description    Radeon ProRender SDK tutorials 
 *
-*  Copyright 2011 - 2017 Advanced Micro Devices, Inc. (unpublished)
+*  Copyright(C) 2011-2021 Advanced Micro Devices, Inc. All rights reserved.
 *
 *  All rights reserved.  This notice is intended as a precaution against
 *  inadvertent publication and does not imply publication or any waiver

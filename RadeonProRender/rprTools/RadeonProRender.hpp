@@ -1,3 +1,20 @@
+/*****************************************************************************\
+*
+*  Module Name    RadeonProRender.hpp
+*  Project        AMD Radeon ProRender
+*
+*  Description    Radeon ProRender Interface header
+*
+*  Copyright(C) 2017-2021 Advanced Micro Devices, Inc. All rights reserved.
+*
+*  All rights reserved.  This notice is intended as a precaution against
+*  inadvertent publication and does not imply publication or any waiver
+*  of confidentiality.  The year included in the foregoing notice is the
+*  year of creation of the work.
+*
+*
+\*****************************************************************************/
+
 #pragma once
 
 #ifndef RPR_API_USE_HEADER_V2
