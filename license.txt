@@ -17,16 +17,10 @@ limitations under the License.
 
 Third Party Licenses
 
-LibTiff - tiff images - BSD license https://en.wikipedia.org/wiki/Libtiff
 Tinyexr - openexr images - 3 clause BSD license. https://github.com/syoyo/tinyexr
 Stb images - all others (including jpg, png). MIT license https://github.com/nothings/stb/blob/master/stb_image.h
-Embree via Apache License 2.0 - https://github.com/embree/embree/blob/master/LICENSE.txt
-OpenSubdiv via Apache License 2.0 - http://graphics.pixar.com/opensubdiv/docs/license.html
-Curl via Apache License 2.0 - https://sourceforge.net/projects/curl-ext/
 GLEW - https://github.com/nigels-com/glew/blob/master/LICENSE.txt - The source code is licensed under the Modified BSD License (http://glew.sourceforge.net/glew.txt), the Mesa 3-D License (MIT) (http://glew.sourceforge.net/mesa.txt) and the Khronos License (MIT) (http://glew.sourceforge.net/khronos.txt).
 FreeGLUT – MIT License - https://sourceforge.net/projects/freeglut/
-glTF - https://www.khronos.org/gltf/, licensed under the Khronos IP frameworkhttps://www.khronos.org/members/ip-framework
-gtest - BSD 3-clauses License - https://github.com/google/googletest
 picoJson - JSON parser - 2-clause BSD license - https://github.com/kazuho/picojson
 tinyObjLoader - OBJ parser - MIT License - https://github.com/tinyobjloader/tinyobjloader
 Premake - https://github.com/premake/premake-core - BSD 3-Clause "New" or "Revised" License - https://github.com/premake/premake-core/blob/master/LICENSE.txt
