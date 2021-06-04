@@ -47,6 +47,10 @@ extern "C" {
 *                                            Advantages: Export and Import will be faster as we directly manage compiled image.
 *                                            Drawbacks: image parameters (like color space) can't be changed in an imported RPRS file that used this flag.
 *
+*  RPRLOADSTORE_EXPORTFLAG_ONLY_EXPORT_ATTACHED_RENDER_LAYERS : If enabled, only the shape and lights attached to the selected Render Layer list will be exported in the RPRS file.
+*                                                               The selected Render Layers list is defined by rprContextAttachRenderLayer / rprContextDetachRenderLayer
+*                                                               Attach/Detach Render Layers to shapes/lights with  rprShapeAttachRenderLayer, rprLightAttachRenderLayer, rprShapeDetachRenderLayer, rprLightDetachRenderLayer.
+*
 */
 #define RPRLOADSTORE_EXPORTFLAG_EXTERNALFILES (1 << 0) 
 #define RPRLOADSTORE_EXPORTFLAG_COMPRESS_IMAGE_LEVEL_1 (1 << 1) 
@@ -55,6 +59,7 @@ extern "C" {
 #define RPRLOADSTORE_EXPORTFLAG_COMPRESS_FLOAT_TO_HALF_UV (1 << 4) 
 #define RPRLOADSTORE_EXPORTFLAG_EMBED_FILE_IMAGES_USING_OBJECTNAME (1 << 5) 
 #define RPRLOADSTORE_EXPORTFLAG_USE_IMAGE_CACHE (1 << 6) 
+#define RPRLOADSTORE_EXPORTFLAG_ONLY_EXPORT_ATTACHED_RENDER_LAYERS (1 << 7) 
 
 
 /** 
@@ -148,9 +153,22 @@ extern RPR_API_ENTRY rpr_status rprsAddExtraCamera(rpr_camera extraCam);
 
 
 
+
+// Some custom 'extra' parameters can be attached to shape and saved inside the RPRS file.
+// Call rprsAddExtraShapeParameter before the rprsExport call to add those parameters in the exporter.
+// Call rprsGetExtraShapeParameter after the rprsImport call in order to read those parameters.
 extern RPR_API_ENTRY rpr_status rprsAddExtraShapeParameter(rpr_shape shape, const rpr_char * parameterName, rpr_int value);
 extern RPR_API_ENTRY rpr_status rprsGetExtraShapeParameter(rpr_shape shape, const rpr_char * parameterName, rpr_int * value);
-extern RPR_API_ENTRY rpr_status rprsExportToXML(char const * rprsFileNameBinary, char const * rprsFileNameAscii);
+
+
+// rprsExportToXML is for Debugging usecase only.
+// This function converts an RPRS file ( created with rprsExport ) into an XML representing this file.
+// The binary buffers ( textures, geometry ... ) are not exported.
+// This XML file is not designed to be imported.
+// Arguments:
+// 'rprsFilePath' : input RPRS file.
+// 'xmlFileOut' : name of the output XML file.
+extern RPR_API_ENTRY rpr_status rprsExportToXML(char const * rprsFilePath, char const * xmlFileOut);
 
 
 // Extra feature :  a shape hierarchy can be saved inside the RPRS

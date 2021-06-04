@@ -495,6 +495,7 @@ public enum Light : int
 LIGHT_TYPE = 0x801 ,
 LIGHT_TRANSFORM = 0x803 ,
 LIGHT_GROUP_ID = 0x805 ,
+LIGHT_RENDER_LAYER_LIST = 0x806 ,
 LIGHT_NAME = 0x777777 ,
 LIGHT_UNIQUE_ID = 0x777778 ,
 LIGHT_CUSTOM_PTR = 0x777779 ,
@@ -516,6 +517,7 @@ ENVIRONMENT_LIGHT_OVERRIDE_REFLECTION = 0x81A ,
 ENVIRONMENT_LIGHT_OVERRIDE_REFRACTION = 0x81B ,
 ENVIRONMENT_LIGHT_OVERRIDE_TRANSPARENCY = 0x81C ,
 ENVIRONMENT_LIGHT_OVERRIDE_BACKGROUND = 0x81D ,
+ENVIRONMENT_LIGHT_OVERRIDE_IRRADIANCE = 0x81E ,
 /* rpr_light_info - sky light */
 SKY_LIGHT_TURBIDITY = 0x812 ,
 SKY_LIGHT_ALBEDO = 0x813 ,
@@ -687,6 +689,7 @@ HSV_TO_RGB = 0x2e,
 USER_TEXTURE = 0x2f,
 TOON_CLOSURE = 0x30,
 TOON_RAMP = 0x31,
+VORONOI_TEXTURE = 0x32 ,
 
 	// MaterialX materials
 MATX_DIFFUSE_BRDF = 0x1000,
@@ -710,6 +713,7 @@ MATX_FRESNEL = 0x1011,
 MATX_LUMINANCE = 0x1012,
 MATX_FRACTAL3D = 0x1013,
 MATX_MIX = 0x1014,
+MATX = 0x1015,
 }
 /*rpr_material_node_input*/
 public enum MaterialInput : int
@@ -801,6 +805,9 @@ POSITION2 = 0x53 ,
 RANGE1 = 0x54 ,
 RANGE2 = 0x55 ,
 INTERPOLATION = 0x56 ,
+RANDOMNESS = 0x57 ,
+DIMENSION = 0x58 ,
+OUTTYPE = 0x59 ,
 UBER_DIFFUSE_COLOR = 0x910,
 UBER_DIFFUSE_WEIGHT = 0x927,
 UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -847,6 +854,8 @@ UBER_SSS_WEIGHT = 0x93a,
 UBER_SSS_MULTISCATTER = 0x93b,
 UBER_BACKSCATTER_WEIGHT = 0x93c,
 UBER_BACKSCATTER_COLOR = 0x93d,
+ADDRESS = 0x93e,
+TYPE = 0x93f,
 UBER_FRESNEL_SCHLICK_APPROXIMATION = 0x2c ,
 }
 /*rpr_material_input_raster*/
@@ -1083,6 +1092,13 @@ CLAMP_TO_EDGE = 0x3 ,
 CLAMP_ZERO = 0x5 ,
 CLAMP_ONE = 0x6 ,
 }
+/*rpr_voronoi_out_type*/
+public enum VoronoiOutType : int
+{
+DISTANCE = 0x1 ,
+COLOR = 0x2 ,
+POSITION = 0x3 ,
+}
 /*rpr_image_filter_type*/
 public enum ImageFilterType : int
 {
@@ -1201,9 +1217,9 @@ VISIBILITY_LIGHT = 0x421 ,
 }
 public const int RPR_VERSION_MAJOR = 2 ;
 public const int RPR_VERSION_MINOR = 2 ;
-public const int RPR_VERSION_REVISION = 3 ;
-public const int RPR_VERSION_BUILD = 0xa88b22f0 ;
-public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200203 ;
+public const int RPR_VERSION_REVISION = 4 ;
+public const int RPR_VERSION_BUILD = 0x0274328c ;
+public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200204 ;
 // Deprecated version naming - will be removed in the future :
 
 public const int RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -2407,6 +2423,32 @@ return rprShapeDetachRenderLayer(shape, renderLayerString);
 
     /** @brief
     *
+    *  @param  light               The light to set 
+    *  @param  renderLayerString   Render layer name to attach
+    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprLightAttachRenderLayer(IntPtr light, string renderLayerString);
+public static Status LightAttachRenderLayer(IntPtr light, string renderLayerString)
+{
+return rprLightAttachRenderLayer(light, renderLayerString);
+}
+
+    /** @brief
+    *
+    *  @param  light               The light to set 
+    *  @param  renderLayerString   Render layer name to detach
+    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprLightDetachRenderLayer(IntPtr light, string renderLayerString);
+public static Status LightDetachRenderLayer(IntPtr light, string renderLayerString)
+{
+return rprLightDetachRenderLayer(light, renderLayerString);
+}
+
+    /** @brief
+    *
     *
     *  @param  shape       The shape to set subdivision for
     *  @param  type
@@ -3186,6 +3228,7 @@ return rprEnvironmentLightDetachPortal(scene, env_light, portal);
       * @li RPR_ENVIRONMENT_LIGHT_OVERRIDE_REFRACTION
       * @li RPR_ENVIRONMENT_LIGHT_OVERRIDE_TRANSPARENCY
       * @li RPR_ENVIRONMENT_LIGHT_OVERRIDE_BACKGROUND
+      * @li RPR_ENVIRONMENT_LIGHT_OVERRIDE_IRRADIANCE
       *
       * @param in_ibl image based light created with rprContextCreateEnvironmentLight
       * @param overrideType override parameter
