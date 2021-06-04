@@ -1,3 +1,14 @@
+/*****************************************************************************\
+*
+*  Module Name    RadeonProRenderCpp.cpp
+*  Project        AMD Radeon ProRender
+*
+*  Description    Radeon ProRender Interface header
+*
+*  Copyright(C) 2017-2021 Advanced Micro Devices, Inc. All rights reserved.
+*
+\*****************************************************************************/
+
 #include "RadeonProRender.hpp"
 #include <cassert>
 #include <vector>

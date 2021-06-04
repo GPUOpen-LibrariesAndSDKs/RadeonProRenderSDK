@@ -1,3 +1,14 @@
+/*****************************************************************************\
+*
+*  Module Name    ShaderManager.cpp
+*  Project        Radeon ProRender SDK rendering tutorial
+*
+*  Description    Radeon ProRender SDK tutorials
+*
+*  Copyright(C) 2020-2021 Advanced Micro Devices, Inc. All rights reserved.
+*
+\*****************************************************************************/
+
 #include "ShaderManager.h"
 
 #include <vector>

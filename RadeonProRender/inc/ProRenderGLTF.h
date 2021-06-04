@@ -1,3 +1,14 @@
+/*****************************************************************************\
+*
+*  Module Name    ProRenderGLTF.h
+*  Project        AMD Radeon ProRender
+*
+*  Description    Radeon ProRender GLTF Interface header
+*
+*  Copyright(C) 2017-2021 Advanced Micro Devices, Inc. All rights reserved.
+*
+\*****************************************************************************/
+
 #ifndef __RPRGLTF_H
 #define __RPRGLTF_H
 

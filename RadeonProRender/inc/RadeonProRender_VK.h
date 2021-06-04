@@ -5,15 +5,7 @@
 *
 *  Description    Fire Render Engine OpenGL Interop header
 *
-*  Copyright 2011 - 2013 Advanced Micro Devices, Inc.
-*
-*  All rights reserved.  This notice is intended as a precaution against
-*  inadvertent publication and does not imply publication or any waiver
-*  of confidentiality.  The year included in the foregoing notice is the
-*  year of creation of the work.
-*  @author Dmitry Kozlov (dmitry.kozlov@amd.com)
-*  @author Takahiro Harada (takahiro.harada@amd.com)
-*  @bug No known bugs.
+*  Copyright(C) 2011-2021 Advanced Micro Devices, Inc. All rights reserved.
 *
 \*****************************************************************************/
 #ifndef __RADEONPRORENDER_VK_H

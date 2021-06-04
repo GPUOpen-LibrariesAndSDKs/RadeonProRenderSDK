@@ -1,3 +1,13 @@
+/*****************************************************************************\
+*
+*  Module Name    rprMaterialXML.cpp
+*  Project        AMD Radeon ProRender
+*
+*  Description    Radeon ProRender Interface header
+*
+*  Copyright(C) 2017-2021 Advanced Micro Devices, Inc. All rights reserved.
+*
+\*****************************************************************************/
 
 #include "rprMaterialXML.h"
 #include "tinyxml2.h"
