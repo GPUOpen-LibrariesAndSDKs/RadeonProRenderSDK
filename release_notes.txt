@@ -3,6 +3,38 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.02.4 - 04 June 2021
+
+-- RESOLVED TICKETS for NORTHSTAR:
+RPRNEXT-766 - (Bug)      - Disable volume/sss on macOS temporarily
+RPRNEXT-761 - (Bug)      - Fix displacement with perface material
+RPRNEXT-759 - (Bug)      - Fix black shadow and highlight colors in toon shader
+RPRNEXT-758 - (Bug)      - Fix normal map in toon shader
+RPRNEXT-748 - (Bug)      - Fix RprsRender crash due to invalid memory access
+RPRNEXT-740 - (Bug)      - Fix reflectioncatcher in contour rendering
+RPRNEXT-738 - (Bug)      - Fix incorrect lighting through glass
+RPRNEXT-726 - (Bug)      - Improve rendering performance
+RPRNEXT-724 - (Bug)      - Fix mipmap with UV scale
+RPRNEXT-723 - (Bug)      - Fix object ID aov
+RPRNEXT-716 - (Bug)      - Fix blurry texture
+RPRNEXT-687 - (Task)     - Render layer is applicable to lights
+RPRNEXT-680 - (Bug)      - Fix rprContextCreateMesh crash with zero size mesh
+RPRNEXT-672 - (Bug)      - Fix uv stretching in subdivision
+RPRNEXT-631 - (Bug)      - Fix long object deletion time on Navi21
+RPRNEXT-568 - (Task)     - Improve memory usage with large texture
+RPRNEXT-436 - (Bug)      - Fix light isn't deleted in IPR
+
+-- RPR API CHANGE:
+ * RPR lights are now part of the Render Layer filter.
+  Before 2.02.4 : only shapes were filterable with Render Layer ( rprShapeAttachRenderLayer )
+  From 2.02.4: lights are also filterable ( new API: rprLightAttachRenderLayer )
+  So, if you enable the Render Layer ( with rprContextAttachRenderLayer ) and don't attach any light to the selected Render Layer(s) you will have a black rendering.
+
+ * Add of Voronoi procedural material (RPR_MATERIAL_NODE_VORONOI_TEXTURE). 
+  Inputs of this material are RPR_MATERIAL_INPUT_RANDOMNESS, RPR_MATERIAL_INPUT_DIMENSION and RPR_MATERIAL_INPUT_OUTTYPE
+  Possible values of RPR_MATERIAL_INPUT_OUTTYPE are:  RPR_VORONOI_OUT_TYPE_DISTANCE, RPR_VORONOI_OUT_TYPE_COLOR or RPR_VORONOI_OUT_TYPE_POSITION.
+
+################################################################################################################
 RPR SDK 2.02.3 - 28 April 2021
 
 -- RESOLVED TICKETS for NORTHSTAR:

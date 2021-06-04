@@ -199,86 +199,91 @@ rpr_int rprtools_MaterialXMLImport(
 			for(unsigned int iNodeParam=0; ;iNodeParam++)
 			{
 				tinyxml2::XMLElement* paramFirstChild_element = paramFirstChild->ToElement();
-				std::string paramFirstChild_element_name = paramFirstChild_element->Name();
-
-				if ( paramFirstChild_element_name != "param")
-					throw (rpr_int)RPR_ERROR_INTERNAL_ERROR;
-			
-				std::string  name = paramFirstChild_element->Attribute("name");
-				std::string  type = paramFirstChild_element->Attribute("type");
-				std::string  value = paramFirstChild_element->Attribute("value");
-
-				if ( name == "displacement" )
+				if ( paramFirstChild_element == nullptr )
 				{
-					containsDisplacement = true;
-				}
-
-				if ( nodeElement_type == "INPUT_TEXTURE" ) 
-				{
-					if ( name == "path" && type == "file_path" )
-					{
-						std::string fullPathName = std::string(imageBaseFolderPath) + value;
-						status = rprContextCreateImageFromFile(context,fullPathName.c_str(),&newNode.image); MACRO_CHECK_RPR_STATUS;
-						status = rprObjectSetName(newNode.image, value.c_str());  MACRO_CHECK_RPR_STATUS;
-						newNode.imagePath = value;
-					}
-					else if ( name == "gamma" && type == "float" )
-					{
-						newNode.imageGamma = std::stof(value);
-					}
-					else if ( name == "tiling_u" && type == "float" )
-					{
-						newNode.tilingX = std::stof(value);
-					}
-					else if ( name == "tiling_v" && type == "float" )
-					{
-						newNode.tilingY = std::stof(value);
-					}
-					else
-					{
-						throw (rpr_int)RPR_ERROR_INTERNAL_ERROR;
-					}
+					// if we reach this case, we are probably inside an XML comment
 				}
 				else
 				{
-					if ( nodeElement_type == "UBER" && name == "displacement" ) // manage old verison of XML : when displacement was an input of UBER. ( is recent verison of RPR, we don't have that anymore )
+					std::string paramFirstChild_element_name = paramFirstChild_element->Name();
+
+					if ( paramFirstChild_element_name != "param")
+						throw (rpr_int)RPR_ERROR_INTERNAL_ERROR;
+			
+					std::string  name = paramFirstChild_element->Attribute("name");
+					std::string  type = paramFirstChild_element->Attribute("type");
+					std::string  value = paramFirstChild_element->Attribute("value");
+
+					if ( name == "displacement" )
 					{
-						if ( type == "connection" )
+						containsDisplacement = true;
+					}
+
+					if ( nodeElement_type == "INPUT_TEXTURE" ) 
+					{
+						if ( name == "path" && type == "file_path" )
 						{
-							displacementNodeUsed = value;
+							std::string fullPathName = std::string(imageBaseFolderPath) + value;
+							status = rprContextCreateImageFromFile(context,fullPathName.c_str(),&newNode.image); MACRO_CHECK_RPR_STATUS;
+							status = rprObjectSetName(newNode.image, value.c_str());  MACRO_CHECK_RPR_STATUS;
+							newNode.imagePath = value;
+						}
+						else if ( name == "gamma" && type == "float" )
+						{
+							newNode.imageGamma = std::stof(value);
+						}
+						else if ( name == "tiling_u" && type == "float" )
+						{
+							newNode.tilingX = std::stof(value);
+						}
+						else if ( name == "tiling_v" && type == "float" )
+						{
+							newNode.tilingY = std::stof(value);
 						}
 						else
 						{
 							throw (rpr_int)RPR_ERROR_INTERNAL_ERROR;
 						}
 					}
-					else if ( type == "uint" )
-					{
-						unsigned long val = std::stoul(value);
-						status = rprMaterialNodeSetInputUByKey(newNode.matNode, strIdMapper.RPRMaterialInput_string_to_id( name ),val);  
-						MACRO_CHECK_RPR_STATUS;
-					}
-					else if ( type == "connection" )
-					{
-						newNode.connecNode_.push_back( std::pair< std::string , std::pair<std::string,rpr_material_node_input> >(value,  std::pair<std::string,rpr_material_node_input>(name, (rpr_material_node_input)0) ) );
-					}
-					else if ( type == "float4" )
-					{
-						bool success = false;
-						RadeonProRender::float4 f4 = rprx4FloatFromXMLString(value,success);
-						if ( !success )
-							throw (rpr_int)RPR_ERROR_INTERNAL_ERROR;
-						status = rprMaterialNodeSetInputFByKey(newNode.matNode, strIdMapper.RPRMaterialInput_string_to_id(name),f4.x , f4.y , f4.z, f4.w);  
-						MACRO_CHECK_RPR_STATUS;
-					}
 					else
 					{
-						throw (rpr_int)RPR_ERROR_INTERNAL_ERROR;
+						if ( nodeElement_type == "UBER" && name == "displacement" ) // manage old verison of XML : when displacement was an input of UBER. ( is recent verison of RPR, we don't have that anymore )
+						{
+							if ( type == "connection" )
+							{
+								displacementNodeUsed = value;
+							}
+							else
+							{
+								throw (rpr_int)RPR_ERROR_INTERNAL_ERROR;
+							}
+						}
+						else if ( type == "uint" )
+						{
+							unsigned long val = std::stoul(value);
+							status = rprMaterialNodeSetInputUByKey(newNode.matNode, strIdMapper.RPRMaterialInput_string_to_id( name ),val);  
+							MACRO_CHECK_RPR_STATUS;
+						}
+						else if ( type == "connection" )
+						{
+							newNode.connecNode_.push_back( std::pair< std::string , std::pair<std::string,rpr_material_node_input> >(value,  std::pair<std::string,rpr_material_node_input>(name, (rpr_material_node_input)0) ) );
+						}
+						else if ( type == "float4" )
+						{
+							bool success = false;
+							RadeonProRender::float4 f4 = rprx4FloatFromXMLString(value,success);
+							if ( !success )
+								throw (rpr_int)RPR_ERROR_INTERNAL_ERROR;
+							status = rprMaterialNodeSetInputFByKey(newNode.matNode, strIdMapper.RPRMaterialInput_string_to_id(name),f4.x , f4.y , f4.z, f4.w);  
+							MACRO_CHECK_RPR_STATUS;
+						}
+						else
+						{
+							throw (rpr_int)RPR_ERROR_INTERNAL_ERROR;
+						}
+
 					}
-
-					int aa=0;
 				}
-
 
 				paramFirstChild = paramFirstChild->NextSibling();
 				if ( paramFirstChild == nullptr )

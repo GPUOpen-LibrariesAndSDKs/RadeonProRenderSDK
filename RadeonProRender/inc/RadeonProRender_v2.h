@@ -71,9 +71,9 @@ typedef rpr_uint rpr_environment_override;
 
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 2 
-#define RPR_VERSION_REVISION 3 
-#define RPR_VERSION_BUILD 0xa88b22f0 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200203 
+#define RPR_VERSION_REVISION 4 
+#define RPR_VERSION_BUILD 0x0274328c 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200204 
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
 #define RPR_API_VERSION_MINOR RPR_VERSION_BUILD 
 #define RPR_OBJECT_NAME 0x777777 
@@ -493,6 +493,7 @@ typedef enum // rpr_light_info
 	RPR_LIGHT_TYPE = 0x801 ,
 	RPR_LIGHT_TRANSFORM = 0x803 ,
 	RPR_LIGHT_GROUP_ID = 0x805 ,
+	RPR_LIGHT_RENDER_LAYER_LIST = 0x806 ,
 	RPR_LIGHT_NAME = RPR_OBJECT_NAME,
 	RPR_LIGHT_UNIQUE_ID = RPR_OBJECT_UNIQUE_ID,
 	RPR_LIGHT_CUSTOM_PTR = RPR_OBJECT_CUSTOM_PTR,
@@ -514,6 +515,7 @@ typedef enum // rpr_light_info
 	RPR_ENVIRONMENT_LIGHT_OVERRIDE_REFRACTION = 0x81B ,
 	RPR_ENVIRONMENT_LIGHT_OVERRIDE_TRANSPARENCY = 0x81C ,
 	RPR_ENVIRONMENT_LIGHT_OVERRIDE_BACKGROUND = 0x81D ,
+	RPR_ENVIRONMENT_LIGHT_OVERRIDE_IRRADIANCE = 0x81E ,
 /* rpr_light_info - sky light */
 	RPR_SKY_LIGHT_TURBIDITY = 0x812 ,
 	RPR_SKY_LIGHT_ALBEDO = 0x813 ,
@@ -685,6 +687,7 @@ typedef enum // rpr_material_node_type
 	RPR_MATERIAL_NODE_USER_TEXTURE = 0x2f,
 	RPR_MATERIAL_NODE_TOON_CLOSURE = 0x30,
 	RPR_MATERIAL_NODE_TOON_RAMP = 0x31,
+	RPR_MATERIAL_NODE_VORONOI_TEXTURE = 0x32 ,
 
 	// MaterialX materials
 	RPR_MATERIAL_NODE_MATX_DIFFUSE_BRDF = 0x1000,
@@ -708,6 +711,7 @@ typedef enum // rpr_material_node_type
 	RPR_MATERIAL_NODE_MATX_LUMINANCE = 0x1012,
 	RPR_MATERIAL_NODE_MATX_FRACTAL3D = 0x1013,
 	RPR_MATERIAL_NODE_MATX_MIX = 0x1014,
+	RPR_MATERIAL_NODE_MATX = 0x1015,
 } rpr_material_node_type ;
 
 typedef enum // rpr_material_node_input
@@ -799,6 +803,9 @@ typedef enum // rpr_material_node_input
 	RPR_MATERIAL_INPUT_RANGE1 = 0x54 ,
 	RPR_MATERIAL_INPUT_RANGE2 = 0x55 ,
 	RPR_MATERIAL_INPUT_INTERPOLATION = 0x56 ,
+	RPR_MATERIAL_INPUT_RANDOMNESS = 0x57 ,
+	RPR_MATERIAL_INPUT_DIMENSION = 0x58 ,
+	RPR_MATERIAL_INPUT_OUTTYPE = 0x59 ,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR = 0x910,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT = 0x927,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -845,6 +852,8 @@ typedef enum // rpr_material_node_input
 	RPR_MATERIAL_INPUT_UBER_SSS_MULTISCATTER = 0x93b,
 	RPR_MATERIAL_INPUT_UBER_BACKSCATTER_WEIGHT = 0x93c,
 	RPR_MATERIAL_INPUT_UBER_BACKSCATTER_COLOR = 0x93d,
+	RPR_MATERIAL_INPUT_ADDRESS = 0x93e,
+	RPR_MATERIAL_INPUT_TYPE = 0x93f,
 	RPR_MATERIAL_INPUT_UBER_FRESNEL_SCHLICK_APPROXIMATION = RPR_MATERIAL_INPUT_SCHLICK_APPROXIMATION,
 } rpr_material_node_input ;
 
@@ -1081,6 +1090,13 @@ typedef enum // rpr_image_wrap_type
 	RPR_IMAGE_WRAP_TYPE_CLAMP_ZERO = 0x5 ,
 	RPR_IMAGE_WRAP_TYPE_CLAMP_ONE = 0x6 ,
 } rpr_image_wrap_type ;
+
+typedef enum // rpr_voronoi_out_type
+{
+	RPR_VORONOI_OUT_TYPE_DISTANCE = 0x1 ,
+	RPR_VORONOI_OUT_TYPE_COLOR = 0x2 ,
+	RPR_VORONOI_OUT_TYPE_POSITION = 0x3 ,
+} rpr_voronoi_out_type ;
 
 typedef enum // rpr_image_filter_type
 {
@@ -2100,6 +2116,24 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
 
     /** @brief
     *
+    *  @param  light               The light to set 
+    *  @param  renderLayerString   Render layer name to attach
+    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprLightAttachRenderLayer(rpr_light light, rpr_char const * renderLayerString);
+
+
+    /** @brief
+    *
+    *  @param  light               The light to set 
+    *  @param  renderLayerString   Render layer name to detach
+    *  @return             RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprLightDetachRenderLayer(rpr_light light, rpr_char const * renderLayerString);
+
+
+    /** @brief
+    *
     *
     *  @param  shape       The shape to set subdivision for
     *  @param  type
@@ -2654,6 +2688,7 @@ extern RPR_API_ENTRY rpr_status rprDiskLightSetAngle(rpr_light light, rpr_float 
       * @li RPR_ENVIRONMENT_LIGHT_OVERRIDE_REFRACTION
       * @li RPR_ENVIRONMENT_LIGHT_OVERRIDE_TRANSPARENCY
       * @li RPR_ENVIRONMENT_LIGHT_OVERRIDE_BACKGROUND
+      * @li RPR_ENVIRONMENT_LIGHT_OVERRIDE_IRRADIANCE
       *
       * @param in_ibl image based light created with rprContextCreateEnvironmentLight
       * @param overrideType override parameter

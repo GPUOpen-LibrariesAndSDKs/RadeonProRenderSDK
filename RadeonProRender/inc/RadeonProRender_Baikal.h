@@ -134,7 +134,7 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_RTAO_UPSCALE_ENABLED 0X1009 // name: "rtao.upscale_enabled"
 #define RPR_CONTEXT_RTAO_UPSCALE_FACTOR 0X100A // name: "rtao.upscale_factor"
 #define RPR_CONTEXT_VCT_RESOLUTION 0X100B // name: "vct.resolution". Only valid if RPR_CONTEXT_CREATEPROP_HYBRID_ENABLE_VCT was set during context creation
-#define RPR_CONTEXT_PROGRESSIVE_LIGHT_BAKE_ENABLED 0X100C // name: "light_baker.enabled"
+#define RPR_CONTEXT_ENABLE_LIGHTMAPS 0X100C // name: "light_baker.enabled"
 #define RPR_CONTEXT_AREA_LIGHT_SHADOWS_ENABLED 0X100D // name: "area_light_shadows.enabled"
 #define RPR_CONTEXT_SPOT_LIGHT_DEPTH_BIAS 0x100E // name: "spot_light.depth_bias". type float
 #define RPR_CONTEXT_POINT_LIGHT_DEPTH_BIAS 0x100F // name: "point_light.depth_bias. type float
@@ -203,6 +203,10 @@ struct RPRHybridKernelsPathInfo
 /* rpr_shape_info */
 #define RPR_SHAPE_LIGHTMAP_CHART_INDEX 0x1440
 
+#define RPR_CAMERA_UV_LIGHTMAP_CHART_INDEX 0x1441
+#define RPR_FRAMEBUFFER_TYPE 0x1442
+#define RPR_CAMERA_MODE_UV 0x1443
+
 // rprMeshGetInfo extension
 #define RPR_MESH_IS_DYNAMIC_MESH 0x519
 #define RPR_MESH_LOCAL_AABB 0x520
@@ -244,11 +248,11 @@ typedef rpr_int (*rprContextFlushFrameBuffers_func)(rpr_context in_context);
 #define RPR_CONTEXT_FLUSH_FRAMEBUFFERS_FUNC_NAME "rprContextFlushFrameBuffers"
 
 /**
- * Set an index of the lighmap char for the shape.
+ * Set an index of the lightmap chart for the shape.
  *
  * If progressive lightbaking mode is enabled, shape's lightmap chart index is being used
- * to determine which lighmap shape belongs to. UV1 set should be correctly laid out for
- * lightmapped geomtry.
+ * to determine which lightmap shape belongs to. UV1 set should be correctly laid out for
+ * lightmapped geometry.
  *
  * @note By default index is -1 (which means disable shape from baking).
  *
@@ -257,6 +261,33 @@ typedef rpr_int (*rprContextFlushFrameBuffers_func)(rpr_context in_context);
  */
 typedef rpr_int(*rprShapeSetLightmapChartIndex_func)(rpr_shape shape, rpr_int chart_index);
 #define RPR_SHAPE_SET_LIGHTMAP_CHART_INDEX_FUNC_NAME "rprShapeSetLightmapChartIndex"
+
+/**
+ */
+typedef rpr_int(*rprUvCameraSetChartIndex_func)(rpr_camera camera, rpr_int chart_index);
+#define RPR_UV_CAMERA_SET_CHART_INDEX_FUNC_NAME "rprUvCameraSetChartIndex"
+
+/**
+ * Framebuffer format types for light baking.
+ */
+typedef enum // rpr_framebuffer_type
+{
+    RPR_FRAMEBUFFER_TYPE_DIFFUSE_RGB = 0x1,
+    RPR_FRAMEBUFFER_TYPE_DOMINANT_DIRECTION = 0x2,
+    RPR_FRAMEBUFFER_TYPE_DOMINANT_DIRECTION_RGB = 0x3,
+    RPR_FRAMEBUFFER_TYPE_HL2 = 0x4,
+    RPR_FRAMEBUFFER_TYPE_AMBIENT_CUBE = 0x5,
+    RPR_FRAMEBUFFER_TYPE_SH1 = 0x6,
+    RPR_FRAMEBUFFER_TYPE_SH2 = 0x7,
+    RPR_FRAMEBUFFER_TYPE_SG = 0x8
+} rpr_framebuffer_type;
+
+/**
+ * Creates special typed framebuffer used for lightmapping.
+ */
+typedef rpr_int(*rprContextCreateFramebufferTyped_func)(rpr_context context, rpr_framebuffer_type fb_type,
+    const rpr_framebuffer_desc* fb_desc, rpr_framebuffer* out_framebuffer);
+#define RPR_CONTEXT_CREATE_FRAMEBUFFER_TYPED_FUNC_NAME "rprContextCreateFramebufferTyped"
 
 /**
  * Create a editable triangle mesh.
@@ -295,6 +326,12 @@ typedef rpr_status (*rprContextCreateMeshEditable_func)(rpr_context context,
     rpr_mesh_info const* mesh_properties,
     rpr_shape* out_mesh);
 #define RPR_CONTEXT_CREATE_MESH_EDITABLE_FUNC_NAME "rprContextCreateMeshEditable"
+
+typedef rpr_status(*rprMaterialNodeSetInputSByKey_func)(rpr_material_node in_node, rpr_material_node_input in_input, rpr_char const* name);
+#define RPR_MATERIAL_SET_INPUT_BY_S_KEY_FUNC_NAME "rprMaterialNodeSetInputSByKey"
+
+typedef rpr_status(*rprMaterialXSetAddress_func)(rpr_material_node in_node, rpr_char const* name);
+#define RPR_MATERIALX_SET_ADDRESS_FUNC_NAME "rprMaterialXSetAddress"
 
 struct DataChange
 {
