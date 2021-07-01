@@ -10,6 +10,7 @@
 \*****************************************************************************/
 
 #include "RadeonProRender.hpp"
+#include "RadeonProRender_MaterialX.h"
 #include <cassert>
 #include <vector>
 

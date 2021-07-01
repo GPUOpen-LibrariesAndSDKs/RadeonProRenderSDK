@@ -33,9 +33,9 @@ extern "C" {
 
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 2 
-#define RPR_VERSION_REVISION 4 
-#define RPR_VERSION_BUILD 0x0274328c 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200204 
+#define RPR_VERSION_REVISION 5 
+#define RPR_VERSION_BUILD 0x9ee78257 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200205 
 
 // Deprecated version naming - will be removed in the future :
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
@@ -389,6 +389,7 @@ extern "C" {
 #define RPR_MESH_UV2_INDEX_STRIDE 0x517 
 #define RPR_MESH_UV_DIM 0x518 
 #define RPR_MESH_MOTION_DIMENSION 0x519 
+#define RPR_MESH_VOLUME_FLAG 0x51A 
 /*rpr_scene_info*/
 #define RPR_SCENE_SHAPE_COUNT 0x701 
 #define RPR_SCENE_LIGHT_COUNT 0x702 
@@ -590,6 +591,7 @@ extern "C" {
 #define RPR_MATERIAL_NODE_TOON_CLOSURE 0x30
 #define RPR_MATERIAL_NODE_TOON_RAMP 0x31
 #define RPR_MATERIAL_NODE_VORONOI_TEXTURE 0x32 
+#define RPR_MATERIAL_NODE_GRID_SAMPLER 0x33 
 
     
 #define RPR_MATERIAL_NODE_MATX_DIFFUSE_BRDF 0x1000
@@ -705,6 +707,9 @@ extern "C" {
 #define RPR_MATERIAL_INPUT_RANDOMNESS 0x57 
 #define RPR_MATERIAL_INPUT_DIMENSION 0x58 
 #define RPR_MATERIAL_INPUT_OUTTYPE 0x59 
+#define RPR_MATERIAL_INPUT_DENSITY 0x5a 
+#define RPR_MATERIAL_INPUT_DENSITYGRID 0x5b 
+#define RPR_MATERIAL_INPUT_DISPLACEMENT 0x5c 
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR 0x910
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT 0x927
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_ROUGHNESS 0x911
@@ -935,6 +940,7 @@ extern "C" {
 #define RPR_MATERIAL_NODE_INPUT_TYPE_NODE 0x3 
 #define RPR_MATERIAL_NODE_INPUT_TYPE_IMAGE 0x4 
 #define RPR_MATERIAL_NODE_INPUT_TYPE_BUFFER 0x5 
+#define RPR_MATERIAL_NODE_INPUT_TYPE_GRID 0x6 
 /*rpr_subdiv_boundary_interfop_type*/
 #define RPR_SUBDIV_BOUNDARY_INTERFOP_TYPE_EDGE_AND_CORNER 0x1 
 #define RPR_SUBDIV_BOUNDARY_INTERFOP_TYPE_EDGE_ONLY 0x2 
@@ -3154,6 +3160,7 @@ extern RPR_API_ENTRY rpr_status rprSceneGetEnvironmentLight(rpr_scene in_scene, 
     */
   extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputImageDataByKey(rpr_material_node in_node, rpr_material_node_input in_input, rpr_image image);
 extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputBufferDataByKey(rpr_material_node in_node, rpr_material_node_input in_input, rpr_buffer buffer);
+extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputGridDataByKey(rpr_material_node in_node, rpr_material_node_input in_input, rpr_grid grid);
 extern RPR_API_ENTRY rpr_status rprMaterialNodeGetInfo(rpr_material_node in_node, rpr_material_node_info in_info, size_t in_size, void * in_data, size_t * out_size);
 extern RPR_API_ENTRY rpr_status rprMaterialNodeGetInputInfo(rpr_material_node in_node, rpr_int in_input_idx, rpr_material_node_input_info in_info, size_t in_size, void * in_data, size_t * out_size);
 extern RPR_API_ENTRY rpr_status rprContextCreateComposite(rpr_context context, rpr_composite_type in_type, rpr_composite * out_composite);
@@ -3250,47 +3257,9 @@ extern RPR_API_ENTRY rpr_status rprHeteroVolumeSetEmissionScale(rpr_hetero_volum
 extern RPR_API_ENTRY rpr_status rprHeteroVolumeSetDensityScale(rpr_hetero_volume heteroVolume, rpr_float scale);
 
 
-  /** @brief Parse a MaterialX XML data, and create the Material graph composed of rpr_material_nodes, and rpr_images
-  *
-  * @param xmlData                       null-terminated string of the MaterialX XML data
-  * @param basePath                      base path used for image loading
-  *
-  * @param imageAlreadyCreated_count
-  * @param imageAlreadyCreated_paths
-  * @param imageAlreadyCreated_list
-  * We can specify a list of rpr_image that are already loaded. 
-  * If rprLoadMaterialX finds any images in the XML belonging to this list it will use it directly instead of creating it with rprContextCreateImageFromFile
-  * Those images will not be added in the listImagesOut list.
-  * example to add an image in the imageAlreadyCreated list:
-  * imageAlreadyCreated_count = 1
-  * imageAlreadyCreated_paths[0] = "../../Textures/UVCheckerMap13-1024.png"    // same path specified in the 'value' of the image in the XML
-  * imageAlreadyCreated_list[0] = (rpr_image) existing_rpr_image
-  * imageAlreadyCreated_paths and imageAlreadyCreated_list must have the same size.
-  *
-  * @param listNodesOut 
-  * @param listImagesOut
-  * Thoses 2 buffers are allocated by rprLoadMaterialX, then you should use rprLoadMaterialX_free to free them.
-  * they contain the list of rpr_material and rpr_image created by rprLoadMaterialX.
-  *
-  * @param rootNodeOut         Closure node in the material graph. Index inside listNodesOut. Could be -1 if an error occured.
-  *                            This is the material that should be assigned to shape: rprShapeSetMaterial(shape,listNodesOut[rootNodeOut]);
-  *
-  * This function is NOT traced. However internally it's calling some RPR API to build the graph, those calls are traced.
-  */
-  extern RPR_API_ENTRY rpr_status rprLoadMaterialX(rpr_context in_context, rpr_material_system in_matsys, char const * xmlData, char const ** incudeData, int includeCount, char const * basePath, int imageAlreadyCreated_count, char const ** imageAlreadyCreated_paths, rpr_image * imageAlreadyCreated_list, rpr_material_node ** listNodesOut, rpr_uint * listNodesOut_count, rpr_image ** listImagesOut, rpr_uint * listImagesOut_count, rpr_uint * rootNodeOut, rpr_uint * rootDisplacementNodeOut);
 
 
-  /** @brief Free the buffers allocated by rprLoadMaterialX
-  *
-  * It does NOT call any rprObjectDelete
-  * Internally it's doing a simple:
-  * delete[] listNodes;
-  * delete[] listImages;
-  * 
-  * This function is NOT traced.
-  */
-  extern RPR_API_ENTRY rpr_status rprLoadMaterialX_free(rpr_material_node * listNodes, rpr_image * listImages);
-#ifdef __cplusplus
+  #ifdef __cplusplus
 }
 #endif
 

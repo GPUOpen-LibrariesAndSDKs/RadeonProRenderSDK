@@ -697,6 +697,22 @@ void XMLExporter_fillMaterialList(
 				MACRO_CHECK_RPR_STATUS;
 			}
 		}
+		else if (nodeInputType == RPR_MATERIAL_NODE_INPUT_TYPE_GRID)
+		{
+			if (shaderParameterValue_lenght != sizeof(rpr_grid))
+			{
+				throw (rpr_int)RPR_ERROR_INTERNAL_ERROR;
+			}
+			else
+			{
+				rpr_grid* grid = (rpr_grid*)shaderParameterValue;
+				if (*grid != NULL)
+				{
+					// TODO
+				}
+				MACRO_CHECK_RPR_STATUS;
+			}
+		}
 		else if ( nodeInputType == RPR_MATERIAL_NODE_INPUT_TYPE_FLOAT4 )
 		{
 			const float* f4 = (const float*)shaderParameterValue;

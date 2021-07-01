@@ -462,6 +462,7 @@ UV2_STRIDE = 0x516 ,
 UV2_INDEX_STRIDE = 0x517 ,
 UV_DIM = 0x518 ,
 MOTION_DIMENSION = 0x519 ,
+VOLUME_FLAG = 0x51A ,
 }
 /*rpr_scene_info*/
 public enum Scene : int
@@ -690,6 +691,7 @@ USER_TEXTURE = 0x2f,
 TOON_CLOSURE = 0x30,
 TOON_RAMP = 0x31,
 VORONOI_TEXTURE = 0x32 ,
+GRID_SAMPLER = 0x33 ,
 
 	// MaterialX materials
 MATX_DIFFUSE_BRDF = 0x1000,
@@ -808,6 +810,9 @@ INTERPOLATION = 0x56 ,
 RANDOMNESS = 0x57 ,
 DIMENSION = 0x58 ,
 OUTTYPE = 0x59 ,
+DENSITY = 0x5a ,
+DENSITYGRID = 0x5b ,
+DISPLACEMENT = 0x5c ,
 UBER_DIFFUSE_COLOR = 0x910,
 UBER_DIFFUSE_WEIGHT = 0x927,
 UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -1076,6 +1081,7 @@ UINT = 0x2 ,
 NODE = 0x3 ,
 IMAGE = 0x4 ,
 BUFFER = 0x5 ,
+GRID = 0x6 ,
 }
 /*rpr_subdiv_boundary_interfop_type*/
 public enum SubdivBoundaryInteropType : int
@@ -1217,9 +1223,9 @@ VISIBILITY_LIGHT = 0x421 ,
 }
 public const int RPR_VERSION_MAJOR = 2 ;
 public const int RPR_VERSION_MINOR = 2 ;
-public const int RPR_VERSION_REVISION = 4 ;
-public const int RPR_VERSION_BUILD = 0x0274328c ;
-public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200204 ;
+public const int RPR_VERSION_REVISION = 5 ;
+public const int RPR_VERSION_BUILD = 0x9ee78257 ;
+public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200205 ;
 // Deprecated version naming - will be removed in the future :
 
 public const int RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -3972,6 +3978,11 @@ public static Status MaterialNodeSetInputBufferDataByKey(IntPtr in_node, Materia
 {
 return rprMaterialNodeSetInputBufferDataByKey(in_node, in_input, buffer);
 }
+[DllImport(dllName)] static extern Status rprMaterialNodeSetInputGridDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr grid);
+public static Status MaterialNodeSetInputGridDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr grid)
+{
+return rprMaterialNodeSetInputGridDataByKey(in_node, in_input, grid);
+}
 [DllImport(dllName)] static extern Status rprMaterialNodeGetInfo(IntPtr in_node, MaterialNodeInfo in_info, long in_size, IntPtr in_data, out long out_size);
 public static Status MaterialNodeGetInfo(IntPtr in_node, MaterialNodeInfo in_info, long in_size, IntPtr in_data, out long out_size)
 {
@@ -4239,54 +4250,8 @@ public static Status HeteroVolumeSetDensityScale(IntPtr heteroVolume, float scal
 return rprHeteroVolumeSetDensityScale(heteroVolume, scale);
 }
 
-  /** @brief Parse a MaterialX XML data, and create the Material graph composed of rpr_material_nodes, and rpr_images
-  *
-  * @param xmlData                       null-terminated string of the MaterialX XML data
-  * @param basePath                      base path used for image loading
-  *
-  * @param imageAlreadyCreated_count
-  * @param imageAlreadyCreated_paths
-  * @param imageAlreadyCreated_list
-  * We can specify a list of rpr_image that are already loaded. 
-  * If rprLoadMaterialX finds any images in the XML belonging to this list it will use it directly instead of creating it with rprContextCreateImageFromFile
-  * Those images will not be added in the listImagesOut list.
-  * example to add an image in the imageAlreadyCreated list:
-  * imageAlreadyCreated_count = 1
-  * imageAlreadyCreated_paths[0] = "../../Textures/UVCheckerMap13-1024.png"    // same path specified in the 'value' of the image in the XML
-  * imageAlreadyCreated_list[0] = (rpr_image) existing_rpr_image
-  * imageAlreadyCreated_paths and imageAlreadyCreated_list must have the same size.
-  *
-  * @param listNodesOut 
-  * @param listImagesOut
-  * Thoses 2 buffers are allocated by rprLoadMaterialX, then you should use rprLoadMaterialX_free to free them.
-  * they contain the list of rpr_material and rpr_image created by rprLoadMaterialX.
-  *
-  * @param rootNodeOut         Closure node in the material graph. Index inside listNodesOut. Could be -1 if an error occured.
-  *                            This is the material that should be assigned to shape: rprShapeSetMaterial(shape,listNodesOut[rootNodeOut]);
-  *
-  * This function is NOT traced. However internally it's calling some RPR API to build the graph, those calls are traced.
-  */
-  
-[DllImport(dllName)] static extern Status rprLoadMaterialX(IntPtr in_context, IntPtr in_matsys, IntPtr xmlData, IntPtr incudeData, int includeCount, IntPtr basePath, int imageAlreadyCreated_count, IntPtr imageAlreadyCreated_paths, IntPtr imageAlreadyCreated_list, out IntPtr listNodesOut, out uint listNodesOut_count, out IntPtr listImagesOut, out uint listImagesOut_count, out uint rootNodeOut, out uint rootDisplacementNodeOut);
-public static Status LoadMaterialX(IntPtr in_context, IntPtr in_matsys, IntPtr xmlData, IntPtr incudeData, int includeCount, IntPtr basePath, int imageAlreadyCreated_count, IntPtr imageAlreadyCreated_paths, IntPtr imageAlreadyCreated_list, out IntPtr listNodesOut, out uint listNodesOut_count, out IntPtr listImagesOut, out uint listImagesOut_count, out uint rootNodeOut, out uint rootDisplacementNodeOut)
-{
-return rprLoadMaterialX(in_context, in_matsys, xmlData, incudeData, includeCount, basePath, imageAlreadyCreated_count, imageAlreadyCreated_paths, imageAlreadyCreated_list, out listNodesOut, out listNodesOut_count, out listImagesOut, out listImagesOut_count, out rootNodeOut, out rootDisplacementNodeOut);
-}
 
-  /** @brief Free the buffers allocated by rprLoadMaterialX
-  *
-  * It does NOT call any rprObjectDelete
-  * Internally it's doing a simple:
-  * delete[] listNodes;
-  * delete[] listImages;
-  * 
-  * This function is NOT traced.
-  */
+
   
-[DllImport(dllName)] static extern Status rprLoadMaterialX_free(IntPtr listNodes, IntPtr listImages);
-public static Status LoadMaterialX_free(IntPtr listNodes, IntPtr listImages)
-{
-return rprLoadMaterialX_free(listNodes, listImages);
-}
 }
 }
