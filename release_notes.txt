@@ -3,6 +3,41 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.02.5 - 09 July 2021
+
+RPRNEXT-798 -      Fix albedo AOV to show basecolor in toon shader
+RPRNEXT-795 -      Fix unwanted halo around geometry with shadowcatcher and reflection catcher
+RPRNEXT-793 -      Fix AOVs through transparent material
+RPRNEXT-785 -      Fix convergence rate with textured emissive
+RPRNEXT-782 -      Improve performance of contour rendering
+RPRNEXT-778 -      Fix incorect background render through refraction
+RPRNEXT-775 -      Fix random behaviour of ray epsilon
+RPRNEXT-771 -      Fix contour rendering on MacOS
+RPRNEXT-770 -      Fix hair rendering artifacts with Nhair on RX 6800 seriese
+RPRNEXT-769 -      Fix render crash
+RPRNEXT-746 -      Implement heterogeneous volume on CPU
+RPRNEXT-714 -      Fix performance drop with Ellesmere GPUs
+RPRNEXT-647 -      Fix opacity AOV with RPR_CONTEXT_PREVIEW=1
+RPRNEXT-469 -      Implement RPR_MATERIAL_NODE_LOOKUP_OBJECT_ID for Northstar
+RPRNEXT-797 -      Fix crash when creating texture from data
+RPRNEXT-804 -      Fix unstable behaviour on RX vega seriese
+RPRNEXT-792 -      Support Volume without surface
+RPRNEXT-537 -      Fix the issue that invisible objects cast shadow 
+RPRNEXT-613 -      Add support MacOS arm
+
+-- RPR API CHANGE:
+  * Heterogeneous Volume is implemented in Northstar ( only for CPU ). The API to create it has some differences compared to the deprecated Tahoe plugin.
+
+  * MaterialX API has evolved: Everything related to MaterialX is in a separate header file: RadeonProRender_MaterialX.h
+    In this header, we can find 2 versions of API:
+    Version 1: Working with Northstar only. Deprecated, will be replaced by version 2.
+    Version 2: Still under developement. The main function: rprMaterialXSetFile is implemented.
+
+  * For both MaterialX and Heterogeneous Volume, It's planned to have demos implemented in this SDK. If you need a sample urgently, feel free to contact RichardGe.
+
+  * known issue: C# header is broken.
+
+################################################################################################################
 RPR SDK 2.02.4 - 04 June 2021
 
 -- RESOLVED TICKETS for NORTHSTAR:
