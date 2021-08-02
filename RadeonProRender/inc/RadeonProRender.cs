@@ -696,6 +696,7 @@ TOON_CLOSURE = 0x30,
 TOON_RAMP = 0x31,
 VORONOI_TEXTURE = 0x32 ,
 GRID_SAMPLER = 0x33 ,
+BLACKBODY = 0x34 ,
 
 	// MaterialX materials
 MATX_DIFFUSE_BRDF = 0x1000,
@@ -817,6 +818,8 @@ OUTTYPE = 0x59 ,
 DENSITY = 0x5a ,
 DENSITYGRID = 0x5b ,
 DISPLACEMENT = 0x5c ,
+TEMPERATURE = 0x5d ,
+KELVIN = 0x5e ,
 UBER_DIFFUSE_COLOR = 0x910,
 UBER_DIFFUSE_WEIGHT = 0x927,
 UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -1228,9 +1231,9 @@ VISIBILITY_LIGHT = 0x421 ,
 }
 public const int RPR_VERSION_MAJOR = 2 ;
 public const int RPR_VERSION_MINOR = 2 ;
-public const int RPR_VERSION_REVISION = 5 ;
-public const int RPR_VERSION_BUILD = 0xa5d6b4fc ;
-public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200205 ;
+public const int RPR_VERSION_REVISION = 6 ;
+public const int RPR_VERSION_BUILD = 0x423fb1bb ;
+public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200206 ;
 // Deprecated version naming - will be removed in the future :
 
 public const int RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
