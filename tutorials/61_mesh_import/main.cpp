@@ -81,7 +81,7 @@ int main()
 	CHECK(rprContextSetScene(context, scene_rprs));
 
 	// make sure to execute the demo "60_mesh_export" in order to create the cube_floor.rprs file first.
-	CHECK(rprsImport("cube_floor.rprs", context, matsys, &scene_rprs, true));
+	CHECK(rprsImport("cube_floor.rprs", context, matsys, &scene_rprs, true, nullptr));
 
 	// Progressively render an image
 	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
@@ -110,7 +110,7 @@ int main()
 	CHECK(rprContextSetScene(context, scene_gltf));
 		
 	// make sure to execute the demo "60_mesh_export" in order to create the cube_floor.gltf file first.
-	CHECK(rprImportFromGLTF("cube_floor.gltf", context, matsys, &scene_gltf, nullptr, 0));
+	CHECK(rprImportFromGLTF("cube_floor.gltf", context, matsys, &scene_gltf, nullptr, 0, nullptr));
 
 	// Progressively render an image
 	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));

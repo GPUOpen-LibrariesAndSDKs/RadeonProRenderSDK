@@ -91,7 +91,7 @@ int main()
 	CHECK(rprContextSetAOV(context, RPR_AOV_COLOR, frame_buffer));
 
 	/////////Mesh Import//////////
-	CHECK(rprsImport("../../Resources/Meshes/matball.rprs", context, matsys, &scene, true));
+	CHECK(rprsImport("../../Resources/Meshes/matball.rprs", context, matsys, &scene, true, nullptr));
 
 	//
 	// parse the shapes from matball.rprs : we are going to change the material assigned on each shapes.
