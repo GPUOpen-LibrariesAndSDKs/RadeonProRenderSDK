@@ -3,6 +3,28 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.02.6 - 06 August 2021
+
+RPRNEXT-835 - (Bug)      - Unexpected thin volumes
+RPRNEXT-824 - (Task)     - Improve render performance
+RPRNEXT-821 - (Bug)      - Fix crash with perface material
+RPRNEXT-818 - (Bug)      - Fix crash on UDIM rpr export
+RPRNEXT-816 - (Bug)      - Fix black render in Refract AOV
+RPRNEXT-781 - (Task)     - Implement Heterogeneous volume on GPU
+RPRNEXT-777 - (Bug)      - Fix toon shader ignores cast shadow flag
+RPRNEXT-557 - (Bug)      - Fix objects render black using camera normal AOV
+RPRNEXT-379 - (Bug)      - Fix light leak on mesh light
+
+-- RPR API CHANGE:
+ * Minor API backward compatibility break:
+   rprsExport, rprsImport, rprImportFromGLTF, rprExportToGLTF have a new argument: rprsCtx.
+   This "import/export" Context will be used to store additional data for the Export or read additional data after an Import.
+   This argument can be set to NULL in order to have the same behavior than before 2.02.6.
+
+ * new material for Northstar: RPR_MATERIAL_NODE_BLACKBODY.
+   inputs of : RPR_MATERIAL_INPUT_TEMPERATURE , RPR_MATERIAL_INPUT_KELVIN , RPR_MATERIAL_INPUT_EMISSION.
+
+################################################################################################################
 RPR SDK 2.02.5 - 09 July 2021
 
 RPRNEXT-798 -      Fix albedo AOV to show basecolor in toon shader
