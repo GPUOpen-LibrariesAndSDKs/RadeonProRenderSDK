@@ -162,10 +162,10 @@ int main()
 
 
 	///////// Mesh Export to RPRS ( native RPR file format ) //////////
-	CHECK(rprsxExport("cube_floor.rprs", context, nullptr, scene, 0, 0, 0, 0, 0, 0, 0));
+	CHECK(rprsxExport("cube_floor.rprs", context, nullptr, scene, 0, 0, 0, 0, 0, 0, 0, nullptr));
 
 	///////// Mesh Export to GLTF //////////
-	CHECK(rprExportToGLTF("cube_floor.gltf", context, nullptr, &scene, 1, 0));
+	CHECK(rprExportToGLTF("cube_floor.gltf", context, nullptr, &scene, 1, 0, nullptr));
 
 	// Progressively render an image
 	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));

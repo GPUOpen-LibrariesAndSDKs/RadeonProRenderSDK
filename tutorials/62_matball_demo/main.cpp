@@ -78,7 +78,7 @@ int main()
 	CHECK(rprContextSetAOV(context, RPR_AOV_COLOR, frame_buffer));
 
 	/////////Mesh Import//////////
-	CHECK(rprsImport("../../Resources/Meshes/matball.rprs", context, matsys, &scene, true));
+	CHECK(rprsImport("../../Resources/Meshes/matball.rprs", context, matsys, &scene, true, nullptr));
 
 	// Progressively render an image
 	std::cout << "Rendering scene 1... ";

@@ -217,7 +217,7 @@ int main()
 
 
 	rpr_scene scene = NULL;
-	status = rprsImport("../../Resources/Meshes/matball.rprs", context, matsys, &scene, false); CHECK(status);
+	status = rprsImport("../../Resources/Meshes/matball.rprs", context, matsys, &scene, false, nullptr); CHECK(status);
 
 
 #ifdef NO_TILE

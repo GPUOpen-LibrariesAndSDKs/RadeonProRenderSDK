@@ -14,6 +14,7 @@
 
 
 #include <RadeonProRender.h>
+#include <RprLoadStore.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,10 +72,13 @@ struct RprGltfImportCallbacks
 @param scene            The scene at gltTF::scene is loaded and stored in this handle.
 @param callbacks        Callbacks to be used during scene parsing - set it to NULL if not used.
 @param importFlags      see RPRGLTF_IMPORTFLAG_* for more details - set it to 0 if not used.
+@param rprsCtx          new argument introduced in 2.02.6 API. can be NULL.
+                        This context is created/deleted with  rprsCreateContext/rprsDeleteContext.
+						It can be used to store additional data for the Export
 @return                 GLTF_SUCCESS if success, GLTF_ERROR_IMPORT or GLTF_ERROR_LOAD otherwise.
 */
 extern int rprImportFromGLTF(const char* filename, rpr_context context, rpr_material_system materialSystem, rpr_scene* scene,
-    RprGltfImportCallbacks *callbacks, unsigned int importFlags);
+    RprGltfImportCallbacks *callbacks, unsigned int importFlags, RPRS_context rprsCtx);
 
 /* Exports a list of Radeon ProRender scenes to a gltf file on disk.
 @param filename         The path to the gltf file to export. (For Unicode, you can encode the name with UTF-8)
@@ -83,9 +87,12 @@ extern int rprImportFromGLTF(const char* filename, rpr_context context, rpr_mate
 @param uberMatContext   The pre-initialized Radeon ProRender uber material system context handle to export API objects from.
 @param scenes           All exported scenes to be written out to the gltf file.
 @param exportFlags      (new parameter from RPR SDK 1.325) - see RPRGLTF_EXPORTFLAG_* for more details - set it to 0 if not used.
+@param rprsCtx          new argument introduced in 2.02.6 API. can be NULL.
+                        This context is created/deleted with  rprsCreateContext/rprsDeleteContext.
+						It can be used to read additional data after an Import.
 @return                 GLTF_SUCCESS if success, GLTF_ERROR_EXPORT or GLTF_ERROR_SAVE otherwise.
 */
-extern int rprExportToGLTF(const char* filename, rpr_context context, rpr_material_system materialSystem_NOT_USED, const rpr_scene* scenes, size_t sceneCount, unsigned int exportFlags);
+extern int rprExportToGLTF(const char* filename, rpr_context context, rpr_material_system materialSystem_NOT_USED, const rpr_scene* scenes, size_t sceneCount, unsigned int exportFlags, RPRS_context rprsCtx);
 
 
 /*

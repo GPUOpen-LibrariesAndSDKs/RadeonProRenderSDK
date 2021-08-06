@@ -71,9 +71,9 @@ typedef rpr_uint rpr_environment_override;
 
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 2 
-#define RPR_VERSION_REVISION 5 
-#define RPR_VERSION_BUILD 0xa5d6b4fc 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200205 
+#define RPR_VERSION_REVISION 6 
+#define RPR_VERSION_BUILD 0xb310d5b4 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200206 
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
 #define RPR_API_VERSION_MINOR RPR_VERSION_BUILD 
 #define RPR_OBJECT_NAME 0x777777 
@@ -694,6 +694,7 @@ typedef enum // rpr_material_node_type
 	RPR_MATERIAL_NODE_TOON_RAMP = 0x31,
 	RPR_MATERIAL_NODE_VORONOI_TEXTURE = 0x32 ,
 	RPR_MATERIAL_NODE_GRID_SAMPLER = 0x33 ,
+	RPR_MATERIAL_NODE_BLACKBODY = 0x34 ,
 
 	// MaterialX materials
 	RPR_MATERIAL_NODE_MATX_DIFFUSE_BRDF = 0x1000,
@@ -815,6 +816,8 @@ typedef enum // rpr_material_node_input
 	RPR_MATERIAL_INPUT_DENSITY = 0x5a ,
 	RPR_MATERIAL_INPUT_DENSITYGRID = 0x5b ,
 	RPR_MATERIAL_INPUT_DISPLACEMENT = 0x5c ,
+	RPR_MATERIAL_INPUT_TEMPERATURE = 0x5d ,
+	RPR_MATERIAL_INPUT_KELVIN = 0x5e ,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR = 0x910,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT = 0x927,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -1311,7 +1314,7 @@ typedef struct //rpr_ies_image_desc
     *  @param out_context		Pointer to context object
     *  @return                RPR_SUCCESS in case of success, error code otherwise
     */
-  extern RPR_API_ENTRY rpr_status rprCreateContext(rpr_int api_version, rpr_int const * pluginIDs, size_t pluginCount, rpr_creation_flags creation_flags, rpr_context_properties const * props, rpr_char const * cache_path, rpr_context * out_context);
+  extern RPR_API_ENTRY rpr_status rprCreateContext(rpr_uint api_version, rpr_int const * pluginIDs, size_t pluginCount, rpr_creation_flags creation_flags, rpr_context_properties const * props, rpr_char const * cache_path, rpr_context * out_context);
 
 
     /** @breif Set active context plugin

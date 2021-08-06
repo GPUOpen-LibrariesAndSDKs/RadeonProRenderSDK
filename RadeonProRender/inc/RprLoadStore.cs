@@ -9,9 +9,9 @@
 *
 \*****************************************************************************/
 
-using FireRender.AMD.RenderEngine.Common;
-using FireRender.Types;
-using FireRender.Types.Common;
+//using FireRender.AMD.RenderEngine.Common;
+//using FireRender.Types;
+//using FireRender.Types.Common;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -21,16 +21,16 @@ namespace FireRender.AMD.RenderEngine.Core
 public static class RprLoadStore
 {
 private const string dllName = "RprLoadStore64";
-public const string TahoeDll = "Tahoe64.dll";
+//public const string TahoeDll = "Tahoe64.dll";
 
-static void Check(int result)
+static void Check(Status result)
 {
 	 Rpr.Status res = (Rpr.Status)result;
     if (Rpr.Status.SUCCESS != res)
     {
         var name = new StackFrame(1).GetMethod().Name;
         var message = string.Format("Error in Rpr.cs, method ({0}) result is {1}", name, res);
-        throw new RprException(res, message);
+        //throw new RprException(res, message);
     }
 }
 [StructLayout(LayoutKind.Sequential)]
@@ -45,9 +45,9 @@ public struct RprsAnimationStruct // _rprs_animation
     public IntPtr Timekeys;
     public IntPtr Transformvalues;
 };
-public const int RPRLOADSTORE_PARAMETER_TYPE_UNDEF = 0x0 ;
-public const int RPRLOADSTORE_PARAMETER_TYPE_INT = 0x1 ;
-public const int RPRLOADSTORE_PARAMETER_TYPE_FLOAT = 0x2 ;
+public const uint RPRLOADSTORE_PARAMETER_TYPE_UNDEF = 0x0 ;
+public const uint RPRLOADSTORE_PARAMETER_TYPE_INT = 0x1 ;
+public const uint RPRLOADSTORE_PARAMETER_TYPE_FLOAT = 0x2 ;
 
 /** 
 *  RPRLOADSTORE_EXPORTFLAG_EXTERNALFILES : buffers above a certain size will be externalized in a file
@@ -76,14 +76,14 @@ public const int RPRLOADSTORE_PARAMETER_TYPE_FLOAT = 0x2 ;
 *
 */
 
-public const int RPRLOADSTORE_EXPORTFLAG_EXTERNALFILES = (1 << 0) ;
-public const int RPRLOADSTORE_EXPORTFLAG_COMPRESS_IMAGE_LEVEL_1 = (1 << 1) ;
-public const int RPRLOADSTORE_EXPORTFLAG_COMPRESS_IMAGE_LEVEL_2 = (1 << 2) ;
-public const int RPRLOADSTORE_EXPORTFLAG_COMPRESS_FLOAT_TO_HALF_NORMALS = (1 << 3) ;
-public const int RPRLOADSTORE_EXPORTFLAG_COMPRESS_FLOAT_TO_HALF_UV = (1 << 4) ;
-public const int RPRLOADSTORE_EXPORTFLAG_EMBED_FILE_IMAGES_USING_OBJECTNAME = (1 << 5) ;
-public const int RPRLOADSTORE_EXPORTFLAG_USE_IMAGE_CACHE = (1 << 6) ;
-public const int RPRLOADSTORE_EXPORTFLAG_ONLY_EXPORT_ATTACHED_RENDER_LAYERS = (1 << 7) ;
+public const uint RPRLOADSTORE_EXPORTFLAG_EXTERNALFILES = (1 << 0) ;
+public const uint RPRLOADSTORE_EXPORTFLAG_COMPRESS_IMAGE_LEVEL_1 = (1 << 1) ;
+public const uint RPRLOADSTORE_EXPORTFLAG_COMPRESS_IMAGE_LEVEL_2 = (1 << 2) ;
+public const uint RPRLOADSTORE_EXPORTFLAG_COMPRESS_FLOAT_TO_HALF_NORMALS = (1 << 3) ;
+public const uint RPRLOADSTORE_EXPORTFLAG_COMPRESS_FLOAT_TO_HALF_UV = (1 << 4) ;
+public const uint RPRLOADSTORE_EXPORTFLAG_EMBED_FILE_IMAGES_USING_OBJECTNAME = (1 << 5) ;
+public const uint RPRLOADSTORE_EXPORTFLAG_USE_IMAGE_CACHE = (1 << 6) ;
+public const uint RPRLOADSTORE_EXPORTFLAG_ONLY_EXPORT_ATTACHED_RENDER_LAYERS = (1 << 7) ;
 
 /** 
 * export an RPR scene to an RPRS file
@@ -95,17 +95,21 @@ public const int RPRLOADSTORE_EXPORTFLAG_ONLY_EXPORT_ATTACHED_RENDER_LAYERS = (1
 *
 * rprsFileName : UTF-8 can be used for UNICODE
 *
+* rprsCtx : new argument introduced in 2.02.6 API. can be NULL.
+*           This context is created/deleted with  rprsCreateContext/rprsDeleteContext.
+*           It can be used to store additional data for the Export
+*
 */
 
-[DllImport(dllName)] static extern Status rprsExport(IntPtr rprsFileName, IntPtr context, IntPtr scene, int extraCustomParam_int_number, IntPtr extraCustomParam_int_names, IntPtr extraCustomParam_int_values, int extraCustomParam_float_number, IntPtr extraCustomParam_float_names, IntPtr extraCustomParam_float_values, uint exportFlags);
-public static Status sExport(IntPtr rprsFileName, IntPtr context, IntPtr scene, int extraCustomParam_int_number, IntPtr extraCustomParam_int_names, IntPtr extraCustomParam_int_values, int extraCustomParam_float_number, IntPtr extraCustomParam_float_names, IntPtr extraCustomParam_float_values, uint exportFlags)
+[DllImport(dllName)] static extern Status rprsExport(IntPtr rprsFileName, IntPtr context, IntPtr scene, int extraCustomParam_int_number, IntPtr extraCustomParam_int_names, IntPtr extraCustomParam_int_values, int extraCustomParam_float_number, IntPtr extraCustomParam_float_names, IntPtr extraCustomParam_float_values, uint exportFlags, IntPtr rprsCtx);
+public static Status sExport(IntPtr rprsFileName, IntPtr context, IntPtr scene, int extraCustomParam_int_number, IntPtr extraCustomParam_int_names, IntPtr extraCustomParam_int_values, int extraCustomParam_float_number, IntPtr extraCustomParam_float_names, IntPtr extraCustomParam_float_values, uint exportFlags, IntPtr rprsCtx)
 {
-return rprsExport(rprsFileName, context, scene, extraCustomParam_int_number, extraCustomParam_int_names, extraCustomParam_int_values, extraCustomParam_float_number, extraCustomParam_float_names, extraCustomParam_float_values, exportFlags);
+return rprsExport(rprsFileName, context, scene, extraCustomParam_int_number, extraCustomParam_int_names, extraCustomParam_int_values, extraCustomParam_float_number, extraCustomParam_float_names, extraCustomParam_float_values, exportFlags, rprsCtx);
 }
-[DllImport(dllName)] static extern Status rprsxExport(IntPtr rprsFileName, IntPtr context, IntPtr contextX__NOT_USED_ANYMORE, IntPtr scene, int extraCustomParam_int_number, IntPtr extraCustomParam_int_names, IntPtr extraCustomParam_int_values, int extraCustomParam_float_number, IntPtr extraCustomParam_float_names, IntPtr extraCustomParam_float_values, uint exportFlags);
-public static Status sxExport(IntPtr rprsFileName, IntPtr context, IntPtr contextX__NOT_USED_ANYMORE, IntPtr scene, int extraCustomParam_int_number, IntPtr extraCustomParam_int_names, IntPtr extraCustomParam_int_values, int extraCustomParam_float_number, IntPtr extraCustomParam_float_names, IntPtr extraCustomParam_float_values, uint exportFlags)
+[DllImport(dllName)] static extern Status rprsxExport(IntPtr rprsFileName, IntPtr context, IntPtr contextX__NOT_USED_ANYMORE, IntPtr scene, int extraCustomParam_int_number, IntPtr extraCustomParam_int_names, IntPtr extraCustomParam_int_values, int extraCustomParam_float_number, IntPtr extraCustomParam_float_names, IntPtr extraCustomParam_float_values, uint exportFlags, IntPtr rprsCtx);
+public static Status sxExport(IntPtr rprsFileName, IntPtr context, IntPtr contextX__NOT_USED_ANYMORE, IntPtr scene, int extraCustomParam_int_number, IntPtr extraCustomParam_int_names, IntPtr extraCustomParam_int_values, int extraCustomParam_float_number, IntPtr extraCustomParam_float_names, IntPtr extraCustomParam_float_values, uint exportFlags, IntPtr rprsCtx)
 {
-return rprsxExport(rprsFileName, context, contextX__NOT_USED_ANYMORE, scene, extraCustomParam_int_number, extraCustomParam_int_names, extraCustomParam_int_values, extraCustomParam_float_number, extraCustomParam_float_names, extraCustomParam_float_values, exportFlags);
+return rprsxExport(rprsFileName, context, contextX__NOT_USED_ANYMORE, scene, extraCustomParam_int_number, extraCustomParam_int_names, extraCustomParam_int_values, extraCustomParam_float_number, extraCustomParam_float_names, extraCustomParam_float_values, exportFlags, rprsCtx);
 }
 
 /** 
@@ -122,27 +126,31 @@ return rprsxExport(rprsFileName, context, contextX__NOT_USED_ANYMORE, scene, ext
 *
 * rprsFileName : UTF-8 can be used for UNICODE
 *
+* rprsCtx : new argument introduced in 2.02.6 API. can be NULL.
+*           This context is created/deleted with  rprsCreateContext/rprsDeleteContext.
+*           It can be used to read additional data after an Import.
+*
 */
 
-[DllImport(dllName)] static extern Status rprsImport(IntPtr rprsFileName, IntPtr context, IntPtr materialSystem, IntPtr scene, bool useAlreadyExistingScene);
-public static Status sImport(IntPtr rprsFileName, IntPtr context, IntPtr materialSystem, IntPtr scene, bool useAlreadyExistingScene)
+[DllImport(dllName)] static extern Status rprsImport(IntPtr rprsFileName, IntPtr context, IntPtr materialSystem, IntPtr scene, bool useAlreadyExistingScene, IntPtr rprsCtx);
+public static Status sImport(IntPtr rprsFileName, IntPtr context, IntPtr materialSystem, IntPtr scene, bool useAlreadyExistingScene, IntPtr rprsCtx)
 {
-return rprsImport(rprsFileName, context, materialSystem, scene, useAlreadyExistingScene);
+return rprsImport(rprsFileName, context, materialSystem, scene, useAlreadyExistingScene, rprsCtx);
 }
-[DllImport(dllName)] static extern Status rprsxImport(IntPtr rprsFileName, IntPtr context, IntPtr contextX__NOT_USED_ANYMORE, IntPtr materialSystem, IntPtr scene, bool useAlreadyExistingScene);
-public static Status sxImport(IntPtr rprsFileName, IntPtr context, IntPtr contextX__NOT_USED_ANYMORE, IntPtr materialSystem, IntPtr scene, bool useAlreadyExistingScene)
+[DllImport(dllName)] static extern Status rprsxImport(IntPtr rprsFileName, IntPtr context, IntPtr contextX__NOT_USED_ANYMORE, IntPtr materialSystem, IntPtr scene, bool useAlreadyExistingScene, IntPtr rprsCtx);
+public static Status sxImport(IntPtr rprsFileName, IntPtr context, IntPtr contextX__NOT_USED_ANYMORE, IntPtr materialSystem, IntPtr scene, bool useAlreadyExistingScene, IntPtr rprsCtx)
 {
-return rprsxImport(rprsFileName, context, contextX__NOT_USED_ANYMORE, materialSystem, scene, useAlreadyExistingScene);
+return rprsxImport(rprsFileName, context, contextX__NOT_USED_ANYMORE, materialSystem, scene, useAlreadyExistingScene, rprsCtx);
 }
-[DllImport(dllName)] static extern Status rprsImportFromData(IntPtr data, long dataSize, IntPtr context, IntPtr materialSystem, IntPtr scene, bool useAlreadyExistingScene);
-public static Status sImportFromData(IntPtr data, long dataSize, IntPtr context, IntPtr materialSystem, IntPtr scene, bool useAlreadyExistingScene)
+[DllImport(dllName)] static extern Status rprsImportFromData(IntPtr data, long dataSize, IntPtr context, IntPtr materialSystem, IntPtr scene, bool useAlreadyExistingScene, IntPtr rprsCtx);
+public static Status sImportFromData(IntPtr data, long dataSize, IntPtr context, IntPtr materialSystem, IntPtr scene, bool useAlreadyExistingScene, IntPtr rprsCtx)
 {
-return rprsImportFromData(data, dataSize, context, materialSystem, scene, useAlreadyExistingScene);
+return rprsImportFromData(data, dataSize, context, materialSystem, scene, useAlreadyExistingScene, rprsCtx);
 }
-[DllImport(dllName)] static extern Status rprsxImportFromData(IntPtr data, long dataSize, IntPtr context, IntPtr contextX__NOT_USED_ANYMORE, IntPtr materialSystem, IntPtr scene, bool useAlreadyExistingScene);
-public static Status sxImportFromData(IntPtr data, long dataSize, IntPtr context, IntPtr contextX__NOT_USED_ANYMORE, IntPtr materialSystem, IntPtr scene, bool useAlreadyExistingScene)
+[DllImport(dllName)] static extern Status rprsxImportFromData(IntPtr data, long dataSize, IntPtr context, IntPtr contextX__NOT_USED_ANYMORE, IntPtr materialSystem, IntPtr scene, bool useAlreadyExistingScene, IntPtr rprsCtx);
+public static Status sxImportFromData(IntPtr data, long dataSize, IntPtr context, IntPtr contextX__NOT_USED_ANYMORE, IntPtr materialSystem, IntPtr scene, bool useAlreadyExistingScene, IntPtr rprsCtx)
 {
-return rprsxImportFromData(data, dataSize, context, contextX__NOT_USED_ANYMORE, materialSystem, scene, useAlreadyExistingScene);
+return rprsxImportFromData(data, dataSize, context, contextX__NOT_USED_ANYMORE, materialSystem, scene, useAlreadyExistingScene, rprsCtx);
 }
 
 /** 
@@ -153,10 +161,10 @@ return rprsxImportFromData(data, dataSize, context, contextX__NOT_USED_ANYMORE, 
 *
 */
 
-[DllImport(dllName)] static extern Status rprsBuildOCIOFiles(IntPtr rprsFileName, IntPtr context, IntPtr basePath);
-public static Status sBuildOCIOFiles(IntPtr rprsFileName, IntPtr context, IntPtr basePath)
+[DllImport(dllName)] static extern Status rprsBuildOCIOFiles(IntPtr rprsFileName, IntPtr context, IntPtr basePath, IntPtr rprsCtx);
+public static Status sBuildOCIOFiles(IntPtr rprsFileName, IntPtr context, IntPtr basePath, IntPtr rprsCtx)
 {
-return rprsBuildOCIOFiles(rprsFileName, context, basePath);
+return rprsBuildOCIOFiles(rprsFileName, context, basePath, rprsCtx);
 }
 
 /** 
@@ -266,15 +274,15 @@ return rprsListImportedImages(Images, sizeImageBytes, numberOfImages);
 
 
 
-[DllImport(dllName)] static extern Status rprsExportCustomList(IntPtr rprsFileName, int materialNode_number, IntPtr materialNode_list, int camera_number, IntPtr camera_list, int light_number, IntPtr light_list, int shape_number, IntPtr shape_list, int image_number, IntPtr image_list);
-public static Status sExportCustomList(IntPtr rprsFileName, int materialNode_number, IntPtr materialNode_list, int camera_number, IntPtr camera_list, int light_number, IntPtr light_list, int shape_number, IntPtr shape_list, int image_number, IntPtr image_list)
+[DllImport(dllName)] static extern Status rprsExportCustomList(IntPtr rprsFileName, int materialNode_number, IntPtr materialNode_list, int camera_number, IntPtr camera_list, int light_number, IntPtr light_list, int shape_number, IntPtr shape_list, int image_number, IntPtr image_list, IntPtr rprsCtx);
+public static Status sExportCustomList(IntPtr rprsFileName, int materialNode_number, IntPtr materialNode_list, int camera_number, IntPtr camera_list, int light_number, IntPtr light_list, int shape_number, IntPtr shape_list, int image_number, IntPtr image_list, IntPtr rprsCtx)
 {
-return rprsExportCustomList(rprsFileName, materialNode_number, materialNode_list, camera_number, camera_list, light_number, light_list, shape_number, shape_list, image_number, image_list);
+return rprsExportCustomList(rprsFileName, materialNode_number, materialNode_list, camera_number, camera_list, light_number, light_list, shape_number, shape_list, image_number, image_list, rprsCtx);
 }
-[DllImport(dllName)] static extern Status rprsImportCustomList(IntPtr rprsFileName, IntPtr context, IntPtr materialSystem, IntPtr materialNode_number, IntPtr materialNode_list, IntPtr camera_number, IntPtr camera_list, IntPtr light_number, IntPtr light_list, IntPtr shape_number, IntPtr shape_list, IntPtr image_number, IntPtr image_list);
-public static Status sImportCustomList(IntPtr rprsFileName, IntPtr context, IntPtr materialSystem, IntPtr materialNode_number, IntPtr materialNode_list, IntPtr camera_number, IntPtr camera_list, IntPtr light_number, IntPtr light_list, IntPtr shape_number, IntPtr shape_list, IntPtr image_number, IntPtr image_list)
+[DllImport(dllName)] static extern Status rprsImportCustomList(IntPtr rprsFileName, IntPtr context, IntPtr materialSystem, IntPtr materialNode_number, IntPtr materialNode_list, IntPtr camera_number, IntPtr camera_list, IntPtr light_number, IntPtr light_list, IntPtr shape_number, IntPtr shape_list, IntPtr image_number, IntPtr image_list, IntPtr rprsCtx);
+public static Status sImportCustomList(IntPtr rprsFileName, IntPtr context, IntPtr materialSystem, IntPtr materialNode_number, IntPtr materialNode_list, IntPtr camera_number, IntPtr camera_list, IntPtr light_number, IntPtr light_list, IntPtr shape_number, IntPtr shape_list, IntPtr image_number, IntPtr image_list, IntPtr rprsCtx)
 {
-return rprsImportCustomList(rprsFileName, context, materialSystem, materialNode_number, materialNode_list, camera_number, camera_list, light_number, light_list, shape_number, shape_list, image_number, image_list);
+return rprsImportCustomList(rprsFileName, context, materialSystem, materialNode_number, materialNode_list, camera_number, camera_list, light_number, light_list, shape_number, shape_list, image_number, image_list, rprsCtx);
 }
 
 
@@ -410,6 +418,25 @@ public static Status sGetParentGroupFromGroup(IntPtr groupChild, long size, IntP
 return rprsGetParentGroupFromGroup(groupChild, size, groupName, size_ret);
 }
 
+// Create a RPRS Context. This object can be used to store additional data ( animation, parameters ... ) for an Export.
+// And it can be used to read them back after an Import.
+// 
+
+[DllImport(dllName)] static extern Status rprsCreateContext(out IntPtr out_rprsCtx);
+public static Status sCreateContext(out IntPtr out_rprsCtx)
+{
+return rprsCreateContext(out out_rprsCtx);
+}
+
+// Delete a RPRS Context
+// 
+
+[DllImport(dllName)] static extern Status rprsDeleteContext(IntPtr rprsCtx);
+public static Status sDeleteContext(IntPtr rprsCtx)
+{
+return rprsDeleteContext(rprsCtx);
+}
+
 // when rprsImport/rprsxImport is called, some buffers will be allocated and kept in memory for future getters.
 // for example, getters for animations data.
 // calling this function will clean all data - and make value from getters unavailable.
@@ -442,9 +469,9 @@ return rprsDeleteListImportedObjects(contextX__NOT_USED_ANYMORE);
 
 //rprs_animation_movement_type
 
-public const int RPRS_ANIMATION_MOVEMENTTYPE_TRANSLATION = 0x1 ;
-public const int RPRS_ANIMATION_MOVEMENTTYPE_ROTATION = 0x2 ;
-public const int RPRS_ANIMATION_MOVEMENTTYPE_SCALE = 0x3 ;
+public const uint RPRS_ANIMATION_MOVEMENTTYPE_TRANSLATION = 0x1 ;
+public const uint RPRS_ANIMATION_MOVEMENTTYPE_ROTATION = 0x2 ;
+public const uint RPRS_ANIMATION_MOVEMENTTYPE_SCALE = 0x3 ;
 
 // structSize : size of this struct in Byte (internally used to identify if different versions)
 // interpolationType : unused for now - set it to 0
