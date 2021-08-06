@@ -22,7 +22,9 @@ RPRNEXT-379 - (Bug)      - Fix light leak on mesh light
    This argument can be set to NULL in order to have the same behavior than before 2.02.6.
 
  * new material for Northstar: RPR_MATERIAL_NODE_BLACKBODY.
-   inputs of : RPR_MATERIAL_INPUT_TEMPERATURE , RPR_MATERIAL_INPUT_KELVIN , RPR_MATERIAL_INPUT_EMISSION.
+   inputs of : RPR_MATERIAL_INPUT_TEMPERATURE , RPR_MATERIAL_INPUT_KELVIN.
+
+ * C# header is fixed
 
 ################################################################################################################
 RPR SDK 2.02.5 - 09 July 2021
