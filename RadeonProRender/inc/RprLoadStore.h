@@ -25,6 +25,8 @@ extern "C" {
 #define RPRLOADSTORE_PARAMETER_TYPE_INT 0x1 
 #define RPRLOADSTORE_PARAMETER_TYPE_FLOAT 0x2 
 
+typedef void * RPRS_context;
+
 
 /** 
 *  RPRLOADSTORE_EXPORTFLAG_EXTERNALFILES : buffers above a certain size will be externalized in a file
@@ -72,9 +74,13 @@ extern "C" {
 *
 * rprsFileName : UTF-8 can be used for UNICODE
 *
+* rprsCtx : new argument introduced in 2.02.6 API. can be NULL.
+*           This context is created/deleted with  rprsCreateContext/rprsDeleteContext.
+*           It can be used to store additional data for the Export
+*
 */
-extern RPR_API_ENTRY rpr_status rprsExport(char const * rprsFileName, rpr_context context, rpr_scene scene, int extraCustomParam_int_number, char const * * extraCustomParam_int_names, int const * extraCustomParam_int_values, int extraCustomParam_float_number, char const * * extraCustomParam_float_names, float const * extraCustomParam_float_values, unsigned int exportFlags);
-extern RPR_API_ENTRY rpr_status rprsxExport(char const * rprsFileName, rpr_context context, void * contextX__NOT_USED_ANYMORE, rpr_scene scene, int extraCustomParam_int_number, char const * * extraCustomParam_int_names, int const * extraCustomParam_int_values, int extraCustomParam_float_number, char const * * extraCustomParam_float_names, float const * extraCustomParam_float_values, unsigned int exportFlags);
+extern RPR_API_ENTRY rpr_status rprsExport(char const * rprsFileName, rpr_context context, rpr_scene scene, int extraCustomParam_int_number, char const * * extraCustomParam_int_names, int const * extraCustomParam_int_values, int extraCustomParam_float_number, char const * * extraCustomParam_float_names, float const * extraCustomParam_float_values, unsigned int exportFlags, RPRS_context rprsCtx);
+extern RPR_API_ENTRY rpr_status rprsxExport(char const * rprsFileName, rpr_context context, void * contextX__NOT_USED_ANYMORE, rpr_scene scene, int extraCustomParam_int_number, char const * * extraCustomParam_int_names, int const * extraCustomParam_int_values, int extraCustomParam_float_number, char const * * extraCustomParam_float_names, float const * extraCustomParam_float_values, unsigned int exportFlags, RPRS_context rprsCtx);
 
 
 /** 
@@ -91,11 +97,15 @@ extern RPR_API_ENTRY rpr_status rprsxExport(char const * rprsFileName, rpr_conte
 *
 * rprsFileName : UTF-8 can be used for UNICODE
 *
+* rprsCtx : new argument introduced in 2.02.6 API. can be NULL.
+*           This context is created/deleted with  rprsCreateContext/rprsDeleteContext.
+*           It can be used to read additional data after an Import.
+*
 */
-extern RPR_API_ENTRY rpr_status rprsImport(char const * rprsFileName, rpr_context context, rpr_material_system materialSystem, rpr_scene * scene, bool useAlreadyExistingScene);
-extern RPR_API_ENTRY rpr_status rprsxImport(char const * rprsFileName, rpr_context context, void * contextX__NOT_USED_ANYMORE, rpr_material_system materialSystem, rpr_scene * scene, bool useAlreadyExistingScene);
-extern RPR_API_ENTRY rpr_status rprsImportFromData(rpr_uchar const * data, size_t dataSize, rpr_context context, rpr_material_system materialSystem, rpr_scene * scene, bool useAlreadyExistingScene);
-extern RPR_API_ENTRY rpr_status rprsxImportFromData(rpr_uchar const * data, size_t dataSize, rpr_context context, void * contextX__NOT_USED_ANYMORE, rpr_material_system materialSystem, rpr_scene * scene, bool useAlreadyExistingScene);
+extern RPR_API_ENTRY rpr_status rprsImport(char const * rprsFileName, rpr_context context, rpr_material_system materialSystem, rpr_scene * scene, bool useAlreadyExistingScene, RPRS_context rprsCtx);
+extern RPR_API_ENTRY rpr_status rprsxImport(char const * rprsFileName, rpr_context context, void * contextX__NOT_USED_ANYMORE, rpr_material_system materialSystem, rpr_scene * scene, bool useAlreadyExistingScene, RPRS_context rprsCtx);
+extern RPR_API_ENTRY rpr_status rprsImportFromData(rpr_uchar const * data, size_t dataSize, rpr_context context, rpr_material_system materialSystem, rpr_scene * scene, bool useAlreadyExistingScene, RPRS_context rprsCtx);
+extern RPR_API_ENTRY rpr_status rprsxImportFromData(rpr_uchar const * data, size_t dataSize, rpr_context context, void * contextX__NOT_USED_ANYMORE, rpr_material_system materialSystem, rpr_scene * scene, bool useAlreadyExistingScene, RPRS_context rprsCtx);
 
 
 /** 
@@ -105,7 +115,7 @@ extern RPR_API_ENTRY rpr_status rprsxImportFromData(rpr_uchar const * data, size
 * This function also sets the RPR context RPR_CONTEXT_OCIO_CONFIG_PATH parameter to 'basePath'.  rprsImport doesn't set this parameter.
 *
 */
-extern RPR_API_ENTRY rpr_status rprsBuildOCIOFiles(char const * rprsFileName, rpr_context context, char const * basePath);
+extern RPR_API_ENTRY rpr_status rprsBuildOCIOFiles(char const * rprsFileName, rpr_context context, char const * basePath, RPRS_context rprsCtx);
 
 
 /** 
@@ -138,8 +148,8 @@ extern RPR_API_ENTRY rpr_status rprsListImportedImages(rpr_image * Images, int s
 
 
 
-extern RPR_API_ENTRY rpr_status rprsExportCustomList(char const * rprsFileName, int materialNode_number, rpr_material_node* materialNode_list, int camera_number, rpr_camera* camera_list, int light_number, rpr_light* light_list, int shape_number, rpr_shape* shape_list, int image_number, rpr_image* image_list);
-extern RPR_API_ENTRY rpr_status rprsImportCustomList(char const * rprsFileName, rpr_context context, rpr_material_system materialSystem, int*  materialNode_number, rpr_material_node* materialNode_list, int*  camera_number, rpr_camera* camera_list, int*  light_number, rpr_light* light_list, int*  shape_number, rpr_shape* shape_list, int*  image_number, rpr_image* image_list);
+extern RPR_API_ENTRY rpr_status rprsExportCustomList(char const * rprsFileName, int materialNode_number, rpr_material_node* materialNode_list, int camera_number, rpr_camera* camera_list, int light_number, rpr_light* light_list, int shape_number, rpr_shape* shape_list, int image_number, rpr_image* image_list, RPRS_context rprsCtx);
+extern RPR_API_ENTRY rpr_status rprsImportCustomList(char const * rprsFileName, rpr_context context, rpr_material_system materialSystem, int*  materialNode_number, rpr_material_node* materialNode_list, int*  camera_number, rpr_camera* camera_list, int*  light_number, rpr_light* light_list, int*  shape_number, rpr_shape* shape_list, int*  image_number, rpr_image* image_list, RPRS_context rprsCtx);
 
 
 
@@ -215,6 +225,17 @@ extern RPR_API_ENTRY rpr_status rprsGetParentGroupFromShape(rpr_shape shape, siz
 extern RPR_API_ENTRY rpr_status rprsGetParentGroupFromCamera(rpr_camera camera, size_t size, rpr_char * groupName, size_t * size_ret);
 extern RPR_API_ENTRY rpr_status rprsGetParentGroupFromLight(rpr_light light, size_t size, rpr_char * groupName, size_t * size_ret);
 extern RPR_API_ENTRY rpr_status rprsGetParentGroupFromGroup(const rpr_char * groupChild, size_t size, rpr_char * groupName, size_t * size_ret);
+
+
+// Create a RPRS Context. This object can be used to store additional data ( animation, parameters ... ) for an Export.
+// And it can be used to read them back after an Import.
+// 
+extern RPR_API_ENTRY rpr_status rprsCreateContext(RPRS_context * out_rprsCtx);
+
+
+// Delete a RPRS Context
+// 
+extern RPR_API_ENTRY rpr_status rprsDeleteContext(RPRS_context rprsCtx);
 
 
 // when rprsImport/rprsxImport is called, some buffers will be allocated and kept in memory for future getters.

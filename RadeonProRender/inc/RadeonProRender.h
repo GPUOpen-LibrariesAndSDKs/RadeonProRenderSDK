@@ -34,7 +34,7 @@ extern "C" {
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 2 
 #define RPR_VERSION_REVISION 6 
-#define RPR_VERSION_BUILD 0x423fb1bb 
+#define RPR_VERSION_BUILD 0xb310d5b4 
 #define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200206 
 
 // Deprecated version naming - will be removed in the future :
@@ -1244,7 +1244,7 @@ typedef _rpr_ies_image_desc rpr_ies_image_desc;
     *  @param out_context		Pointer to context object
     *  @return                RPR_SUCCESS in case of success, error code otherwise
     */
-  extern RPR_API_ENTRY rpr_status rprCreateContext(rpr_int api_version, rpr_int const * pluginIDs, size_t pluginCount, rpr_creation_flags creation_flags, rpr_context_properties const * props, rpr_char const * cache_path, rpr_context * out_context);
+  extern RPR_API_ENTRY rpr_status rprCreateContext(rpr_uint api_version, rpr_int const * pluginIDs, size_t pluginCount, rpr_creation_flags creation_flags, rpr_context_properties const * props, rpr_char const * cache_path, rpr_context * out_context);
 
 
     /** @breif Set active context plugin

@@ -9,9 +9,9 @@
 *
 \*****************************************************************************/
 
-using FireRender.AMD.RenderEngine.Common;
-using FireRender.Types;
-using FireRender.Types.Common;
+//using FireRender.AMD.RenderEngine.Common;
+//using FireRender.Types;
+//using FireRender.Types.Common;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -21,16 +21,16 @@ namespace FireRender.AMD.RenderEngine.Core
 public static class Rpr
 {
 private const string dllName = "RadeonProRender64";
-public const string TahoeDll = "Tahoe64.dll";
+//public const string TahoeDll = "Tahoe64.dll";
 
-static void Check(int result)
+static void Check(Status result)
 {
 	 Rpr.Status res = (Rpr.Status)result;
     if (Rpr.Status.SUCCESS != res)
     {
         var name = new StackFrame(1).GetMethod().Name;
         var message = string.Format("Error in Rpr.cs, method ({0}) result is {1}", name, res);
-        throw new RprException(res, message);
+        //throw new RprException(res, message);
     }
 }
 [StructLayout(LayoutKind.Sequential)]
@@ -1229,18 +1229,18 @@ VISIBILITY_GLOSSY_REFLECTION = 0x41F ,
 VISIBILITY_GLOSSY_REFRACTION = 0x420 ,
 VISIBILITY_LIGHT = 0x421 ,
 }
-public const int RPR_VERSION_MAJOR = 2 ;
-public const int RPR_VERSION_MINOR = 2 ;
-public const int RPR_VERSION_REVISION = 6 ;
-public const int RPR_VERSION_BUILD = 0x423fb1bb ;
-public const int RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200206 ;
+public const uint RPR_VERSION_MAJOR = 2 ;
+public const uint RPR_VERSION_MINOR = 2 ;
+public const uint RPR_VERSION_REVISION = 6 ;
+public const uint RPR_VERSION_BUILD = 0xb310d5b4 ;
+public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200206 ;
 // Deprecated version naming - will be removed in the future :
 
-public const int RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
-public const int RPR_API_VERSION_MINOR = RPR_VERSION_BUILD ;
-public const int RPR_OBJECT_NAME = 0x777777 ;
-public const int RPR_OBJECT_UNIQUE_ID = 0x777778 ;
-public const int RPR_OBJECT_CUSTOM_PTR = 0x777779 ;
+public const uint RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
+public const uint RPR_API_VERSION_MINOR = RPR_VERSION_BUILD ;
+public const uint RPR_OBJECT_NAME = 0x777777 ;
+public const uint RPR_OBJECT_UNIQUE_ID = 0x777778 ;
+public const uint RPR_OBJECT_CUSTOM_PTR = 0x777779 ;
 /* last of the RPR_CONTEXT_* */
   
 // RPR_PARAMETER_NAME_STRING 0x1202   not used anymore  you can only set/get parameters using  RPR_CONTEXT_*
@@ -1248,14 +1248,14 @@ public const int RPR_OBJECT_CUSTOM_PTR = 0x777779 ;
 
 /* rpr_instance_info */
 
-public const int RPR_INSTANCE_PARENT_SHAPE = 0x1601 ;
+public const uint RPR_INSTANCE_PARENT_SHAPE = 0x1601 ;
 // RPR_MATERIAL_NODE_INPUT_NAME_STRING 0x1104  not used anymore  you can only set/get parameters using  RPR_MATERIAL_INPUT_*
 
 
 /* rpr_bool */
 
-public const int RPR_FALSE = 0u;
-public const int RPR_TRUE = 1u;
+public const uint RPR_FALSE = 0u;
+public const uint RPR_TRUE = 1u;
 /* Library types */
 /* This is going to be moved to rpr_platform.h or similar */
 
@@ -1299,8 +1299,8 @@ return rprRegisterPlugin(path);
     *  @return                RPR_SUCCESS in case of success, error code otherwise
     */
   
-[DllImport(dllName)] static extern Status rprCreateContext(int api_version, int[] pluginIDs, long pluginCount, CreationFlags creation_flags, IntPtr props, string cache_path, out IntPtr out_context);
-public static Status CreateContext(int api_version, int[] pluginIDs, long pluginCount, CreationFlags creation_flags, IntPtr props, string cache_path, out IntPtr out_context)
+[DllImport(dllName)] static extern Status rprCreateContext(uint api_version, int[] pluginIDs, long pluginCount, CreationFlags creation_flags, IntPtr props, string cache_path, out IntPtr out_context);
+public static Status CreateContext(uint api_version, int[] pluginIDs, long pluginCount, CreationFlags creation_flags, IntPtr props, string cache_path, out IntPtr out_context)
 {
 return rprCreateContext(api_version, pluginIDs, pluginCount, creation_flags, props, cache_path, out out_context);
 }
@@ -4081,7 +4081,7 @@ public static void ObjectDelete(ref IntPtr obj)
 	}
 	catch (Exception ex)
 	{
-		Log.Write(LoggerLevel.Error, ProjectType.RadeonProRender, ex, "Error on deleting IntPtr in FR", true);
+		//Log.Write(LoggerLevel.Error, ProjectType.RadeonProRender, ex, "Error on deleting IntPtr in FR", true);
 	}
 }
 
