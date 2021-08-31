@@ -167,112 +167,212 @@ public static Status sBuildOCIOFiles(IntPtr rprsFileName, IntPtr context, IntPtr
 return rprsBuildOCIOFiles(rprsFileName, context, basePath, rprsCtx);
 }
 
-/** 
-*
-*/
+//
+// rprsGetExtraCustomParam**** can be called after an rprsImport. they give the 'extraCustomParam' that were given as argument to the rprsExport function and stored inside the RPRS file.
+// Using the function with the 'Ex' suffix must be use if the rprsImport was using a RPRS_context.
+//
 
 [DllImport(dllName)] static extern Status rprsGetExtraCustomParam_int(IntPtr name, IntPtr value);
 public static Status sGetExtraCustomParam_int(IntPtr name, IntPtr value)
 {
 return rprsGetExtraCustomParam_int(name, value);
 }
+[DllImport(dllName)] static extern Status rprsGetExtraCustomParamEx_int(IntPtr rprsCtx, IntPtr name, IntPtr value);
+public static Status sGetExtraCustomParamEx_int(IntPtr rprsCtx, IntPtr name, IntPtr value)
+{
+return rprsGetExtraCustomParamEx_int(rprsCtx, name, value);
+}
 [DllImport(dllName)] static extern Status rprsGetExtraCustomParam_float(IntPtr name, IntPtr value);
 public static Status sGetExtraCustomParam_float(IntPtr name, IntPtr value)
 {
 return rprsGetExtraCustomParam_float(name, value);
+}
+[DllImport(dllName)] static extern Status rprsGetExtraCustomParamEx_float(IntPtr rprsCtx, IntPtr name, IntPtr value);
+public static Status sGetExtraCustomParamEx_float(IntPtr rprsCtx, IntPtr name, IntPtr value)
+{
+return rprsGetExtraCustomParamEx_float(rprsCtx, name, value);
 }
 [DllImport(dllName)] static extern Status rprsGetExtraCustomParamIndex_int(int index, IntPtr value);
 public static Status sGetExtraCustomParamIndex_int(int index, IntPtr value)
 {
 return rprsGetExtraCustomParamIndex_int(index, value);
 }
+[DllImport(dllName)] static extern Status rprsGetExtraCustomParamIndexEx_int(IntPtr rprsCtx, int index, IntPtr value);
+public static Status sGetExtraCustomParamIndexEx_int(IntPtr rprsCtx, int index, IntPtr value)
+{
+return rprsGetExtraCustomParamIndexEx_int(rprsCtx, index, value);
+}
 [DllImport(dllName)] static extern Status rprsGetExtraCustomParamIndex_float(int index, IntPtr value);
 public static Status sGetExtraCustomParamIndex_float(int index, IntPtr value)
 {
 return rprsGetExtraCustomParamIndex_float(index, value);
+}
+[DllImport(dllName)] static extern Status rprsGetExtraCustomParamIndexEx_float(IntPtr rprsCtx, int index, IntPtr value);
+public static Status sGetExtraCustomParamIndexEx_float(IntPtr rprsCtx, int index, IntPtr value)
+{
+return rprsGetExtraCustomParamIndexEx_float(rprsCtx, index, value);
 }
 [DllImport(dllName)] static extern int rprsGetNumberOfExtraCustomParam();
 public static void  sGetNumberOfExtraCustomParam()
 {
 Check(rprsGetNumberOfExtraCustomParam());
 }
+[DllImport(dllName)] static extern int rprsGetNumberOfExtraCustomParamEx(IntPtr rprsCtx);
+public static void  sGetNumberOfExtraCustomParamEx(IntPtr rprsCtx)
+{
+Check(rprsGetNumberOfExtraCustomParamEx(rprsCtx));
+}
 [DllImport(dllName)] static extern Status rprsGetExtraCustomParamNameSize(int index, IntPtr nameSizeGet);
 public static Status sGetExtraCustomParamNameSize(int index, IntPtr nameSizeGet)
 {
 return rprsGetExtraCustomParamNameSize(index, nameSizeGet);
+}
+[DllImport(dllName)] static extern Status rprsGetExtraCustomParamNameSizeEx(IntPtr rprsCtx, int index, IntPtr nameSizeGet);
+public static Status sGetExtraCustomParamNameSizeEx(IntPtr rprsCtx, int index, IntPtr nameSizeGet)
+{
+return rprsGetExtraCustomParamNameSizeEx(rprsCtx, index, nameSizeGet);
 }
 [DllImport(dllName)] static extern Status rprsGetExtraCustomParamName(int index, IntPtr nameGet, int nameGetSize);
 public static Status sGetExtraCustomParamName(int index, IntPtr nameGet, int nameGetSize)
 {
 return rprsGetExtraCustomParamName(index, nameGet, nameGetSize);
 }
+[DllImport(dllName)] static extern Status rprsGetExtraCustomParamNameEx(IntPtr rprsCtx, int index, IntPtr nameGet, int nameGetSize);
+public static Status sGetExtraCustomParamNameEx(IntPtr rprsCtx, int index, IntPtr nameGet, int nameGetSize)
+{
+return rprsGetExtraCustomParamNameEx(rprsCtx, index, nameGet, nameGetSize);
+}
 [DllImport(dllName)] static extern int rprsGetExtraCustomParamType(int index);
 public static void  sGetExtraCustomParamType(int index)
 {
 Check(rprsGetExtraCustomParamType(index));
 }
+[DllImport(dllName)] static extern int rprsGetExtraCustomParamTypeEx(IntPtr rprsCtx, int index);
+public static void  sGetExtraCustomParamTypeEx(IntPtr rprsCtx, int index)
+{
+Check(rprsGetExtraCustomParamTypeEx(rprsCtx, index));
+}
 
-/** 
-* rprsListImportedMaterialX si deprecated and may be removed in the future.
-*/
+// 
+// rprsListImported*** can be called after an rprsImport. those functions will list each RPR objects created during the import.
+// rprsListImportedMaterialX si deprecated and may be removed in the future.
+// Using the function with the 'Ex' suffix must be use if the rprsImport was using a RPRS_context.
+//
 
 [DllImport(dllName)] static extern Status rprsListImportedCameras(IntPtr Cameras, int sizeCameraBytes, IntPtr numberOfCameras);
 public static Status sListImportedCameras(IntPtr Cameras, int sizeCameraBytes, IntPtr numberOfCameras)
 {
 return rprsListImportedCameras(Cameras, sizeCameraBytes, numberOfCameras);
 }
+[DllImport(dllName)] static extern Status rprsListImportedCamerasEx(IntPtr rprsCtx, IntPtr Cameras, int sizeCameraBytes, IntPtr numberOfCameras);
+public static Status sListImportedCamerasEx(IntPtr rprsCtx, IntPtr Cameras, int sizeCameraBytes, IntPtr numberOfCameras)
+{
+return rprsListImportedCamerasEx(rprsCtx, Cameras, sizeCameraBytes, numberOfCameras);
+}
 [DllImport(dllName)] static extern Status rprsListImportedMaterialX(IntPtr MaterialNodes, int sizeMaterialNodeBytes, IntPtr numberOfMaterialNodes);
 public static Status sListImportedMaterialX(IntPtr MaterialNodes, int sizeMaterialNodeBytes, IntPtr numberOfMaterialNodes)
 {
 return rprsListImportedMaterialX(MaterialNodes, sizeMaterialNodeBytes, numberOfMaterialNodes);
+}
+[DllImport(dllName)] static extern Status rprsListImportedMaterialXEx(IntPtr rprsCtx, IntPtr MaterialNodes, int sizeMaterialNodeBytes, IntPtr numberOfMaterialNodes);
+public static Status sListImportedMaterialXEx(IntPtr rprsCtx, IntPtr MaterialNodes, int sizeMaterialNodeBytes, IntPtr numberOfMaterialNodes)
+{
+return rprsListImportedMaterialXEx(rprsCtx, MaterialNodes, sizeMaterialNodeBytes, numberOfMaterialNodes);
 }
 [DllImport(dllName)] static extern Status rprsListImportedMaterialNodes(IntPtr MaterialNodes, int sizeMaterialNodeBytes, IntPtr numberOfMaterialNodes);
 public static Status sListImportedMaterialNodes(IntPtr MaterialNodes, int sizeMaterialNodeBytes, IntPtr numberOfMaterialNodes)
 {
 return rprsListImportedMaterialNodes(MaterialNodes, sizeMaterialNodeBytes, numberOfMaterialNodes);
 }
+[DllImport(dllName)] static extern Status rprsListImportedMaterialNodesEx(IntPtr rprsCtx, IntPtr MaterialNodes, int sizeMaterialNodeBytes, IntPtr numberOfMaterialNodes);
+public static Status sListImportedMaterialNodesEx(IntPtr rprsCtx, IntPtr MaterialNodes, int sizeMaterialNodeBytes, IntPtr numberOfMaterialNodes)
+{
+return rprsListImportedMaterialNodesEx(rprsCtx, MaterialNodes, sizeMaterialNodeBytes, numberOfMaterialNodes);
+}
 [DllImport(dllName)] static extern Status rprsListImportedLights(IntPtr Lights, int sizeLightBytes, IntPtr numberOfLights);
 public static Status sListImportedLights(IntPtr Lights, int sizeLightBytes, IntPtr numberOfLights)
 {
 return rprsListImportedLights(Lights, sizeLightBytes, numberOfLights);
+}
+[DllImport(dllName)] static extern Status rprsListImportedLightsEx(IntPtr rprsCtx, IntPtr Lights, int sizeLightBytes, IntPtr numberOfLights);
+public static Status sListImportedLightsEx(IntPtr rprsCtx, IntPtr Lights, int sizeLightBytes, IntPtr numberOfLights)
+{
+return rprsListImportedLightsEx(rprsCtx, Lights, sizeLightBytes, numberOfLights);
 }
 [DllImport(dllName)] static extern Status rprsListImportedShapes(IntPtr Shapes, int sizeShapeBytes, IntPtr numberOfShapes);
 public static Status sListImportedShapes(IntPtr Shapes, int sizeShapeBytes, IntPtr numberOfShapes)
 {
 return rprsListImportedShapes(Shapes, sizeShapeBytes, numberOfShapes);
 }
+[DllImport(dllName)] static extern Status rprsListImportedShapesEx(IntPtr rprsCtx, IntPtr Shapes, int sizeShapeBytes, IntPtr numberOfShapes);
+public static Status sListImportedShapesEx(IntPtr rprsCtx, IntPtr Shapes, int sizeShapeBytes, IntPtr numberOfShapes)
+{
+return rprsListImportedShapesEx(rprsCtx, Shapes, sizeShapeBytes, numberOfShapes);
+}
 [DllImport(dllName)] static extern Status rprsListImportedCurves(IntPtr Curves, int sizeCurveBytes, IntPtr numberOfCurves);
 public static Status sListImportedCurves(IntPtr Curves, int sizeCurveBytes, IntPtr numberOfCurves)
 {
 return rprsListImportedCurves(Curves, sizeCurveBytes, numberOfCurves);
+}
+[DllImport(dllName)] static extern Status rprsListImportedCurvesEx(IntPtr rprsCtx, IntPtr Curves, int sizeCurveBytes, IntPtr numberOfCurves);
+public static Status sListImportedCurvesEx(IntPtr rprsCtx, IntPtr Curves, int sizeCurveBytes, IntPtr numberOfCurves)
+{
+return rprsListImportedCurvesEx(rprsCtx, Curves, sizeCurveBytes, numberOfCurves);
 }
 [DllImport(dllName)] static extern Status rprsListImportedPostEffects(IntPtr PostEffects, int sizePostEffectsBytes, IntPtr numberOfPostEffects);
 public static Status sListImportedPostEffects(IntPtr PostEffects, int sizePostEffectsBytes, IntPtr numberOfPostEffects)
 {
 return rprsListImportedPostEffects(PostEffects, sizePostEffectsBytes, numberOfPostEffects);
 }
+[DllImport(dllName)] static extern Status rprsListImportedPostEffectsEx(IntPtr rprsCtx, IntPtr PostEffects, int sizePostEffectsBytes, IntPtr numberOfPostEffects);
+public static Status sListImportedPostEffectsEx(IntPtr rprsCtx, IntPtr PostEffects, int sizePostEffectsBytes, IntPtr numberOfPostEffects)
+{
+return rprsListImportedPostEffectsEx(rprsCtx, PostEffects, sizePostEffectsBytes, numberOfPostEffects);
+}
 [DllImport(dllName)] static extern Status rprsListImportedHeteroVolumes(IntPtr HeteroVolumes, int sizeHeteroVolumesBytes, IntPtr numberOfHeteroVolumes);
 public static Status sListImportedHeteroVolumes(IntPtr HeteroVolumes, int sizeHeteroVolumesBytes, IntPtr numberOfHeteroVolumes)
 {
 return rprsListImportedHeteroVolumes(HeteroVolumes, sizeHeteroVolumesBytes, numberOfHeteroVolumes);
+}
+[DllImport(dllName)] static extern Status rprsListImportedHeteroVolumesEx(IntPtr rprsCtx, IntPtr HeteroVolumes, int sizeHeteroVolumesBytes, IntPtr numberOfHeteroVolumes);
+public static Status sListImportedHeteroVolumesEx(IntPtr rprsCtx, IntPtr HeteroVolumes, int sizeHeteroVolumesBytes, IntPtr numberOfHeteroVolumes)
+{
+return rprsListImportedHeteroVolumesEx(rprsCtx, HeteroVolumes, sizeHeteroVolumesBytes, numberOfHeteroVolumes);
 }
 [DllImport(dllName)] static extern Status rprsListImportedGrids(IntPtr Grids, int sizeGridsBytes, IntPtr numberOfGrids);
 public static Status sListImportedGrids(IntPtr Grids, int sizeGridsBytes, IntPtr numberOfGrids)
 {
 return rprsListImportedGrids(Grids, sizeGridsBytes, numberOfGrids);
 }
+[DllImport(dllName)] static extern Status rprsListImportedGridsEx(IntPtr rprsCtx, IntPtr Grids, int sizeGridsBytes, IntPtr numberOfGrids);
+public static Status sListImportedGridsEx(IntPtr rprsCtx, IntPtr Grids, int sizeGridsBytes, IntPtr numberOfGrids)
+{
+return rprsListImportedGridsEx(rprsCtx, Grids, sizeGridsBytes, numberOfGrids);
+}
 [DllImport(dllName)] static extern Status rprsListImportedBuffers(IntPtr Buffers, int sizeBuffersBytes, IntPtr numberOfBuffers);
 public static Status sListImportedBuffers(IntPtr Buffers, int sizeBuffersBytes, IntPtr numberOfBuffers)
 {
 return rprsListImportedBuffers(Buffers, sizeBuffersBytes, numberOfBuffers);
+}
+[DllImport(dllName)] static extern Status rprsListImportedBuffersEx(IntPtr rprsCtx, IntPtr Buffers, int sizeBuffersBytes, IntPtr numberOfBuffers);
+public static Status sListImportedBuffersEx(IntPtr rprsCtx, IntPtr Buffers, int sizeBuffersBytes, IntPtr numberOfBuffers)
+{
+return rprsListImportedBuffersEx(rprsCtx, Buffers, sizeBuffersBytes, numberOfBuffers);
 }
 [DllImport(dllName)] static extern Status rprsListImportedImages(IntPtr Images, int sizeImageBytes, IntPtr numberOfImages);
 public static Status sListImportedImages(IntPtr Images, int sizeImageBytes, IntPtr numberOfImages)
 {
 return rprsListImportedImages(Images, sizeImageBytes, numberOfImages);
 }
+[DllImport(dllName)] static extern Status rprsListImportedImagesEx(IntPtr rprsCtx, IntPtr Images, int sizeImageBytes, IntPtr numberOfImages);
+public static Status sListImportedImagesEx(IntPtr rprsCtx, IntPtr Images, int sizeImageBytes, IntPtr numberOfImages)
+{
+return rprsListImportedImagesEx(rprsCtx, Images, sizeImageBytes, numberOfImages);
+}
 
-
+//
+// rprsExportCustomList and rprsImportCustomList are deprecated and not supported anymore.
+//
 
 [DllImport(dllName)] static extern Status rprsExportCustomList(IntPtr rprsFileName, int materialNode_number, IntPtr materialNode_list, int camera_number, IntPtr camera_list, int light_number, IntPtr light_list, int shape_number, IntPtr shape_list, int image_number, IntPtr image_list, IntPtr rprsCtx);
 public static Status sExportCustomList(IntPtr rprsFileName, int materialNode_number, IntPtr materialNode_list, int camera_number, IntPtr camera_list, int light_number, IntPtr light_list, int shape_number, IntPtr shape_list, int image_number, IntPtr image_list, IntPtr rprsCtx)
@@ -299,6 +399,11 @@ public static Status sAddExtraCamera(IntPtr extraCam)
 {
 return rprsAddExtraCamera(extraCam);
 }
+[DllImport(dllName)] static extern Status rprsAddExtraCameraEx(IntPtr rprsCtx, IntPtr extraCam);
+public static Status sAddExtraCameraEx(IntPtr rprsCtx, IntPtr extraCam)
+{
+return rprsAddExtraCameraEx(rprsCtx, extraCam);
+}
 
 
 
@@ -312,10 +417,20 @@ public static Status sAddExtraShapeParameter(IntPtr shape, IntPtr parameterName,
 {
 return rprsAddExtraShapeParameter(shape, parameterName, value);
 }
+[DllImport(dllName)] static extern Status rprsAddExtraShapeParameterEx(IntPtr rprsCtx, IntPtr shape, IntPtr parameterName, int value);
+public static Status sAddExtraShapeParameterEx(IntPtr rprsCtx, IntPtr shape, IntPtr parameterName, int value)
+{
+return rprsAddExtraShapeParameterEx(rprsCtx, shape, parameterName, value);
+}
 [DllImport(dllName)] static extern Status rprsGetExtraShapeParameter(IntPtr shape, IntPtr parameterName, IntPtr value);
 public static Status sGetExtraShapeParameter(IntPtr shape, IntPtr parameterName, IntPtr value)
 {
 return rprsGetExtraShapeParameter(shape, parameterName, value);
+}
+[DllImport(dllName)] static extern Status rprsGetExtraShapeParameterEx(IntPtr rprsCtx, IntPtr shape, IntPtr parameterName, IntPtr value);
+public static Status sGetExtraShapeParameterEx(IntPtr rprsCtx, IntPtr shape, IntPtr parameterName, IntPtr value)
+{
+return rprsGetExtraShapeParameterEx(rprsCtx, shape, parameterName, value);
 }
 
 // rprsExportToXML is for Debugging usecase only.
@@ -330,6 +445,11 @@ return rprsGetExtraShapeParameter(shape, parameterName, value);
 public static Status sExportToXML(IntPtr rprsFilePath, IntPtr xmlFileOut)
 {
 return rprsExportToXML(rprsFilePath, xmlFileOut);
+}
+[DllImport(dllName)] static extern Status rprsExportToXMLEx(IntPtr rprsCtx, IntPtr rprsFilePath, IntPtr xmlFileOut);
+public static Status sExportToXMLEx(IntPtr rprsCtx, IntPtr rprsFilePath, IntPtr xmlFileOut)
+{
+return rprsExportToXMLEx(rprsCtx, rprsFilePath, xmlFileOut);
 }
 
 // Extra feature :  a shape hierarchy can be saved inside the RPRS
@@ -372,55 +492,106 @@ public static Status sAssignShapeToGroup(IntPtr shape, IntPtr groupName)
 {
 return rprsAssignShapeToGroup(shape, groupName);
 }
+[DllImport(dllName)] static extern Status rprsAssignShapeToGroupEx(IntPtr rprsCtx, IntPtr shape, IntPtr groupName);
+public static Status sAssignShapeToGroupEx(IntPtr rprsCtx, IntPtr shape, IntPtr groupName)
+{
+return rprsAssignShapeToGroupEx(rprsCtx, shape, groupName);
+}
 [DllImport(dllName)] static extern Status rprsAssignLightToGroup(IntPtr light, IntPtr groupName);
 public static Status sAssignLightToGroup(IntPtr light, IntPtr groupName)
 {
 return rprsAssignLightToGroup(light, groupName);
+}
+[DllImport(dllName)] static extern Status rprsAssignLightToGroupEx(IntPtr rprsCtx, IntPtr light, IntPtr groupName);
+public static Status sAssignLightToGroupEx(IntPtr rprsCtx, IntPtr light, IntPtr groupName)
+{
+return rprsAssignLightToGroupEx(rprsCtx, light, groupName);
 }
 [DllImport(dllName)] static extern Status rprsAssignCameraToGroup(IntPtr camera, IntPtr groupName);
 public static Status sAssignCameraToGroup(IntPtr camera, IntPtr groupName)
 {
 return rprsAssignCameraToGroup(camera, groupName);
 }
+[DllImport(dllName)] static extern Status rprsAssignCameraToGroupEx(IntPtr rprsCtx, IntPtr camera, IntPtr groupName);
+public static Status sAssignCameraToGroupEx(IntPtr rprsCtx, IntPtr camera, IntPtr groupName)
+{
+return rprsAssignCameraToGroupEx(rprsCtx, camera, groupName);
+}
 [DllImport(dllName)] static extern Status rprsAssignParentGroupToGroup(IntPtr groupChild, IntPtr groupParent);
 public static Status sAssignParentGroupToGroup(IntPtr groupChild, IntPtr groupParent)
 {
 return rprsAssignParentGroupToGroup(groupChild, groupParent);
+}
+[DllImport(dllName)] static extern Status rprsAssignParentGroupToGroupEx(IntPtr rprsCtx, IntPtr groupChild, IntPtr groupParent);
+public static Status sAssignParentGroupToGroupEx(IntPtr rprsCtx, IntPtr groupChild, IntPtr groupParent)
+{
+return rprsAssignParentGroupToGroupEx(rprsCtx, groupChild, groupParent);
 }
 [DllImport(dllName)] static extern Status rprsSetTransformGroup(IntPtr groupChild, IntPtr matrixComponents);
 public static Status sSetTransformGroup(IntPtr groupChild, IntPtr matrixComponents)
 {
 return rprsSetTransformGroup(groupChild, matrixComponents);
 }
+[DllImport(dllName)] static extern Status rprsSetTransformGroupEx(IntPtr rprsCtx, IntPtr groupChild, IntPtr matrixComponents);
+public static Status sSetTransformGroupEx(IntPtr rprsCtx, IntPtr groupChild, IntPtr matrixComponents)
+{
+return rprsSetTransformGroupEx(rprsCtx, groupChild, matrixComponents);
+}
 [DllImport(dllName)] static extern Status rprsGetTransformGroup(IntPtr groupChild, IntPtr matrixComponents);
 public static Status sGetTransformGroup(IntPtr groupChild, IntPtr matrixComponents)
 {
 return rprsGetTransformGroup(groupChild, matrixComponents);
+}
+[DllImport(dllName)] static extern Status rprsGetTransformGroupEx(IntPtr rprsCtx, IntPtr groupChild, IntPtr matrixComponents);
+public static Status sGetTransformGroupEx(IntPtr rprsCtx, IntPtr groupChild, IntPtr matrixComponents)
+{
+return rprsGetTransformGroupEx(rprsCtx, groupChild, matrixComponents);
 }
 [DllImport(dllName)] static extern Status rprsGetParentGroupFromShape(IntPtr shape, long size, IntPtr groupName, IntPtr size_ret);
 public static Status sGetParentGroupFromShape(IntPtr shape, long size, IntPtr groupName, IntPtr size_ret)
 {
 return rprsGetParentGroupFromShape(shape, size, groupName, size_ret);
 }
+[DllImport(dllName)] static extern Status rprsGetParentGroupFromShapeEx(IntPtr rprsCtx, IntPtr shape, long size, IntPtr groupName, IntPtr size_ret);
+public static Status sGetParentGroupFromShapeEx(IntPtr rprsCtx, IntPtr shape, long size, IntPtr groupName, IntPtr size_ret)
+{
+return rprsGetParentGroupFromShapeEx(rprsCtx, shape, size, groupName, size_ret);
+}
 [DllImport(dllName)] static extern Status rprsGetParentGroupFromCamera(IntPtr camera, long size, IntPtr groupName, IntPtr size_ret);
 public static Status sGetParentGroupFromCamera(IntPtr camera, long size, IntPtr groupName, IntPtr size_ret)
 {
 return rprsGetParentGroupFromCamera(camera, size, groupName, size_ret);
+}
+[DllImport(dllName)] static extern Status rprsGetParentGroupFromCameraEx(IntPtr rprsCtx, IntPtr camera, long size, IntPtr groupName, IntPtr size_ret);
+public static Status sGetParentGroupFromCameraEx(IntPtr rprsCtx, IntPtr camera, long size, IntPtr groupName, IntPtr size_ret)
+{
+return rprsGetParentGroupFromCameraEx(rprsCtx, camera, size, groupName, size_ret);
 }
 [DllImport(dllName)] static extern Status rprsGetParentGroupFromLight(IntPtr light, long size, IntPtr groupName, IntPtr size_ret);
 public static Status sGetParentGroupFromLight(IntPtr light, long size, IntPtr groupName, IntPtr size_ret)
 {
 return rprsGetParentGroupFromLight(light, size, groupName, size_ret);
 }
+[DllImport(dllName)] static extern Status rprsGetParentGroupFromLightEx(IntPtr rprsCtx, IntPtr light, long size, IntPtr groupName, IntPtr size_ret);
+public static Status sGetParentGroupFromLightEx(IntPtr rprsCtx, IntPtr light, long size, IntPtr groupName, IntPtr size_ret)
+{
+return rprsGetParentGroupFromLightEx(rprsCtx, light, size, groupName, size_ret);
+}
 [DllImport(dllName)] static extern Status rprsGetParentGroupFromGroup(IntPtr groupChild, long size, IntPtr groupName, IntPtr size_ret);
 public static Status sGetParentGroupFromGroup(IntPtr groupChild, long size, IntPtr groupName, IntPtr size_ret)
 {
 return rprsGetParentGroupFromGroup(groupChild, size, groupName, size_ret);
 }
+[DllImport(dllName)] static extern Status rprsGetParentGroupFromGroupEx(IntPtr rprsCtx, IntPtr groupChild, long size, IntPtr groupName, IntPtr size_ret);
+public static Status sGetParentGroupFromGroupEx(IntPtr rprsCtx, IntPtr groupChild, long size, IntPtr groupName, IntPtr size_ret)
+{
+return rprsGetParentGroupFromGroupEx(rprsCtx, groupChild, size, groupName, size_ret);
+}
 
 // Create a RPRS Context. This object can be used to store additional data ( animation, parameters ... ) for an Export.
 // And it can be used to read them back after an Import.
-// 
+// From 2.02.7 RPR SDK it's advised to use the RPRS_context. meaning that  rprsExport/rprsImport  should not give a nullptr to the rprsCtx argument.
+//    and function with the 'Ex' suffix should be used.
 
 [DllImport(dllName)] static extern Status rprsCreateContext(out IntPtr out_rprsCtx);
 public static Status sCreateContext(out IntPtr out_rprsCtx)
@@ -428,8 +599,8 @@ public static Status sCreateContext(out IntPtr out_rprsCtx)
 return rprsCreateContext(out out_rprsCtx);
 }
 
-// Delete a RPRS Context
-// 
+// Delete a RPRS Context:
+// the rprsCtx object and any data hold by it are destroyed (pointers become invalid).
 
 [DllImport(dllName)] static extern Status rprsDeleteContext(IntPtr rprsCtx);
 public static Status sDeleteContext(IntPtr rprsCtx)
@@ -448,8 +619,13 @@ return rprsDeleteContext(rprsCtx);
 // - all pointers returned by getters become undefined - and musn't be used anymore.
 // - render the scene.
 //
-// important: this function will be automatically called internally at the very beginning of each call of rprsImport/rprsxImport
-//            make sure to not use the pointer from getters from a previous Import.
+// Notes:
+//  - this function will be automatically called internally at the very beginning of each call of rprsImport/rprsxImport
+//    make sure to not use the pointer from getters from a previous Import.
+//
+//  - IMPORTANT: if using RPRS_context (which is recommended) this function is useless and deprecated. 
+//               For RPRS_context, release data with rprsDeleteContext.
+//
 
 [DllImport(dllName)] static extern Status rprsReleaseImportedData();
 public static Status sReleaseImportedData()
@@ -458,13 +634,18 @@ return rprsReleaseImportedData();
 }
 
 // void* contextX__NOT_USED_ANYMORE can be set to null  - not used anymore.
-// Delete objects created by last rprsImport : camera, material_node, shape, light, image, post_effect, hetero_volume, buffer, curve
-// do NOT delete context and scene
+// Delete RPR objects created by last rprsImport : camera, material_node, shape, light, image, post_effect, hetero_volume, buffer, curve
+// do NOT any delete rpr_context, rpr_scene and the RPRS_context
 
 [DllImport(dllName)] static extern Status rprsDeleteListImportedObjects(IntPtr contextX__NOT_USED_ANYMORE);
 public static Status sDeleteListImportedObjects(IntPtr contextX__NOT_USED_ANYMORE)
 {
 return rprsDeleteListImportedObjects(contextX__NOT_USED_ANYMORE);
+}
+[DllImport(dllName)] static extern Status rprsDeleteListImportedObjectsEx(IntPtr rprsCtx);
+public static Status sDeleteListImportedObjectsEx(IntPtr rprsCtx)
+{
+return rprsDeleteListImportedObjectsEx(rprsCtx);
 }
 
 //rprs_animation_movement_type
@@ -484,23 +665,41 @@ public const uint RPRS_ANIMATION_MOVEMENTTYPE_SCALE = 0x3 ;
 //transformValues = { 0.0,0.0,0.0,  0.0,1.0,0.0,  }
 
 
-//return null if not animation exists for animIndex
+// rprsGetAnimation can be called after a rprsImport call. This function gives dedails on each animations stored in the RPRS file.
+// return null if not animation exists for animIndex
+// Using the function with the 'Ex' suffix must be used if the rprsImport was using a RPRS_context.
 
 [DllImport(dllName)] static extern IntPtr rprsGetAnimation(int animIndex);
 public static IntPtr sGetAnimation(int animIndex)
 {
 return rprsGetAnimation(animIndex);
 }
+[DllImport(dllName)] static extern IntPtr rprsGetAnimationEx(IntPtr rprsCtx, int animIndex);
+public static IntPtr sGetAnimationEx(IntPtr rprsCtx, int animIndex)
+{
+return rprsGetAnimationEx(rprsCtx, animIndex);
+}
 
+// rprsAddAnimation can be called before the rprsExport call. It adds information about animation in the scene. those informations are stored in the RPRS file.
+// 1 rprsAddAnimation call per animation.
+//
 // before 2.01.6 SDK : make sure the pointers specified inside rprs_animation structure  ( groupName2, timeKeys, transformValues) stay available from this call to the rprsExport call.
 //                     after that, they won't be used anymore by the LoadStore library.
 // from   2.01.6 SDK : RPRS library will copy the animation buffers internally until the rprsExport call. So pointers given to rprsAddAnimation don't need to be kept by the API user.
+//
+// Using the function with the 'Ex' suffix must be used if the rprsExport will use a RPRS_context.
+//
 // return RPR_SUCCESS if success.
 
 [DllImport(dllName)] static extern Status rprsAddAnimation(IntPtr anim);
 public static Status sAddAnimation(IntPtr anim)
 {
 return rprsAddAnimation(anim);
+}
+[DllImport(dllName)] static extern Status rprsAddAnimationEx(IntPtr rprsCtx, IntPtr anim);
+public static Status sAddAnimationEx(IntPtr rprsCtx, IntPtr anim)
+{
+return rprsAddAnimationEx(rprsCtx, anim);
 }
 
 //

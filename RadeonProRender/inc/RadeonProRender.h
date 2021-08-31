@@ -33,9 +33,9 @@ extern "C" {
 
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 2 
-#define RPR_VERSION_REVISION 6 
-#define RPR_VERSION_BUILD 0xb310d5b4 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200206 
+#define RPR_VERSION_REVISION 7 
+#define RPR_VERSION_BUILD 0xdeae87c8 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200207 
 
 // Deprecated version naming - will be removed in the future :
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 

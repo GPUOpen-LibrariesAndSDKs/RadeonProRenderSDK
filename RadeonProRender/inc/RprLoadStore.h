@@ -118,36 +118,60 @@ extern RPR_API_ENTRY rpr_status rprsxImportFromData(rpr_uchar const * data, size
 extern RPR_API_ENTRY rpr_status rprsBuildOCIOFiles(char const * rprsFileName, rpr_context context, char const * basePath, RPRS_context rprsCtx);
 
 
-/** 
-*
-*/
+//
+// rprsGetExtraCustomParam**** can be called after an rprsImport. they give the 'extraCustomParam' that were given as argument to the rprsExport function and stored inside the RPRS file.
+// Using the function with the 'Ex' suffix must be use if the rprsImport was using a RPRS_context.
+//
 extern RPR_API_ENTRY rpr_status rprsGetExtraCustomParam_int(char const * name, int * value);
+extern RPR_API_ENTRY rpr_status rprsGetExtraCustomParamEx_int(RPRS_context rprsCtx, char const * name, int * value);
 extern RPR_API_ENTRY rpr_status rprsGetExtraCustomParam_float(char const * name, float * value);
+extern RPR_API_ENTRY rpr_status rprsGetExtraCustomParamEx_float(RPRS_context rprsCtx, char const * name, float * value);
 extern RPR_API_ENTRY rpr_status rprsGetExtraCustomParamIndex_int(int index, int * value);
+extern RPR_API_ENTRY rpr_status rprsGetExtraCustomParamIndexEx_int(RPRS_context rprsCtx, int index, int * value);
 extern RPR_API_ENTRY rpr_status rprsGetExtraCustomParamIndex_float(int index, float * value);
+extern RPR_API_ENTRY rpr_status rprsGetExtraCustomParamIndexEx_float(RPRS_context rprsCtx, int index, float * value);
 extern RPR_API_ENTRY rpr_int rprsGetNumberOfExtraCustomParam();
+extern RPR_API_ENTRY rpr_int rprsGetNumberOfExtraCustomParamEx(RPRS_context rprsCtx);
 extern RPR_API_ENTRY rpr_status rprsGetExtraCustomParamNameSize(int index, int * nameSizeGet);
+extern RPR_API_ENTRY rpr_status rprsGetExtraCustomParamNameSizeEx(RPRS_context rprsCtx, int index, int * nameSizeGet);
 extern RPR_API_ENTRY rpr_status rprsGetExtraCustomParamName(int index, char * nameGet, int nameGetSize);
+extern RPR_API_ENTRY rpr_status rprsGetExtraCustomParamNameEx(RPRS_context rprsCtx, int index, char * nameGet, int nameGetSize);
 extern RPR_API_ENTRY rpr_int rprsGetExtraCustomParamType(int index);
+extern RPR_API_ENTRY rpr_int rprsGetExtraCustomParamTypeEx(RPRS_context rprsCtx, int index);
 
 
-/** 
-* rprsListImportedMaterialX si deprecated and may be removed in the future.
-*/
+// 
+// rprsListImported*** can be called after an rprsImport. those functions will list each RPR objects created during the import.
+// rprsListImportedMaterialX si deprecated and may be removed in the future.
+// Using the function with the 'Ex' suffix must be use if the rprsImport was using a RPRS_context.
+//
 extern RPR_API_ENTRY rpr_status rprsListImportedCameras(rpr_camera * Cameras, int sizeCameraBytes, int * numberOfCameras);
+extern RPR_API_ENTRY rpr_status rprsListImportedCamerasEx(RPRS_context rprsCtx, rpr_camera * Cameras, int sizeCameraBytes, int * numberOfCameras);
 extern RPR_API_ENTRY rpr_status rprsListImportedMaterialX(void * * MaterialNodes, int sizeMaterialNodeBytes, int * numberOfMaterialNodes);
+extern RPR_API_ENTRY rpr_status rprsListImportedMaterialXEx(RPRS_context rprsCtx, void * * MaterialNodes, int sizeMaterialNodeBytes, int * numberOfMaterialNodes);
 extern RPR_API_ENTRY rpr_status rprsListImportedMaterialNodes(rpr_material_node * MaterialNodes, int sizeMaterialNodeBytes, int * numberOfMaterialNodes);
+extern RPR_API_ENTRY rpr_status rprsListImportedMaterialNodesEx(RPRS_context rprsCtx, rpr_material_node * MaterialNodes, int sizeMaterialNodeBytes, int * numberOfMaterialNodes);
 extern RPR_API_ENTRY rpr_status rprsListImportedLights(rpr_light * Lights, int sizeLightBytes, int * numberOfLights);
+extern RPR_API_ENTRY rpr_status rprsListImportedLightsEx(RPRS_context rprsCtx, rpr_light * Lights, int sizeLightBytes, int * numberOfLights);
 extern RPR_API_ENTRY rpr_status rprsListImportedShapes(rpr_shape * Shapes, int sizeShapeBytes, int * numberOfShapes);
+extern RPR_API_ENTRY rpr_status rprsListImportedShapesEx(RPRS_context rprsCtx, rpr_shape * Shapes, int sizeShapeBytes, int * numberOfShapes);
 extern RPR_API_ENTRY rpr_status rprsListImportedCurves(rpr_curve * Curves, int sizeCurveBytes, int * numberOfCurves);
+extern RPR_API_ENTRY rpr_status rprsListImportedCurvesEx(RPRS_context rprsCtx, rpr_curve * Curves, int sizeCurveBytes, int * numberOfCurves);
 extern RPR_API_ENTRY rpr_status rprsListImportedPostEffects(rpr_post_effect * PostEffects, int sizePostEffectsBytes, int * numberOfPostEffects);
+extern RPR_API_ENTRY rpr_status rprsListImportedPostEffectsEx(RPRS_context rprsCtx, rpr_post_effect * PostEffects, int sizePostEffectsBytes, int * numberOfPostEffects);
 extern RPR_API_ENTRY rpr_status rprsListImportedHeteroVolumes(rpr_hetero_volume * HeteroVolumes, int sizeHeteroVolumesBytes, int * numberOfHeteroVolumes);
+extern RPR_API_ENTRY rpr_status rprsListImportedHeteroVolumesEx(RPRS_context rprsCtx, rpr_hetero_volume * HeteroVolumes, int sizeHeteroVolumesBytes, int * numberOfHeteroVolumes);
 extern RPR_API_ENTRY rpr_status rprsListImportedGrids(rpr_grid * Grids, int sizeGridsBytes, int * numberOfGrids);
+extern RPR_API_ENTRY rpr_status rprsListImportedGridsEx(RPRS_context rprsCtx, rpr_grid * Grids, int sizeGridsBytes, int * numberOfGrids);
 extern RPR_API_ENTRY rpr_status rprsListImportedBuffers(rpr_buffer * Buffers, int sizeBuffersBytes, int * numberOfBuffers);
+extern RPR_API_ENTRY rpr_status rprsListImportedBuffersEx(RPRS_context rprsCtx, rpr_buffer * Buffers, int sizeBuffersBytes, int * numberOfBuffers);
 extern RPR_API_ENTRY rpr_status rprsListImportedImages(rpr_image * Images, int sizeImageBytes, int * numberOfImages);
+extern RPR_API_ENTRY rpr_status rprsListImportedImagesEx(RPRS_context rprsCtx, rpr_image * Images, int sizeImageBytes, int * numberOfImages);
 
 
-
+//
+// rprsExportCustomList and rprsImportCustomList are deprecated and not supported anymore.
+//
 extern RPR_API_ENTRY rpr_status rprsExportCustomList(char const * rprsFileName, int materialNode_number, rpr_material_node* materialNode_list, int camera_number, rpr_camera* camera_list, int light_number, rpr_light* light_list, int shape_number, rpr_shape* shape_list, int image_number, rpr_image* image_list, RPRS_context rprsCtx);
 extern RPR_API_ENTRY rpr_status rprsImportCustomList(char const * rprsFileName, rpr_context context, rpr_material_system materialSystem, int*  materialNode_number, rpr_material_node* materialNode_list, int*  camera_number, rpr_camera* camera_list, int*  light_number, rpr_light* light_list, int*  shape_number, rpr_shape* shape_list, int*  image_number, rpr_image* image_list, RPRS_context rprsCtx);
 
@@ -160,6 +184,7 @@ extern RPR_API_ENTRY rpr_status rprsImportCustomList(char const * rprsFileName, 
 // internally, the list of extra cameras will be reset as soon as you call rprsExport
 // return RPR_SUCCESS if success.
 extern RPR_API_ENTRY rpr_status rprsAddExtraCamera(rpr_camera extraCam);
+extern RPR_API_ENTRY rpr_status rprsAddExtraCameraEx(RPRS_context rprsCtx, rpr_camera extraCam);
 
 
 
@@ -168,7 +193,9 @@ extern RPR_API_ENTRY rpr_status rprsAddExtraCamera(rpr_camera extraCam);
 // Call rprsAddExtraShapeParameter before the rprsExport call to add those parameters in the exporter.
 // Call rprsGetExtraShapeParameter after the rprsImport call in order to read those parameters.
 extern RPR_API_ENTRY rpr_status rprsAddExtraShapeParameter(rpr_shape shape, const rpr_char * parameterName, rpr_int value);
+extern RPR_API_ENTRY rpr_status rprsAddExtraShapeParameterEx(RPRS_context rprsCtx, rpr_shape shape, const rpr_char * parameterName, rpr_int value);
 extern RPR_API_ENTRY rpr_status rprsGetExtraShapeParameter(rpr_shape shape, const rpr_char * parameterName, rpr_int * value);
+extern RPR_API_ENTRY rpr_status rprsGetExtraShapeParameterEx(RPRS_context rprsCtx, rpr_shape shape, const rpr_char * parameterName, rpr_int * value);
 
 
 // rprsExportToXML is for Debugging usecase only.
@@ -179,6 +206,7 @@ extern RPR_API_ENTRY rpr_status rprsGetExtraShapeParameter(rpr_shape shape, cons
 // 'rprsFilePath' : input RPRS file.
 // 'xmlFileOut' : name of the output XML file.
 extern RPR_API_ENTRY rpr_status rprsExportToXML(char const * rprsFilePath, char const * xmlFileOut);
+extern RPR_API_ENTRY rpr_status rprsExportToXMLEx(RPRS_context rprsCtx, char const * rprsFilePath, char const * xmlFileOut);
 
 
 // Extra feature :  a shape hierarchy can be saved inside the RPRS
@@ -216,25 +244,36 @@ extern RPR_API_ENTRY rpr_status rprsExportToXML(char const * rprsFilePath, char 
 // those functions return RPR_SUCCESS if success
 // 
 extern RPR_API_ENTRY rpr_status rprsAssignShapeToGroup(rpr_shape shape, const rpr_char * groupName);
+extern RPR_API_ENTRY rpr_status rprsAssignShapeToGroupEx(RPRS_context rprsCtx, rpr_shape shape, const rpr_char * groupName);
 extern RPR_API_ENTRY rpr_status rprsAssignLightToGroup(rpr_light light, const rpr_char * groupName);
+extern RPR_API_ENTRY rpr_status rprsAssignLightToGroupEx(RPRS_context rprsCtx, rpr_light light, const rpr_char * groupName);
 extern RPR_API_ENTRY rpr_status rprsAssignCameraToGroup(rpr_camera camera, const rpr_char * groupName);
+extern RPR_API_ENTRY rpr_status rprsAssignCameraToGroupEx(RPRS_context rprsCtx, rpr_camera camera, const rpr_char * groupName);
 extern RPR_API_ENTRY rpr_status rprsAssignParentGroupToGroup(const rpr_char * groupChild, const rpr_char * groupParent);
+extern RPR_API_ENTRY rpr_status rprsAssignParentGroupToGroupEx(RPRS_context rprsCtx, const rpr_char * groupChild, const rpr_char * groupParent);
 extern RPR_API_ENTRY rpr_status rprsSetTransformGroup(const rpr_char * groupChild, const float * matrixComponents);
+extern RPR_API_ENTRY rpr_status rprsSetTransformGroupEx(RPRS_context rprsCtx, const rpr_char * groupChild, const float * matrixComponents);
 extern RPR_API_ENTRY rpr_status rprsGetTransformGroup(const rpr_char * groupChild, float * matrixComponents);
+extern RPR_API_ENTRY rpr_status rprsGetTransformGroupEx(RPRS_context rprsCtx, const rpr_char * groupChild, float * matrixComponents);
 extern RPR_API_ENTRY rpr_status rprsGetParentGroupFromShape(rpr_shape shape, size_t size, rpr_char * groupName, size_t * size_ret);
+extern RPR_API_ENTRY rpr_status rprsGetParentGroupFromShapeEx(RPRS_context rprsCtx, rpr_shape shape, size_t size, rpr_char * groupName, size_t * size_ret);
 extern RPR_API_ENTRY rpr_status rprsGetParentGroupFromCamera(rpr_camera camera, size_t size, rpr_char * groupName, size_t * size_ret);
+extern RPR_API_ENTRY rpr_status rprsGetParentGroupFromCameraEx(RPRS_context rprsCtx, rpr_camera camera, size_t size, rpr_char * groupName, size_t * size_ret);
 extern RPR_API_ENTRY rpr_status rprsGetParentGroupFromLight(rpr_light light, size_t size, rpr_char * groupName, size_t * size_ret);
+extern RPR_API_ENTRY rpr_status rprsGetParentGroupFromLightEx(RPRS_context rprsCtx, rpr_light light, size_t size, rpr_char * groupName, size_t * size_ret);
 extern RPR_API_ENTRY rpr_status rprsGetParentGroupFromGroup(const rpr_char * groupChild, size_t size, rpr_char * groupName, size_t * size_ret);
+extern RPR_API_ENTRY rpr_status rprsGetParentGroupFromGroupEx(RPRS_context rprsCtx, const rpr_char * groupChild, size_t size, rpr_char * groupName, size_t * size_ret);
 
 
 // Create a RPRS Context. This object can be used to store additional data ( animation, parameters ... ) for an Export.
 // And it can be used to read them back after an Import.
-// 
+// From 2.02.7 RPR SDK it's advised to use the RPRS_context. meaning that  rprsExport/rprsImport  should not give a nullptr to the rprsCtx argument.
+//    and function with the 'Ex' suffix should be used.
 extern RPR_API_ENTRY rpr_status rprsCreateContext(RPRS_context * out_rprsCtx);
 
 
-// Delete a RPRS Context
-// 
+// Delete a RPRS Context:
+// the rprsCtx object and any data hold by it are destroyed (pointers become invalid).
 extern RPR_API_ENTRY rpr_status rprsDeleteContext(RPRS_context rprsCtx);
 
 
@@ -249,15 +288,21 @@ extern RPR_API_ENTRY rpr_status rprsDeleteContext(RPRS_context rprsCtx);
 // - all pointers returned by getters become undefined - and musn't be used anymore.
 // - render the scene.
 //
-// important: this function will be automatically called internally at the very beginning of each call of rprsImport/rprsxImport
-//            make sure to not use the pointer from getters from a previous Import.
+// Notes:
+//  - this function will be automatically called internally at the very beginning of each call of rprsImport/rprsxImport
+//    make sure to not use the pointer from getters from a previous Import.
+//
+//  - IMPORTANT: if using RPRS_context (which is recommended) this function is useless and deprecated. 
+//               For RPRS_context, release data with rprsDeleteContext.
+//
 extern RPR_API_ENTRY rpr_status rprsReleaseImportedData();
 
 
 // void* contextX__NOT_USED_ANYMORE can be set to null  - not used anymore.
-// Delete objects created by last rprsImport : camera, material_node, shape, light, image, post_effect, hetero_volume, buffer, curve
-// do NOT delete context and scene
+// Delete RPR objects created by last rprsImport : camera, material_node, shape, light, image, post_effect, hetero_volume, buffer, curve
+// do NOT any delete rpr_context, rpr_scene and the RPRS_context
 extern RPR_API_ENTRY rpr_status rprsDeleteListImportedObjects(void * contextX__NOT_USED_ANYMORE);
+extern RPR_API_ENTRY rpr_status rprsDeleteListImportedObjectsEx(RPRS_context rprsCtx);
 
 typedef rpr_uint rprs_animation_movement_type;
 
@@ -294,15 +339,25 @@ typedef __rprs_animation _rprs_animation;
 typedef _rprs_animation rprs_animation;
 
 
-//return null if not animation exists for animIndex
+// rprsGetAnimation can be called after a rprsImport call. This function gives dedails on each animations stored in the RPRS file.
+// return null if not animation exists for animIndex
+// Using the function with the 'Ex' suffix must be used if the rprsImport was using a RPRS_context.
 extern RPR_API_ENTRY const rprs_animation * rprsGetAnimation(int animIndex);
+extern RPR_API_ENTRY const rprs_animation * rprsGetAnimationEx(RPRS_context rprsCtx, int animIndex);
 
 
+// rprsAddAnimation can be called before the rprsExport call. It adds information about animation in the scene. those informations are stored in the RPRS file.
+// 1 rprsAddAnimation call per animation.
+//
 // before 2.01.6 SDK : make sure the pointers specified inside rprs_animation structure  ( groupName2, timeKeys, transformValues) stay available from this call to the rprsExport call.
 //                     after that, they won't be used anymore by the LoadStore library.
 // from   2.01.6 SDK : RPRS library will copy the animation buffers internally until the rprsExport call. So pointers given to rprsAddAnimation don't need to be kept by the API user.
+//
+// Using the function with the 'Ex' suffix must be used if the rprsExport will use a RPRS_context.
+//
 // return RPR_SUCCESS if success.
 extern RPR_API_ENTRY rpr_status rprsAddAnimation(const rprs_animation * anim);
+extern RPR_API_ENTRY rpr_status rprsAddAnimationEx(RPRS_context rprsCtx, const rprs_animation * anim);
 
 
 //

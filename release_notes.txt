@@ -3,6 +3,20 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.02.7 - 31 August 2021
+
+RPRNEXT-847 - (Bug)      - Improve Contour rendering quality
+RPRNEXT-846 - (Task)     - Improve render scene building time
+RPRNEXT-843 - (Bug)      - Fix render crash issue with specific drivers
+RPRNEXT-842 - (Bug)      - Fix volume render artifact on Navi2 cards
+RPRNEXT-838 - (Task)     - Improve render time
+RPRNEXT-801 - (Bug)      - Fix preview mode with AOVs
+RPRNEXT-768 - (Task)     - Improve rpr file export performance
+RPRNEXT-743 - (Bug)      - Fix Opacity AOV with toon render and shadow/reflection catcher
+RPRNEXT-729 - (Task)     - Improve performance of LPE
+
+
+################################################################################################################
 RPR SDK 2.02.6 - 06 August 2021
 
 RPRNEXT-835 - (Bug)      - Unexpected thin volumes

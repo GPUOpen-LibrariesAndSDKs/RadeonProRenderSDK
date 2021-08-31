@@ -94,7 +94,7 @@ extern "C" {
 #define RPR_MATERIAL_NODE_OP_LOOKUP 0x1003
 #define RPR_MATERIAL_NODE_OP_NORMAL_MAP 0x1004
 #define RPR_MATERIAL_NODE_OP_LEAF 0x1005
-
+#define RPR_MATERIAL_NODE_OP_CHECKER 0x1006
 
 /*rpr_material_node_lookup_value*/
 #define RPR_MATERIAL_NODE_LOOKUP_VIEW_VECTOR 0x2000
@@ -171,6 +171,8 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_PT_DENOISER 0x102D // Sets denoiser type.
 #define RPR_CONTEXT_MAX_TEXTURES 0x102E // Defines maximim textures allowed
 #define RPR_CONTEXT_RESERVOIR_SAMPLING 0x102F // Turn on reservoir sampling
+#define RPR_CONTEXT_EXPOSURE 0x1030
+#define RPR_CONTEXT_TONE_MAPPING 0x1031
 
 /* Traversal modes */
 #define RPR_HYBRID_TRAVERSAL_STATIC_TLAS_SEPARATE 0x1 ///< Use a separate acceleration structure for static objects
@@ -218,6 +220,11 @@ struct RPRHybridKernelsPathInfo
 #define RPR_DENOISER_NONE 0u
 #define RPR_DENOISER_SVGF 1u
 #define RPR_DENOISER_ASVGF 2u
+
+#define RPR_TONE_MAPPING_NONE 0u
+#define RPR_TONE_MAPPING_FILMIC 1u
+#define RPR_TONE_MAPPING_ACES 2u
+#define RPR_TONE_MAPPING_REINHARD 3u
 
 /**
  * Sets directional light shadow splits count for for rasterization renderer.
@@ -332,8 +339,11 @@ typedef rpr_status (*rprContextCreateMeshEditable_func)(rpr_context context,
 typedef rpr_status(*rprMaterialNodeSetInputSByKey_func)(rpr_material_node in_node, rpr_material_node_input in_input, rpr_char const* name);
 #define RPR_MATERIAL_SET_INPUT_BY_S_KEY_FUNC_NAME "rprMaterialNodeSetInputSByKey"
 
-typedef rpr_status(*rprMaterialXSetAddress_func)(rpr_material_node in_node, rpr_char const* name);
-#define RPR_MATERIALX_SET_ADDRESS_FUNC_NAME "rprMaterialXSetAddress"
+typedef rpr_status(*rprMaterialXSetFile_func)(rpr_material_node in_node, rpr_char const* name);
+#define RPR_MATERIALX_SET_FILE_FUNC_NAME "rprMaterialXSetFile"
+
+typedef rpr_status(*rprMaterialXSetFileAsBuffer_func)(rpr_material_node in_node, rpr_char const* buffer, size_t bufferSize);
+#define RPR_MATERIALX_SET_FILE_AS_BUFFER_FUNC_NAME "rprMaterialXSetFileAsBuffer"
 
 struct DataChange
 {
