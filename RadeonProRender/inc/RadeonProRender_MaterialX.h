@@ -27,7 +27,7 @@ extern "C" {
   *  -----> Note: MaterialX API is still in development, this function is part of the 'Version 1' API, it may be replaced by the 'Version 2' 
   *
   * @param xmlData                       null-terminated string of the MaterialX XML data
-  * @param basePath                      base path used for image loading
+  * @param resourcePaths and  resourcePathsCount   list of paths used for image loading
   *
   * @param imageAlreadyCreated_count
   * @param imageAlreadyCreated_paths
@@ -51,7 +51,7 @@ extern "C" {
   *
   * This function is NOT traced. However internally it's calling some RPR API to build the graph, those calls are traced.
   */
-  extern RPR_API_ENTRY rpr_status rprLoadMaterialX(rpr_context in_context, rpr_material_system in_matsys, char const * xmlData, char const ** incudeData, int includeCount, char const * basePath, int imageAlreadyCreated_count, char const ** imageAlreadyCreated_paths, rpr_image * imageAlreadyCreated_list, rpr_material_node ** listNodesOut, rpr_uint * listNodesOut_count, rpr_image ** listImagesOut, rpr_uint * listImagesOut_count, rpr_uint * rootNodeOut, rpr_uint * rootDisplacementNodeOut);
+  extern RPR_API_ENTRY rpr_status rprLoadMaterialX(rpr_context in_context, rpr_material_system in_matsys, char const * xmlData, char const ** incudeData, int includeCount, char const ** resourcePaths, int resourcePathsCount, int imageAlreadyCreated_count, char const ** imageAlreadyCreated_paths, rpr_image * imageAlreadyCreated_list, rpr_material_node ** listNodesOut, rpr_uint * listNodesOut_count, rpr_image ** listImagesOut, rpr_uint * listImagesOut_count, rpr_uint * rootNodeOut, rpr_uint * rootDisplacementNodeOut);
 
 
   /** @brief Free the buffers allocated by rprLoadMaterialX
