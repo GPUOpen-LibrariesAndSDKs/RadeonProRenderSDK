@@ -1,6 +1,6 @@
 /*****************************************************************************\
 *
-*  Module Name    main.cpp
+*  Module Name    Tiled Rendering
 *  Project        Radeon pro render rendering tutorial
 *
 *  Description    How to render a scene using tiles. This doesn't require you to

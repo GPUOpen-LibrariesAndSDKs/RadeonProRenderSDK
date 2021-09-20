@@ -193,5 +193,3 @@ int main()
 }
 
 
-// Things to try in this tutorial:
-// 1) Try to remove

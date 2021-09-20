@@ -141,6 +141,3 @@ int main()
 	return 0;
 }
 
-
-// Things to try in this tutorial:
-// Try to import your own scene

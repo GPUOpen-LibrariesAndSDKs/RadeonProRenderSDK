@@ -1,6 +1,6 @@
 /*****************************************************************************\
 *
-*  Module Name    simple_render.cpp
+*  Module Name    Curve Demo
 *  Project        Radeon ProRender rendering tutorial
 *
 *  Description    Radeon ProRender SDK tutorials 
@@ -240,7 +240,3 @@ int main()
 	return 0;
 }
 
-
-// Things to try in this tutorial:
-// 1) As you probably notice the curve is made out of cylinder which produce small hole, so you should make sure your curve has enough control point to avoid this effect
-// 2) You can try to add more point, change radius, add more curve, ...

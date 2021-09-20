@@ -1,6 +1,6 @@
 /*****************************************************************************\
 *
-*  Module Name    mesh_obj_demo.cpp
+*  Module Name    mesh_obj_demo
 *  Project        Radeon ProRender rendering tutorial
 *
 *  Description    Radeon ProRender SDK tutorials 

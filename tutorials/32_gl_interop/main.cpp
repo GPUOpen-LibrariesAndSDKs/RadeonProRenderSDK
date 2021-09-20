@@ -36,8 +36,8 @@
 #include <iostream>
 #include <thread>
 
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 600
+#define WINDOW_WIDTH 640
+#define WINDOW_HEIGHT 480
 
 void Display();
 
@@ -88,19 +88,46 @@ rpr_camera			g_camera=nullptr;
 rpr_material_node	g_diffuse=nullptr;
 rpr_shape			g_plane=nullptr;
 float*				g_fbdata = nullptr;
-float				g_camera_posX = 0.0;
-float				g_camera_posY = 5.0;
-int					g_lastMouseDownUpdateX = -1;
-int					g_lastMouseDownUpdateY = -1;
+
+
+
+
 GuiRenderImpl::Update g_update;
 const auto g_invalidTime = std::chrono::time_point<std::chrono::high_resolution_clock>::max();
 int					g_benchmark_numberOfRenderIteration = 0;
 auto g_benchmark_start = g_invalidTime;
 
 
+
+
+struct MOUSE_DRAG_INFO
+{
+	MOUSE_DRAG_INFO()
+	{
+		dragging = false;
+		leftMouseButtonDown = false;
+		mousePosAtMouseButtonDown_X = -1;
+		mousePosAtMouseButtonDown_Y = -1;
+	}
+
+	bool dragging;
+	RadeonProRender::float3 lookat;
+	RadeonProRender::float3 up;
+	RadeonProRender::float3 pos;
+	RadeonProRender::matrix mat;
+
+	int	mousePosAtMouseButtonDown_X;
+	int	mousePosAtMouseButtonDown_Y;
+
+	bool leftMouseButtonDown;
+};
+MOUSE_DRAG_INFO g_mouse_camera;
+
+
+
 // High batch size will increase the RPR performance ( rendering iteration per second ), but lower the render feedback FPS on the OpenGL viewer.
 // Note that for better OpenGL FPS (and decreased RPR render quality), API user can also tune the `RPR_CONTEXT_PREVIEW` value.
-const int			g_batchSize = 30;
+const int			g_batchSize = 15;
 
 
 // thread rendering 'g_batchSize' iteration(s)
@@ -185,30 +212,30 @@ void Update()
 	return;
 }
 
-void MoveCamera()
+void OnMouseMoveEvent(int x, int y)
 {
-	CHECK( rprCameraLookAt(
-		g_camera, g_camera_posX, g_camera_posY, 20, // position
-		0, 1, 0, // look at point
-		0, 1, 0  // up vector
-		) );
+	int delaX =  (x - g_mouse_camera.mousePosAtMouseButtonDown_X);
+	int delaY = -(y - g_mouse_camera.mousePosAtMouseButtonDown_Y);
+
+	if ( g_mouse_camera.leftMouseButtonDown )
+	{
+		RadeonProRender::matrix rotZ = RadeonProRender::rotation(g_mouse_camera.up, (float)delaX * 0.001);
+
+		RadeonProRender::float3 lookAtVec = g_mouse_camera.lookat - g_mouse_camera.pos;
+		lookAtVec.normalize();
+
+		RadeonProRender::float3 left = RadeonProRender::cross(g_mouse_camera.up, lookAtVec);
+		left.normalize();
+
+		RadeonProRender::matrix rotleft = RadeonProRender::rotation(left, (float)delaY * 0.001);
+		RadeonProRender::matrix newMat =  rotleft * rotZ * g_mouse_camera.mat ;
+
+		rprCameraSetTransform( g_camera, false, &newMat.m00 );
+	}
 
 	// camera moved, so we need to redraw the framebuffer.
 	CHECK( rprFrameBufferClear(g_frame_buffer) );
-}
 
-void OnMouseMoveEvent(int x, int y)
-{
-	g_camera_posX += (x-g_lastMouseDownUpdateX)/4;
-	g_camera_posY += (y-g_lastMouseDownUpdateY)/4;
-
-	// avoid to have a camera under the floor.
-	if ( g_camera_posY < 0.1 ) { g_camera_posY = 0.1; }
-
-	g_lastMouseDownUpdateX = x;
-	g_lastMouseDownUpdateY = y;
-
-	MoveCamera();
 	return;
 }
 
@@ -218,11 +245,21 @@ void OnMouseEvent(int button, int state, int x, int y)
 	{
 		if ( state == GLUT_DOWN )
 		{
-			g_lastMouseDownUpdateX = x;
-			g_lastMouseDownUpdateY = y;
+			g_mouse_camera.leftMouseButtonDown = true;
+
+			rprCameraGetInfo(g_camera,RPR_CAMERA_LOOKAT,sizeof(g_mouse_camera.lookat),&g_mouse_camera.lookat,0);
+			rprCameraGetInfo(g_camera,RPR_CAMERA_UP,sizeof(g_mouse_camera.up),&g_mouse_camera.up,0);
+			rprCameraGetInfo(g_camera,RPR_CAMERA_POSITION,sizeof(g_mouse_camera.pos),&g_mouse_camera.pos,0);
+			rprCameraGetInfo(g_camera,RPR_CAMERA_TRANSFORM,sizeof(g_mouse_camera.mat),&g_mouse_camera.mat,0);
+
+			g_mouse_camera.mousePosAtMouseButtonDown_X = x;
+			g_mouse_camera.mousePosAtMouseButtonDown_Y = y;
+
 		}
 		else if ( state == GLUT_UP )
 		{
+			g_mouse_camera.leftMouseButtonDown = false;
+
 		}
 	}
 
@@ -237,14 +274,30 @@ void OnKeyboardEvent(unsigned char key, int xmouse, int ymouse)
 		case 'w':
 		case 'z':
 		{
-			g_camera_posX += 0.5f;
+			rprCameraGetInfo(g_camera,RPR_CAMERA_LOOKAT,sizeof(g_mouse_camera.lookat),&g_mouse_camera.lookat,0);
+			rprCameraGetInfo(g_camera,RPR_CAMERA_TRANSFORM,sizeof(g_mouse_camera.mat),&g_mouse_camera.mat,0);
+			rprCameraGetInfo(g_camera,RPR_CAMERA_POSITION,sizeof(g_mouse_camera.pos),&g_mouse_camera.pos,0);
+
+			RadeonProRender::float3 lookAtVec = g_mouse_camera.lookat - g_mouse_camera.pos;
+			lookAtVec.normalize();
+
+			g_mouse_camera.pos += lookAtVec * 0.5f;
+
 			cameraMoves = true;
 			break;
 		}
 
 		case 's':
 		{
-			g_camera_posX -= 0.5f;
+			rprCameraGetInfo(g_camera,RPR_CAMERA_LOOKAT,sizeof(g_mouse_camera.lookat),&g_mouse_camera.lookat,0);
+			rprCameraGetInfo(g_camera,RPR_CAMERA_TRANSFORM,sizeof(g_mouse_camera.mat),&g_mouse_camera.mat,0);
+			rprCameraGetInfo(g_camera,RPR_CAMERA_POSITION,sizeof(g_mouse_camera.pos),&g_mouse_camera.pos,0);
+
+			RadeonProRender::float3 lookAtVec = g_mouse_camera.lookat - g_mouse_camera.pos;
+			lookAtVec.normalize();
+
+			g_mouse_camera.pos -= lookAtVec * 0.5f;
+
 			cameraMoves = true;
 			break;
 		}
@@ -254,8 +307,17 @@ void OnKeyboardEvent(unsigned char key, int xmouse, int ymouse)
 	}
 
 	if ( cameraMoves )
-		MoveCamera();
-	
+	{
+		g_mouse_camera.mat.m30 = g_mouse_camera.pos.x;
+		g_mouse_camera.mat.m31 = g_mouse_camera.pos.y;
+		g_mouse_camera.mat.m32 = g_mouse_camera.pos.z;
+
+		rprCameraSetTransform( g_camera, false, &g_mouse_camera.mat.m00 );
+
+		// camera moved, so we need to redraw the framebuffer.
+		CHECK( rprFrameBufferClear(g_frame_buffer) );
+	}
+
 }
 
 void Display()
@@ -445,7 +507,7 @@ int main(int argc, char** argv)
 		CHECK( rprContextCreateCamera(g_context, &g_camera) );
 
 		// Position camera in world space: 
-		CHECK( rprCameraLookAt(g_camera, g_camera_posX, g_camera_posY, 20, 0, 1, 0, 0, 1, 0) );
+		CHECK( rprCameraLookAt(g_camera, 0.0f, 5.0f, 20.0f,    0, 1, 0,   0, 1, 0) );
 
 		CHECK( rprCameraSetFocalLength(g_camera, 75.f) );
 
