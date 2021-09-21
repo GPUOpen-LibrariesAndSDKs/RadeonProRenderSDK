@@ -15,6 +15,14 @@
 #include <cassert>
 #include <iostream>
 
+
+//
+// This demo illustrates how to create materials in RPR.
+// It's not covering the UBER material which is used inside the 22_material_uber demo.
+//
+
+
+
 //
 // Garbage Collector functions :
 //

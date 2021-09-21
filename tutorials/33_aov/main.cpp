@@ -16,6 +16,12 @@
 #include <iostream>
 
 
+//
+// This demo covers AOV (Arbitrary Output Variables), providing way to render different material component - mostly used for scene debugging.
+//
+//
+
+
 int main()
 {
 

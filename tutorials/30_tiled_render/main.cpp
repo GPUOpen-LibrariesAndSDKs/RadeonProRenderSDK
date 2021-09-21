@@ -22,6 +22,14 @@
 #include <vector>
 #include <string>
 
+
+//
+// This demo illustrates how to break down the framebuffer into smaller render regions (tiles)
+//
+//
+
+
+
 //-------------------Utilities-----------------------------
 static void StudyErrorCode(rpr_int errorCode, rpr_context context__ = nullptr)
 {

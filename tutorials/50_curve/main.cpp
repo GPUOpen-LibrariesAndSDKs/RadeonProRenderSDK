@@ -8,6 +8,13 @@
 *  Copyright(C) 2011-2021 Advanced Micro Devices, Inc. All rights reserved.
 *
 \*****************************************************************************/
+
+
+//
+// Demo covering Curves rendering. 
+// Curves are often used for hair rendering.
+//
+
 #include "RadeonProRender.h"
 #include "RprLoadStore.h"
 #include "Math/mathutils.h"

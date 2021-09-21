@@ -8,6 +8,15 @@
 *  Copyright(C) 2011-2021 Advanced Micro Devices, Inc. All rights reserved.
 *
 \*****************************************************************************/
+
+
+//
+// Shows how to import an RPR scene as RPRS files ( native RPR file format ) or GLTF ( Khronos Group ).
+// It's advised to execute the demo "60_mesh_export" first in order to create the files used in this "61_mesh_import" Demo.
+//
+
+
+
 #include "RadeonProRender.h"
 #include "Math/mathutils.h"
 #include "RprLoadStore.h" //For Import RPRS files ( native RPR file format )

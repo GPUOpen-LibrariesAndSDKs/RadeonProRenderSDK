@@ -8,6 +8,14 @@
 *  Copyright(C) 2011-2021 Advanced Micro Devices, Inc. All rights reserved.
 *
 \*****************************************************************************/
+
+
+//
+// Shows how to export an RPR scene as RPRS files ( native RPR file format ) or GLTF ( Khronos Group ).
+//
+//
+
+
 #include "RadeonProRender.h"
 #include "Math/mathutils.h"
 #include "RprLoadStore.h" //For Export to RPRS ( native RPR file format )

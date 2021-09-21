@@ -17,7 +17,7 @@
 
 //
 // This demo is a good starting point to learn all the basic features of RPR.
-// You'll learn how to manage  geometry, light, camera, framebuffer, materials  for simple cube renderings.
+// You'll learn how to manage  geometry, light, camera, framebuffer, materials for simple cubes renderings.
 //
 
 int main()

@@ -16,6 +16,12 @@
 #include <iostream>
 
 
+
+//
+// This demo illustrates examples for the UBER ( RPR_MATERIAL_NODE_UBERV2 ) material. 
+//
+
+
 //
 // Garbage Collector functions :
 //

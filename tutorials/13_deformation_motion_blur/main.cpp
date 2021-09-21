@@ -14,6 +14,10 @@
 #include <cassert>
 #include <iostream>
 
+//
+// This demo covers vertices deformation over time for a blur effect.
+//
+
 int main()
 {
 	//	enable Radeon ProRender API trace

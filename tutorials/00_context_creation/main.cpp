@@ -15,8 +15,10 @@
 #include <cassert>
 #include <iostream>
 
-// this demo shows how to create a RPR context.
-// the RPR context is the first object that needs to be created before any RPR renderings.
+//
+// This demo shows how to create a RPR context.
+// The RPR context is the first object that needs to be created before any RPR renderings.
+//
 
 int main()
 {

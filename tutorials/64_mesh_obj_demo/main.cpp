@@ -8,6 +8,15 @@
 *  Copyright(C) 2011-2021 Advanced Micro Devices, Inc. All rights reserved.
 *
 \*****************************************************************************/
+
+
+//
+//
+// Project that import and rendering any OBJ file with Radeon ProRender.
+//
+//
+
+
 #include "RadeonProRender.h"
 #include "Math/mathutils.h"
 #include "RprLoadStore.h"//For Export

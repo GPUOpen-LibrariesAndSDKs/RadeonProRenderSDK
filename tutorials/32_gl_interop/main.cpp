@@ -10,6 +10,14 @@
 *
 \*****************************************************************************/
 
+
+
+//
+// Demo covering an RPR rendering inside an OpenGL app.
+//
+//
+
+
 #ifdef __APPLE__
 #include "GL/glew.h"
 #elif WIN32

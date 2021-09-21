@@ -10,11 +10,12 @@
 \*****************************************************************************/
 
 
-/*
+//
+//
+//	This is a demo for the Hybrid.DLL plugin.
+//
+//
 
-	This is a demo for the Hybrid.DLL plugin.
-
-*/
 
 #include "RadeonProRender.h"
 #include "RadeonProRender_Baikal.h"
