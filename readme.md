@@ -2,6 +2,8 @@
 
 # AMD Radeon:tm: ProRender SDK
 
+![](Resources/doc/doc1.png)
+
 AMD Radeon:tm: ProRender is a powerful physically-based rendering engine that enables creative professionals to produce stunningly photorealistic images.
 https://www.amd.com/en/technologies/radeon-prorender
 
