@@ -93,56 +93,67 @@ int main()
 	vertex cube_data_motionBlur[cube_NumberOfVertices*numberOfBlurKeyTime] = 
 	{
 		// vertices at camera exposure = 0.0
-		{ -1.0f, 1.0f, -1.0f, 0.f, 1.f, 0.f, 0.f, 0.f },
-		{  1.0f, 1.0f, -1.0f, 0.f, 1.f, 0.f, 0.f, 0.f },
-		{  1.0f, 1.0f, 1.0f , 0.f, 1.f, 0.f, 0.f, 0.f },
-		{  -1.0f, 1.0f, 1.0f , 0.f, 1.f, 0.f, 0.f, 0.f},
-		{  -1.0f, -1.0f, -1.0f , 0.f, -1.f, 0.f, 0.f, 0.f },
-		{  1.0f, -1.0f, -1.0f , 0.f, -1.f, 0.f, 0.f, 0.f },
-		{  1.0f, -1.0f, 1.0f , 0.f, -1.f, 0.f, 0.f, 0.f },
-		{  -1.0f, -1.0f, 1.0f , 0.f, -1.f, 0.f, 0.f, 0.f },
-		{  -1.0f, -1.0f, 1.0f , -1.f, 0.f, 0.f, 0.f, 0.f },
-		{  -1.0f, -1.0f, -1.0f , -1.f, 0.f, 0.f, 0.f, 0.f },
-		{  -1.0f, 1.0f, -1.0f , -1.f, 0.f, 0.f, 0.f, 0.f },
-		{  -1.0f, 1.0f, 1.0f , -1.f, 0.f, 0.f, 0.f, 0.f },
-		{  1.0f, -1.0f, 1.0f ,  1.f, 0.f, 0.f, 0.f, 0.f },
-		{  1.0f, -1.0f, -1.0f ,  1.f, 0.f, 0.f, 0.f, 0.f },
-		{  1.0f, 1.0f, -1.0f ,  1.f, 0.f, 0.f, 0.f, 0.f },
-		{  1.0f, 1.0f, 1.0f ,  1.f, 0.f, 0.f, 0.f, 0.f },
-		{  -1.0f, -1.0f, -1.0f ,  0.f, 0.f, -1.f , 0.f, 0.f },
-		{  1.0f, -1.0f, -1.0f ,  0.f, 0.f, -1.f , 0.f, 0.f },
-		{  1.0f, 1.0f, -1.0f ,  0.f, 0.f, -1.f, 0.f, 0.f },
-		{  -1.0f, 1.0f, -1.0f ,  0.f, 0.f, -1.f, 0.f, 0.f },
-		{  -1.0f, -1.0f, 1.0f , 0.f, 0.f, 1.f, 0.f, 0.f },
-		{  1.0f, -1.0f, 1.0f , 0.f, 0.f,  1.f, 0.f, 0.f },
-		{  1.0f, 1.0f, 1.0f , 0.f, 0.f, 1.f, 0.f, 0.f },
-		{  -1.0f, 1.0f, 1.0f , 0.f, 0.f, 1.f, 0.f, 0.f },
+		{ -1.0f, 1.0f, -1.0f,    0.f, 1.f, 0.f,    0.f, 0.f },
+		{  1.0f, 1.0f, -1.0f,    0.f, 1.f, 0.f,    1.f, 0.f },
+		{  1.0f, 1.0f, 1.0f ,    0.f, 1.f, 0.f,    1.f, 1.f },
+		{  -1.0f, 1.0f, 1.0f ,   0.f, 1.f, 0.f,    0.f, 1.f},
+
+		{  -1.0f, -1.0f, -1.0f , 0.f, -1.f, 0.f,   0.f, 0.f },
+		{  1.0f, -1.0f, -1.0f ,  0.f, -1.f, 0.f,   1.f, 0.f },
+		{  1.0f, -1.0f, 1.0f ,   0.f, -1.f, 0.f,   1.f, 1.f },
+		{  -1.0f, -1.0f, 1.0f ,  0.f, -1.f, 0.f,   0.f, 1.f },
+
+		{  -1.0f, -1.0f, 1.0f ,  -1.f, 0.f, 0.f,   0.f, 0.f },
+		{  -1.0f, -1.0f, -1.0f , -1.f, 0.f, 0.f,   1.f, 0.f },
+		{  -1.0f, 1.0f, -1.0f ,  -1.f, 0.f, 0.f,   1.f, 1.f },
+		{  -1.0f, 1.0f, 1.0f ,   -1.f, 0.f, 0.f,   0.f, 1.f },
+
+		{  1.0f, -1.0f, 1.0f ,   1.f, 0.f, 0.f,    0.f, 0.f },
+		{  1.0f, -1.0f, -1.0f ,  1.f, 0.f, 0.f,    1.f, 0.f },
+		{  1.0f, 1.0f, -1.0f ,   1.f, 0.f, 0.f,    1.f, 1.f },
+		{  1.0f, 1.0f, 1.0f ,    1.f, 0.f, 0.f,    0.f, 1.f },
+
+		{  -1.0f, -1.0f, -1.0f , 0.f, 0.f, -1.f ,  0.f, 0.f },
+		{  1.0f, -1.0f, -1.0f ,  0.f, 0.f, -1.f ,  1.f, 0.f },
+		{  1.0f, 1.0f, -1.0f ,   0.f, 0.f, -1.f,   1.f, 1.f },
+		{  -1.0f, 1.0f, -1.0f ,  0.f, 0.f, -1.f,   0.f, 1.f },
+
+		{  -1.0f, -1.0f, 1.0f ,  0.f, 0.f, 1.f,    0.f, 0.f },
+		{  1.0f, -1.0f, 1.0f ,   0.f, 0.f,  1.f,   1.f, 0.f },
+		{  1.0f, 1.0f, 1.0f ,    0.f, 0.f, 1.f,    1.f, 1.f },
+		{  -1.0f, 1.0f, 1.0f ,   0.f, 0.f, 1.f,    0.f, 1.f },
+
 
 		// vertices at camera exposure = 1.0 : slightly deform the Cube
-		{ -1.0f+shiftX, 1.0f, -1.0f, 0.f, 1.f, 0.f, 0.f, 0.f },
-		{  1.0f+shiftX, 1.0f+shiftY, -1.0f, 0.f, 1.f, 0.f, 0.f, 0.f },
-		{  1.0f+shiftX, 1.0f+shiftY, 1.0f , 0.f, 1.f, 0.f, 0.f, 0.f },
-		{  -1.0f+shiftX, 1.0f, 1.0f , 0.f, 1.f, 0.f, 0.f, 0.f},
-		{  -1.0f, -1.0f, -1.0f , 0.f, -1.f, 0.f, 0.f, 0.f },
-		{  1.0f, -1.0f, -1.0f , 0.f, -1.f, 0.f, 0.f, 0.f },
-		{  1.0f, -1.0f, 1.0f , 0.f, -1.f, 0.f, 0.f, 0.f },
-		{  -1.0f, -1.0f, 1.0f , 0.f, -1.f, 0.f, 0.f, 0.f },
-		{  -1.0f, -1.0f, 1.0f , -1.f, 0.f, 0.f, 0.f, 0.f },
-		{  -1.0f, -1.0f, -1.0f , -1.f, 0.f, 0.f, 0.f, 0.f },
-		{  -1.0f+shiftX, 1.0f, -1.0f , -1.f, 0.f, 0.f, 0.f, 0.f },
-		{  -1.0f+shiftX, 1.0f, 1.0f , -1.f, 0.f, 0.f, 0.f, 0.f },
-		{  1.0f, -1.0f, 1.0f ,  1.f, 0.f, 0.f, 0.f, 0.f },
-		{  1.0f, -1.0f, -1.0f ,  1.f, 0.f, 0.f, 0.f, 0.f },
-		{  1.0f+shiftX, 1.0f+shiftY, -1.0f ,  1.f, 0.f, 0.f, 0.f, 0.f },
-		{  1.0f+shiftX, 1.0f+shiftY, 1.0f ,  1.f, 0.f, 0.f, 0.f, 0.f },
-		{  -1.0f, -1.0f, -1.0f ,  0.f, 0.f, -1.f , 0.f, 0.f },
-		{  1.0f, -1.0f, -1.0f ,  0.f, 0.f, -1.f , 0.f, 0.f },
-		{  1.0f+shiftX, 1.0f+shiftY, -1.0f ,  0.f, 0.f, -1.f, 0.f, 0.f },
-		{  -1.0f+shiftX, 1.0f, -1.0f ,  0.f, 0.f, -1.f, 0.f, 0.f },
-		{  -1.0f, -1.0f, 1.0f , 0.f, 0.f, 1.f, 0.f, 0.f },
-		{  1.0f, -1.0f, 1.0f , 0.f, 0.f,  1.f, 0.f, 0.f },
-		{  1.0f+shiftX, 1.0f+shiftY, 1.0f , 0.f, 0.f, 1.f, 0.f, 0.f },
-		{  -1.0f+shiftX, 1.0f, 1.0f , 0.f, 0.f, 1.f, 0.f, 0.f },
+		{ -1.0f+shiftX, 1.0f, -1.0f,           0.f, 1.f, 0.f,      0.f, 0.f },
+		{  1.0f+shiftX, 1.0f+shiftY, -1.0f,    0.f, 1.f, 0.f,      1.f, 0.f },
+		{  1.0f+shiftX, 1.0f+shiftY, 1.0f ,    0.f, 1.f, 0.f,      1.f, 1.f },
+		{  -1.0f+shiftX, 1.0f, 1.0f ,          0.f, 1.f, 0.f,      0.f, 1.f},
+
+		{  -1.0f, -1.0f, -1.0f ,               0.f, -1.f, 0.f,     0.f, 0.f },
+		{  1.0f, -1.0f, -1.0f ,                0.f, -1.f, 0.f,     1.f, 0.f },
+		{  1.0f, -1.0f, 1.0f ,                 0.f, -1.f, 0.f,     1.f, 1.f },
+		{  -1.0f, -1.0f, 1.0f ,                0.f, -1.f, 0.f,     0.f, 1.f },
+
+		{  -1.0f, -1.0f, 1.0f ,               -1.f, 0.f, 0.f,      0.f, 0.f },
+		{  -1.0f, -1.0f, -1.0f ,              -1.f, 0.f, 0.f,      1.f, 0.f },
+		{  -1.0f+shiftX, 1.0f, -1.0f ,        -1.f, 0.f, 0.f,      1.f, 1.f },
+		{  -1.0f+shiftX, 1.0f, 1.0f ,         -1.f, 0.f, 0.f,      0.f, 1.f },
+
+		{  1.0f, -1.0f, 1.0f ,                1.f, 0.f, 0.f,       0.f, 0.f },
+		{  1.0f, -1.0f, -1.0f ,               1.f, 0.f, 0.f,       1.f, 0.f },
+		{  1.0f+shiftX, 1.0f+shiftY, -1.0f ,  1.f, 0.f, 0.f,       1.f, 1.f },
+		{  1.0f+shiftX, 1.0f+shiftY, 1.0f ,   1.f, 0.f, 0.f,       0.f, 1.f },
+
+		{  -1.0f, -1.0f, -1.0f ,              0.f, 0.f, -1.f ,     0.f, 0.f },
+		{  1.0f, -1.0f, -1.0f ,               0.f, 0.f, -1.f ,     1.f, 0.f },
+		{  1.0f+shiftX, 1.0f+shiftY, -1.0f ,  0.f, 0.f, -1.f,      1.f, 1.f },
+		{  -1.0f+shiftX, 1.0f, -1.0f ,        0.f, 0.f, -1.f,      0.f, 1.f },
+
+		{  -1.0f, -1.0f, 1.0f ,               0.f, 0.f, 1.f,       0.f, 0.f },
+		{  1.0f, -1.0f, 1.0f ,                0.f, 0.f,  1.f,      1.f, 0.f },
+		{  1.0f+shiftX, 1.0f+shiftY, 1.0f ,   0.f, 0.f, 1.f,       1.f, 1.f },
+		{  -1.0f+shiftX, 1.0f, 1.0f ,         0.f, 0.f, 1.f,       0.f, 1.f },
 
 	};
 
@@ -217,19 +228,63 @@ int main()
 		CHECK(rprLightSetTransform(light, RPR_TRUE, &lightm.m00));
 
 		// Set light radiant power in Watts
-		CHECK(rprPointLightSetRadiantPower3f(light, 100, 100, 100));
+		CHECK(rprPointLightSetRadiantPower3f(light, 200, 200, 200));
 
 		// Attach the light to the scene
 		CHECK(rprSceneAttachLight(scene, light));
+	}
+
+	// apply material on cube
+	rpr_material_node diffuseA = nullptr;
+	rpr_material_node diffuseB = nullptr;
+	rpr_material_node uv_node = nullptr;
+	rpr_material_node uv_scaled_node = nullptr;
+	rpr_material_node checker = nullptr;
+	rpr_material_node layered = nullptr;
+	{
+		CHECK( rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuseA));
+		CHECK( rprMaterialNodeSetInputFByKey(diffuseA, RPR_MATERIAL_INPUT_COLOR, 0.0f, 0.5f, 1.0f, 0.0f)); // Diffuse color
+
+		CHECK( rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuseB));
+		CHECK( rprMaterialNodeSetInputFByKey(diffuseB, RPR_MATERIAL_INPUT_COLOR, 0.5f, 0.20f, 1.0f, 0.0f)); // Diffuse color
+
+		CHECK( rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_INPUT_LOOKUP, &uv_node));
+		CHECK( rprMaterialNodeSetInputUByKey(uv_node, RPR_MATERIAL_INPUT_VALUE, RPR_MATERIAL_NODE_LOOKUP_UV));
+
+		CHECK( rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_ARITHMETIC, &uv_scaled_node));
+		CHECK( rprMaterialNodeSetInputUByKey(uv_scaled_node, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_MUL));
+		CHECK( rprMaterialNodeSetInputNByKey(uv_scaled_node, RPR_MATERIAL_INPUT_COLOR0, uv_node));
+		CHECK( rprMaterialNodeSetInputFByKey(uv_scaled_node, RPR_MATERIAL_INPUT_COLOR1, 0.7f, 0.7f, 0.0f, 0));
+
+		CHECK(  rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_CHECKER_TEXTURE, &checker)); 
+		CHECK(  rprMaterialNodeSetInputNByKey(checker, RPR_MATERIAL_INPUT_UV  , uv_scaled_node));
+
+		// Create layered material
+		CHECK(  rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_BLEND, &layered));
+		CHECK(  rprMaterialNodeSetInputNByKey(layered, RPR_MATERIAL_INPUT_COLOR0, diffuseA)); // Set material for base layer
+		CHECK(  rprMaterialNodeSetInputNByKey(layered, RPR_MATERIAL_INPUT_COLOR1, diffuseB)); // Set material for top layer
+		CHECK(  rprMaterialNodeSetInputNByKey(layered, RPR_MATERIAL_INPUT_WEIGHT, checker));
+
+		CHECK( rprShapeSetMaterial(cube,layered));
+	}
+
+	// apply material on floor
+	rpr_material_node diffuseC = nullptr;
+	{
+		CHECK(  rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuseC));
+		CHECK(  rprMaterialNodeSetInputFByKey(diffuseC, RPR_MATERIAL_INPUT_COLOR, 1.0f, 0.2f, 0.0f, 0.0f)); // Diffuse color
+
+		CHECK( rprShapeSetMaterial(plane,diffuseC));
 	}
 
 	// set exposure, for motion blur
 	CHECK(rprCameraSetExposure(camera,1.0));
 
 	// Progressively render an image
+	CHECK( rprContextSetParameterByKey1f(context, RPR_CONTEXT_DISPLAY_GAMMA , 2.2f ) ); // set display gamma
 	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
 	CHECK( rprContextRender(context) );
-	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,false));
 
 	std::cout << "Rendering finished.\n";
 
@@ -237,6 +292,13 @@ int main()
 	CHECK( rprFrameBufferSaveToFile(frame_buffer_resolved, "13.png") );
 
 	// Release the stuff we created
+	CHECK(rprObjectDelete(diffuseA));diffuseA=nullptr;
+	CHECK(rprObjectDelete(diffuseB));diffuseB=nullptr;
+	CHECK(rprObjectDelete(uv_node));uv_node=nullptr;
+	CHECK(rprObjectDelete(uv_scaled_node));uv_scaled_node=nullptr;
+	CHECK(rprObjectDelete(checker));checker=nullptr;
+	CHECK(rprObjectDelete(layered));layered=nullptr;
+	CHECK(rprObjectDelete(diffuseC));diffuseC=nullptr;
 	CHECK(rprObjectDelete(matsys));matsys=nullptr;
 	CHECK(rprObjectDelete(plane));plane=nullptr;
 	CHECK(rprObjectDelete(cube));cube=nullptr;
