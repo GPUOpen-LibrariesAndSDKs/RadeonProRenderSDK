@@ -40,8 +40,8 @@ On MacOS:
 To run a demo, just select the executable and start it, example:
 ```
 > cd tutorials/Bin
-> ./21_material_layered64
-this demo generates the rendering output image: 21.png
+> ./05_basic_scene64
+this demo generates the rendering output images: 05_00.png, 05_01.png, 05_02.png, 05_03.png
 ```
 
 See detailed documentation at 
