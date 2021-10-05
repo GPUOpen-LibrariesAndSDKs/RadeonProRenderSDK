@@ -1,6 +1,6 @@
 /*****************************************************************************\
 *
-*  Module Name    simple_render.cpp
+*  Module Name    Volume Demo
 *  Project        Radeon ProRender rendering tutorial
 *
 *  Description    Radeon ProRender SDK tutorials 
@@ -8,136 +8,62 @@
 *  Copyright(C) 2011-2021 Advanced Micro Devices, Inc. All rights reserved.
 *
 \*****************************************************************************/
+
 #include "RadeonProRender.h"
-#include "RprLoadStore.h"
 #include "Math/mathutils.h"
 #include "../common/common.h"
-
 #include <cassert>
 #include <iostream>
-#include <iomanip>
-#include <algorithm>
-#include <vector>
+
+//
+// This demo demonstrates Volumes with RPR
+//
 
 int main()
 {
-	//	enable Radeon ProRender API trace
+	//	for Debugging you can enable Radeon ProRender API trace
 	//	set this before any RPR API calls
-	//	frContextSetParameter1u(0,RPR_CONTEXT_TRACING_ENABLED,1);
+	//	rprContextSetParameterByKey1u(0,RPR_CONTEXT_TRACING_ENABLED,1);
 
-	std::cout << "Radeon ProRender SDK simple rendering tutorial.\n";
-	// Indicates whether the last operation has suceeded or not
-	rpr_int status = RPR_SUCCESS;
-	// Create OpenCL context using a single GPU 
-	rpr_context context = NULL;
 
-	// Register Tahoe ray tracing plugin.
+	// the RPR context object.
+	rpr_context context = nullptr;
+
+	// Register the RPR DLL
 	rpr_int tahoePluginID = rprRegisterPlugin(RPR_PLUGIN_FILE_NAME); 
-	CHECK_NE(tahoePluginID , -1)
+	CHECK_NE(tahoePluginID , -1);
 	rpr_int plugins[] = { tahoePluginID };
 	size_t pluginCount = sizeof(plugins) / sizeof(plugins[0]);
 
 	// Create context using a single GPU 
-	 status  = rprCreateContext(RPR_API_VERSION, plugins, pluginCount, g_ContextCreationFlags, NULL, NULL, &context);
+	// note that multiple GPUs can be enabled for example with creation_flags = RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GPU1
+	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, g_ContextCreationFlags, NULL, NULL, &context) );
 
-	// Set active plugin.
+	// Set the active plugin.
 	CHECK(  rprContextSetActivePlugin(context, plugins[0]) );
 
+	std::cout << "RPR Context creation succeeded." << std::endl;
 
-	rpr_material_system matsys;
-	CHECK( rprContextCreateMaterialSystem(context, 0, &matsys) );
-	// Check if it is created successfully
-	if (status != RPR_SUCCESS)
-	{
-		std::cout << "Context creation failed: check your OpenCL runtime and driver versions.\n";
-		return -1;
-	}
-
-	std::cout << "Context successfully created.\n";
+	// Create material system
+	rpr_material_system matsys = 0;
+	CHECK( rprContextCreateMaterialSystem(context, 0, &matsys));
 
 	// Create a scene
 	rpr_scene scene = nullptr;
-	CHECK( rprContextCreateScene(context, &scene) );
+	CHECK( rprContextCreateScene(context, &scene) ); // create the scene
+	CHECK( rprContextSetScene(context, scene) ); // set this scene as the "active" scene used for rendering.
 
-	// Create point light
-	rpr_light light = nullptr;
-	{
-		CHECK(rprContextCreatePointLight(context, &light));
 
-		// Create a transform: move 5 units in X axis, 8 units up Y axis, -2 units in Z axis
-		RadeonProRender::matrix lightm = RadeonProRender::translation(RadeonProRender::float3(0, 7,5));
-
-		// Set transform for the light
-		CHECK(rprLightSetTransform(light, RPR_TRUE, &lightm.m00));
-
-		// Set light radiant power in Watts
-		CHECK(rprPointLightSetRadiantPower3f(light, 255, 255, 255));
-
-		// Attach the light to the scene
-		CHECK(rprSceneAttachLight(scene, light));
-	}
-	// Create camera
+	// Create the camera
 	rpr_camera camera = nullptr;
 	{
 		CHECK( rprContextCreateCamera(context, &camera) );
-
-		// Position camera in world space: 
-		// Camera position is (5,5,20)
-		// Camera aimed at (0,0,0)
-		// Camera up vector is (0,1,0)
-		CHECK( rprCameraLookAt(camera, 0, 5, 20, 0, 1, 0, 0, 1, 0) );
-
-		CHECK( rprCameraSetFocalLength(camera, 75.f) );
-
-		// Set camera for the scene
+		CHECK( rprCameraLookAt(camera,	1.5f,1.5f,2.5f	, 0.0f, 0.1f, 0.0f,	  0, 1, 0) );
 		CHECK( rprSceneSetCamera(scene, camera) );
 	}
-	// Set scene to render for the context
-	CHECK( rprContextSetScene(context, scene) );
 
-	// Create cube mesh
-	rpr_shape cube = nullptr;
-	{
-		CHECK(rprContextCreateMesh(context,
-			(rpr_float const*)&cube_data[0], 24, sizeof(vertex),
-			(rpr_float const*)((char*)&cube_data[0] + sizeof(rpr_float) * 3), 24, sizeof(vertex),
-			(rpr_float const*)((char*)&cube_data[0] + sizeof(rpr_float) * 6), 24, sizeof(vertex),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			num_face_vertices, 12, &cube));
 
-		// Add cube into the scene
-		CHECK(rprSceneAttachShape(scene, cube));
-
-		// Create a transform: -2 unit along X axis and 1 unit up Y axis
-		RadeonProRender::matrix m = RadeonProRender::translation(RadeonProRender::float3(-2, 1.01f, 0));
-
-		// Set the transform 
-		CHECK(rprShapeSetTransform(cube, RPR_TRUE, &m.m00));
-	}
-	// Create cube mesh
-	rpr_shape cube2 = nullptr;
-	{
-		CHECK(rprContextCreateMesh(context,
-			(rpr_float const*)&cube_data[0], 24, sizeof(vertex),
-			(rpr_float const*)((char*)&cube_data[0] + sizeof(rpr_float) * 3), 24, sizeof(vertex),
-			(rpr_float const*)((char*)&cube_data[0] + sizeof(rpr_float) * 6), 24, sizeof(vertex),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			num_face_vertices, 12, &cube2));
-
-		// Add cube into the scene
-		CHECK(rprSceneAttachShape(scene, cube2));
-
-		// Create a transform: -2 unit along X axis and 1 unit up Y axis
-		RadeonProRender::matrix m = RadeonProRender::translation(RadeonProRender::float3(2, 1.01f, 0));
-
-		// Set the transform 
-		CHECK(rprShapeSetTransform(cube2, RPR_TRUE, &m.m00));
-	}
-	// Create plane mesh
+	// Create the floor mesh
 	rpr_shape plane = nullptr;
 	{
 		CHECK(rprContextCreateMesh(context,
@@ -148,198 +74,215 @@ int main()
 			(rpr_int const*)indices, sizeof(rpr_int),
 			(rpr_int const*)indices, sizeof(rpr_int),
 			num_face_vertices, 2, &plane));
-
-		// Add plane into the scene
 		CHECK(rprSceneAttachShape(scene, plane));
+
+		
+		RadeonProRender::matrix m = RadeonProRender::translation(RadeonProRender::float3(0, -1, 0)) * RadeonProRender::scale(RadeonProRender::float3(0.5f, 1.0f, 0.5f));;
+		CHECK( rprShapeSetTransform(plane, RPR_TRUE, &m.m00));
 	}
 
-	// Create simple diffuse shader
-	rpr_material_node diffuse = nullptr;
-	{
-		CHECK( rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuse) );
+	// apply a simple diffuse material on the plane
+	rpr_material_node diffuseMaterial = nullptr;
+	CHECK(  rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuseMaterial));
+	CHECK(  rprMaterialNodeSetInputFByKey(diffuseMaterial, RPR_MATERIAL_INPUT_COLOR, 0.8f, 0.9f, 1.0f, 0.0f)); // Diffuse color
+	CHECK(  rprShapeSetMaterial(plane,diffuseMaterial));
 
-		// Set diffuse color parameter to gray
-		CHECK( rprMaterialNodeSetInputFByKey(diffuse, RPR_MATERIAL_INPUT_COLOR, 0.5f, 0.5f, 0.5f, 1.f) );
+	// create an Environment light, based on a 1x1 white pixel image
+	rpr_light ibl = 0;
+	CHECK(rprContextCreateEnvironmentLight(context, &ibl));
+	float env_color[] = {1, 1, 1, 0}; // white color
+	rpr_image img = 0;
+	rpr_image_desc descImg;
+	descImg.image_width = 1;  // 1 x 1 pixel image
+	descImg.image_height = 1; //
+	descImg.image_depth = 0;
+	descImg.image_row_pitch = descImg.image_width * sizeof(rpr_float) * 4;
+	descImg.image_slice_pitch = 0;
+	CHECK(rprContextCreateImage(context, {4, RPR_COMPONENT_TYPE_FLOAT32}, &descImg, env_color, &img));
+	CHECK(rprEnvironmentLightSetImage(ibl, img));
+	CHECK(rprEnvironmentLightSetIntensityScale(ibl, 0.9));
+	CHECK(rprSceneAttachLight(scene, ibl));
 
-		// Set shader for cube & plane meshes
-		CHECK( rprShapeSetMaterial(plane, diffuse) );
-	}
-	// Create framebuffer to store rendering result
-	rpr_framebuffer_desc desc = { 800,600 };
 
-	// 4 component 32-bit float value each
-	rpr_framebuffer_format fmt = {4, RPR_COMPONENT_TYPE_FLOAT32};
+	// Create framebuffer 
+	rpr_framebuffer_desc desc = { 640 , 480 }; // resolution in pixels
+	rpr_framebuffer_format fmt = {4, RPR_COMPONENT_TYPE_FLOAT32}; // format: 4 component 32-bit float value each
 	rpr_framebuffer frame_buffer = nullptr;
 	rpr_framebuffer frame_buffer_resolved = nullptr;
-	CHECK(rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer));
+	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer) );
 	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer_resolved) );
-
-	// Clear framebuffer to black color
-	CHECK( rprFrameBufferClear(frame_buffer) );
-
-	// Set framebuffer for the context
-	CHECK(rprContextSetAOV(context, RPR_AOV_COLOR, frame_buffer));
+	CHECK( rprContextSetAOV(context, RPR_AOV_COLOR, frame_buffer) ); // attach 'frame_buffer' to the Color AOV ( this is the main AOV for final rendering )
 
 
-	/////////Volume Tutorial//////////
+	rpr_mesh_info mesh_properties[16];
+	mesh_properties[0] = (rpr_mesh_info)RPR_MESH_VOLUME_FLAG;
+	mesh_properties[1] = (rpr_mesh_info)1; // enable the Volume flag for the Mesh
+	mesh_properties[2] = (rpr_mesh_info)0;
 
-	//the grid contain value beetween 0 and 1 which are then use to for color, emisive, density
-	const uint64_t n = 128; //volume resolution
-	std::vector<uint64_t> indices1;
-	std::vector<uint32_t> indices2;
-	std::vector<float> grid1, grid2;
+	// Volume shapes don't need any vertices data: the bounds of volume will only be defined by the grid.
+	// Also, make sure to enable the RPR_MESH_VOLUME_FLAG
+	rpr_shape cube = 0;
+	CHECK( rprContextCreateMeshEx2(context,
+		nullptr,0,0,
+		nullptr,0,0,
+		nullptr,0,0,0,
+		nullptr,nullptr,nullptr,nullptr,0,
+		nullptr,0,nullptr,nullptr,nullptr,0,
+		mesh_properties,
+		&cube));
 
-	const float radiusFadeoutStart = 5.0f;
+	// bounds of volume will always be a box defined by the rprShapeSetTransform
+	RadeonProRender::matrix cubeTransform1 = RadeonProRender::translation(RadeonProRender::float3(0 ,+0.0f ,0))  *  RadeonProRender::rotation_y(0.0f) *   RadeonProRender::scale(RadeonProRender::float3(1.0f, 2.0f, 1.0f));
+	CHECK( rprShapeSetTransform(cube,true,&cubeTransform1.m00)); 
+	CHECK( rprSceneAttachShape(scene, cube)); 
+
+
+	// define the grids data used by the Volume material.
+	const size_t n = 128;
+	std::vector<unsigned int> indicesList;
+	std::vector<float> gridVector1;
+	std::vector<float> gridVector2;
+	const float radiusFadeoutStart = 15.0f;
 	const float radiusFadeoutEnd = 40.0f;
-
-	for (int x = 0; x < n; x++)
+	for(unsigned int x=0; x<n; x++)
 	{
-		for (int y = 0; y < n; y++)
+		for(unsigned int y=0; y<n; y++)
 		{
-			for (int z = 0; z < n; z++)
+			for(unsigned int z=0; z<n; z++)
 			{
-				//A simple Cube, there is 1 indices for all voxel, if you skip some it will take a default value of 0
-				float v = (float)y / (float)n; //compute the grid value base on y to get a linear vertical gradiant
-				//if you move thoses next 2 lines inside the if you will get a cylinder
-				indices1.push_back((x)*(n*n) + (y)*(n)+z);
-				grid1.push_back(v);
+				float radius = sqrtf( ((float)x-(float)n/2.0f) * ((float)x-(float)n/2.0f) + ((float)z-(float)n/2.0f) * ((float)z-(float)n/2.0f) );
 
-
-				//Cylinder
-				float radius = sqrtf(((float)x - (float)n / 2.0) * ((float)x - (float)n / 2.0) + ((float)z - (float)n / 2.0) * ((float)z - (float)n / 2.0));
-
-				if (radius < radiusFadeoutEnd) // if skiped default value will be 0
+				if  ( radius < radiusFadeoutEnd )
 				{
-					//the RPR_GRID_INDICES_TOPOLOGY_XYZ_U32 is based on 3 indices describing the voxel location, for each 3 index you have 1 value in grid
-					indices2.push_back(x);
-					indices2.push_back(y);
-					indices2.push_back(z);
-
-					if (radius < radiusFadeoutStart)
-						grid2.push_back(1.0f);
+					indicesList.push_back(x);
+					indicesList.push_back(y);
+					indicesList.push_back(z);
+					
+					// "gridVector1" is going to be a cylinder
+					if ( radius <= radiusFadeoutStart )
+					{
+						gridVector1.push_back(1.0f);
+					}
 					else
-						grid2.push_back(1.0f - (radius - radiusFadeoutStart) / (radiusFadeoutEnd - radiusFadeoutStart));
+					{
+						gridVector1.push_back(1.0f - (radius - radiusFadeoutStart) / (radiusFadeoutEnd-radiusFadeoutStart));
+					}
+					
+					// "gridVector2" will be a 0->1 ramp along Y-axis
+					gridVector2.push_back(  (float)y / (float)n );
 				}
 			}
 		}
 	}
 
+	// this first grid defines a cylinder
 	rpr_grid rprgrid1 = 0;
-	CHECK(rprContextCreateGrid(context, &rprgrid1,
-		n, n, n,
-		&indices1[0], indices1.size(), RPR_GRID_INDICES_TOPOLOGY_I_U64,
-		&grid1[0], grid1.size() * sizeof(grid1[0]), 0
-	));
+	CHECK( rprContextCreateGrid(context, &rprgrid1,
+		n,n,n,
+		&indicesList[0], indicesList.size()/3, RPR_GRID_INDICES_TOPOLOGY_XYZ_U32,
+		&gridVector1[0], gridVector1.size() * sizeof(gridVector1[0]), 0
+		));
 
+	// GRID_SAMPLER could be compared to a 3d-texture sampler. 
+	// input is a 3d grid,  output is the sampled value from grid
+	rpr_material_node gridSampler1 = NULL;
+	CHECK( rprMaterialSystemCreateNode(matsys,RPR_MATERIAL_NODE_GRID_SAMPLER, &gridSampler1));
+	CHECK( rprMaterialNodeSetInputGridDataByKey(gridSampler1, RPR_MATERIAL_INPUT_DATA, rprgrid1));
+
+	// This second grid is a gradient along the Y axis.
 	rpr_grid rprgrid2 = 0;
-	CHECK(rprContextCreateGrid(context, &rprgrid2,
-		n, n, n,
-		&indices2[0], indices2.size() / 3, RPR_GRID_INDICES_TOPOLOGY_XYZ_U32,
-		&grid2[0], grid2.size() * sizeof(grid2[0]), 0
-	));
+	CHECK( rprContextCreateGrid(context, &rprgrid2,
+		n,n,n,
+		&indicesList[0], indicesList.size()/3, RPR_GRID_INDICES_TOPOLOGY_XYZ_U32,
+		&gridVector2[0], gridVector2.size() * sizeof(gridVector2[0]), 0
+		));
 
+	// create grid sample for grid2
+	rpr_material_node gridSampler2 = NULL;
+	CHECK( rprMaterialSystemCreateNode(matsys,RPR_MATERIAL_NODE_GRID_SAMPLER, &gridSampler2));
+	CHECK( rprMaterialNodeSetInputGridDataByKey(gridSampler2, RPR_MATERIAL_INPUT_DATA, rprgrid2));
 
-	//Now we have a grid with value we need a way to convert value to color, density and possibly emmision
-	//compose of 3 float for 1 value, the repartition is linear, you can insert as many as you want, value will be interpolated
-	//look up table save memory as one grid can be bind on multiple channel
-	float colorLookUp[] = {
-		1.f, 0.0f, 0.0f,//RED
-		0.0f, 1.f, 0.0f//GREEN
-	};
-	//float colorLookUp[] = {
-	//	1.f, 0.0f, 0.0f,//RED
-	//	0.0f, 1.f, 0.0f,//GREEN
-	//	1.f, 0.0f, 0.0f,//RED
-	//	0.0f, 1.f, 0.0f,//GREEN
-	//	1.f, 0.0f, 0.0f,//RED
-	//	0.0f, 1.f, 0.0f,//GREEN
-	//	1.f, 0.0f, 0.0f,//RED
-	//	0.0f, 1.f, 0.0f//GREEN
-	//};
+	// create a gradient color texture, here 3 pixels : Red, Green, Blue.
+	// will be used as a lookup output 
+	float rampData2[] = {
+		1.f,0.f,0.f,
+		0.f,1.f,0.f,
+		0.f,0.f,1.f};
+	rpr_image rampimg2 = 0;
+	rpr_image_desc rampDesc2;
+	rampDesc2.image_width = sizeof(rampData2) / (3*sizeof(float));
+	rampDesc2.image_height = 1;
+	rampDesc2.image_depth = 0;
+	rampDesc2.image_row_pitch = rampDesc2.image_width * sizeof(rpr_float) * 3;
+	rampDesc2.image_slice_pitch = 0;
+	CHECK(  rprContextCreateImage(context, {3, RPR_COMPONENT_TYPE_FLOAT32}, &rampDesc2, rampData2, &rampimg2));
 
-	float densityLookUp[] = {
-		10.0f, 10.0f, 10.0f,//DENSITY
-	};
-	//Density 0 mean 100% transparent
-	//float densityLookUp[] = {
-	//	0.0f, 0.0f, 0.0f,//DENSITY
-	//	1.0f, 1.0f, 1.0f//DENSITY
-	//};
+	// this texture will be used for the color of the volume material.
+	// UV input is the 0->1 gradient created by the scalar grid "rprgrid2".
+	// Output is the red,green,blue texture.
+	// This demonstrates how we can create a lookup table from scalar grid to vector values.
+	rpr_material_node rampSampler2 = NULL; 
+	CHECK( rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_IMAGE_TEXTURE, &rampSampler2));
+	CHECK( rprMaterialNodeSetInputImageDataByKey(rampSampler2, RPR_MATERIAL_INPUT_DATA, rampimg2));
+	CHECK( rprMaterialNodeSetInputNByKey(rampSampler2, RPR_MATERIAL_INPUT_UV, gridSampler2));
 
-	rpr_hetero_volume rprvolume1 = 0;
-	CHECK(rprContextCreateHeteroVolume(context, &rprvolume1));
+	// for ramp texture, it's better to clamp it to edges.
+	CHECK( rprMaterialNodeSetInputUByKey(rampSampler2, RPR_MATERIAL_INPUT_WRAP_U, RPR_IMAGE_WRAP_TYPE_CLAMP_TO_EDGE));
+	CHECK( rprMaterialNodeSetInputUByKey(rampSampler2, RPR_MATERIAL_INPUT_WRAP_V, RPR_IMAGE_WRAP_TYPE_CLAMP_TO_EDGE));
 
+	// create the Volume material
+	rpr_material_node materialVolume = NULL; 
+	CHECK( rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_VOLUME, &materialVolume));
 
-	//Here you can change the rprgrid1 to rprgrid2 to use the 2nd topology
-	CHECK(rprHeteroVolumeSetAlbedoGrid(rprvolume1, rprgrid1));
-	CHECK(rprHeteroVolumeSetAlbedoLookup(rprvolume1, colorLookUp, 2));//last param is count input, change it if you change the lookup table
-	CHECK(rprHeteroVolumeSetDensityGrid(rprvolume1, rprgrid1));
-	CHECK(rprHeteroVolumeSetDensityLookup(rprvolume1, densityLookUp, 1));//last param is count input, change it if you change the lookup table
+	// density is defined by the "cylinder" grid
+	CHECK( rprMaterialNodeSetInputNByKey(materialVolume, RPR_MATERIAL_INPUT_DENSITYGRID, gridSampler1));
 
-	rpr_hetero_volume rprvolume2 = 0;
-	CHECK(rprContextCreateHeteroVolume(context, &rprvolume2));
+	// apply the volume material to the shape.
+	// Note that here we use   rprShapeSetVolumeMaterial  instead of the classic  rprShapeSetMaterial  call.
+	CHECK( rprShapeSetVolumeMaterial(cube, materialVolume));
 
-	CHECK(rprHeteroVolumeSetAlbedoGrid(rprvolume2, rprgrid2));
-	CHECK(rprHeteroVolumeSetAlbedoLookup(rprvolume2, colorLookUp, 2));//last param is count input, change it if you change the lookup table
-	CHECK(rprHeteroVolumeSetDensityGrid(rprvolume2, rprgrid2));
-	CHECK(rprHeteroVolumeSetDensityLookup(rprvolume2, densityLookUp, 1));//last param is count input, change it if you change the lookup table
+	// RPR_MATERIAL_INPUT_DENSITY is just a multiplier for DENSITYGRID
+	CHECK( rprMaterialNodeSetInputFByKey(materialVolume, RPR_MATERIAL_INPUT_DENSITY, 10.0f, 0.0f, 0.0f, 0.0f));
 
-	//Volume need to be bound to a mesh, if the mesh is transparent the volume will be display
-	//We use the same matrix as for the cube
-	RadeonProRender::matrix m = RadeonProRender::translation(RadeonProRender::float3(-2, 1.01f, 0))
-							  * RadeonProRender::scale(RadeonProRender::float3(2.f, 2.f, 2.f)); // The cube is lenght 2 (-1, 1) so we must scale to fill it
-	CHECK(rprHeteroVolumeSetTransform(rprvolume1, true, &m.m00));
-	m = RadeonProRender::translation(RadeonProRender::float3(2, 1.01f, 0)) * RadeonProRender::scale(RadeonProRender::float3(2.f, 2.f, 2.f));
-	CHECK(rprHeteroVolumeSetTransform(rprvolume2, true, &m.m00));
+	// define the color of the volume
+	CHECK( rprMaterialNodeSetInputNByKey(materialVolume, RPR_MATERIAL_INPUT_COLOR, rampSampler2));
 
-	CHECK(rprSceneAttachHeteroVolume(scene, rprvolume1));
-	CHECK(rprSceneAttachHeteroVolume(scene, rprvolume2));
-	CHECK(rprShapeSetHeteroVolume(cube, rprvolume1));
-	CHECK(rprShapeSetHeteroVolume(cube2, rprvolume2));
+	// more iterations will increase the light penetration inside the volume.
+	CHECK( rprContextSetParameterByKey1u(context, RPR_CONTEXT_MAX_RECURSION, (rpr_uint)5) ); // 5
 
-	//to avoid dark transparency, we raise recursion
-	CHECK(rprContextSetParameterByKey1u(context, RPR_CONTEXT_MAX_RECURSION, 10));
-	//Transparency is important for volume, else won't see it
-	rpr_material_node materialTransparent = NULL;
-	CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_TRANSPARENT, &materialTransparent));
-	CHECK(rprMaterialNodeSetInputFByKey(materialTransparent, RPR_MATERIAL_INPUT_COLOR, 1.0f, 1.0f, 1.0f, 1.0f));
-	CHECK(rprShapeSetMaterial(cube, materialTransparent));
-	CHECK(rprShapeSetMaterial(cube2, materialTransparent));
+	// when using volumes, we usually need high number of iterations.
+	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS, 4000));
 
-	// Progressively render an image
-	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
-	CHECK(rprContextRender(context));
+	// Start the rendering. 
+	CHECK( rprContextRender(context) );
+
+	// resolve and save the rendering to an image file.
 	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
+	CHECK(rprFrameBufferSaveToFile(frame_buffer_resolved,"51_00.png"));
 
-	std::cout << "Rendering finished.\n";
-
-	// Save the result to file
-	CHECK(rprFrameBufferSaveToFile(frame_buffer_resolved, "51.png"));
 
 	// Release the stuff we created
-	CHECK(rprObjectDelete(materialTransparent));materialTransparent=nullptr;
-	CHECK(rprObjectDelete(matsys));matsys=nullptr;
-	CHECK(rprObjectDelete(plane));plane=nullptr;
-	CHECK(rprObjectDelete(cube));cube=nullptr;
-	CHECK(rprObjectDelete(cube2));cube2=nullptr;
-	CHECK(rprObjectDelete(rprgrid1));rprgrid1=nullptr;
-	CHECK(rprObjectDelete(rprgrid2));rprgrid2=nullptr;
-	CHECK(rprObjectDelete(rprvolume1));rprvolume1=nullptr;
-	CHECK(rprObjectDelete(rprvolume2));rprvolume2=nullptr;
-	CHECK(rprObjectDelete(light));light=nullptr;
-	CHECK(rprObjectDelete(diffuse));diffuse=nullptr;
-	CHECK(rprObjectDelete(scene));scene=nullptr;
-	CHECK(rprObjectDelete(camera));camera=nullptr;
-	CHECK(rprObjectDelete(frame_buffer));frame_buffer=nullptr;
-	CHECK(rprObjectDelete(frame_buffer_resolved));frame_buffer_resolved=nullptr;
+	CHECK(rprObjectDelete(ibl)); ibl=nullptr;
+	CHECK(rprObjectDelete(img)); img=nullptr;
+	CHECK(rprObjectDelete(diffuseMaterial)); diffuseMaterial=nullptr;
+	CHECK(rprObjectDelete(cube)); cube=nullptr;
+	CHECK(rprObjectDelete(rprgrid1)); rprgrid1=nullptr;
+	CHECK(rprObjectDelete(gridSampler1)); gridSampler1=nullptr;
+	CHECK(rprObjectDelete(rprgrid2)); rprgrid2=nullptr;
+	CHECK(rprObjectDelete(gridSampler2)); gridSampler2=nullptr;
+	CHECK(rprObjectDelete(materialVolume)); materialVolume=nullptr;
+	CHECK(rprObjectDelete(rampimg2)); rampimg2=nullptr;
+	CHECK(rprObjectDelete(rampSampler2)); rampSampler2=nullptr;
+	CHECK(rprObjectDelete(camera)); camera=nullptr;
+	CHECK(rprObjectDelete(frame_buffer)); frame_buffer=nullptr;
+	CHECK(rprObjectDelete(frame_buffer_resolved)); frame_buffer_resolved=nullptr;
+	CHECK(rprObjectDelete(scene)); scene=nullptr;
+	CHECK(rprObjectDelete(plane)); plane=nullptr;
+	CHECK(rprObjectDelete(matsys)); matsys=nullptr;
 	CheckNoLeak(context);
-	CHECK(rprObjectDelete(context));context=nullptr; // Always delete the RPR Context in last.
+	CHECK(rprObjectDelete(context)); context=nullptr;
 	return 0;
+
 }
 
 
-// Things to try in this tutorial:
-// 1) You can try to change the lookup table (color and density), you also need to change the last parameter of rprHeteroVolumeSet if the number of value in the lookup table changed
-// 2) You can try to add a new lookup table for emission rprHeteroVolumeSetEmissionGrid and rprHeteroVolumeSetEmissionLookup
-// 3) You can try the to scale value rprHeteroVolumeSetAlbedoScale
-// 4) You can try to mix multiple grid, obviously more grid mean higher memory usage

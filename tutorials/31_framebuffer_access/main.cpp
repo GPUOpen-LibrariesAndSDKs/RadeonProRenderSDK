@@ -1,6 +1,6 @@
 /*****************************************************************************\
 *
-*  Module Name    simple_render.cpp
+*  Module Name    Framebuffer access demo
 *  Project        Radeon ProRender rendering tutorial
 *
 *  Description    Radeon ProRender SDK tutorials 
@@ -8,12 +8,18 @@
 *  Copyright(C) 2011-2021 Advanced Micro Devices, Inc. All rights reserved.
 *
 \*****************************************************************************/
+
 #include "RadeonProRender.h"
 #include "Math/mathutils.h"
 #include "../common/common.h"
 
 #include <cassert>
 #include <iostream>
+
+//
+// Here we demonstrate usage of rprFrameBufferGetInfo: We can access the image data of a frame buffer
+// In this demo, we use the data of a first rendering and use it as an input texture for a second rendering.
+//
 
 #define PI 3.1412f
 
@@ -272,7 +278,3 @@ int main()
 	CHECK(rprObjectDelete(context));context=nullptr; // Always delete the RPR Context in last.
 	return 0;
 }
-
-
-// Things to try in this tutorial:
-// 1) Try to access other AOV

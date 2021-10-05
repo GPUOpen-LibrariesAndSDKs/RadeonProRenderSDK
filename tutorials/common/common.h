@@ -5,12 +5,7 @@
 *
 *  Description    Radeon ProRender SDK tutorials
 *
-*  Copyright (c) 2020 Advanced Micro Devices, Inc. All rights reserved.
-*
-*  All rights reserved.  This notice is intended as a precaution against
-*  inadvertent publication and does not imply publication or any waiver
-*  of confidentiality.  The year included in the foregoing notice is the
-*  year of creation of the work.
+*  Copyright(C) 2011-2021 Advanced Micro Devices, Inc. All rights reserved.
 *
 \*****************************************************************************/
 
@@ -18,6 +13,12 @@
 
 #include <assert.h> 
 #include <iostream>
+#include <vector>
+#include <fstream>
+#include <string>
+#include <sstream>
+
+#include "RadeonProRender.h"
 
 // Tahoe plugin is in maintenance mode - no new features planned.
 #if 0
@@ -64,75 +65,16 @@ struct vertex
 };
 
 // Cube geometry
-vertex cube_data[] = 
-{
-	{ -1.0f, 1.0f, -1.0f, 0.f, 1.f, 0.f, 0.f, 0.f },
-	{  1.0f, 1.0f, -1.0f, 0.f, 1.f, 0.f, 0.f, 0.f },
-	{  1.0f, 1.0f, 1.0f , 0.f, 1.f, 0.f, 0.f, 0.f },
-	{  -1.0f, 1.0f, 1.0f , 0.f, 1.f, 0.f, 0.f, 0.f},
-
-	{  -1.0f, -1.0f, -1.0f , 0.f, -1.f, 0.f, 0.f, 0.f },
-	{  1.0f, -1.0f, -1.0f , 0.f, -1.f, 0.f, 0.f, 0.f },
-	{  1.0f, -1.0f, 1.0f , 0.f, -1.f, 0.f, 0.f, 0.f },
-	{  -1.0f, -1.0f, 1.0f , 0.f, -1.f, 0.f, 0.f, 0.f },
-
-	{  -1.0f, -1.0f, 1.0f , -1.f, 0.f, 0.f, 0.f, 0.f },
-	{  -1.0f, -1.0f, -1.0f , -1.f, 0.f, 0.f, 0.f, 0.f },
-	{  -1.0f, 1.0f, -1.0f , -1.f, 0.f, 0.f, 0.f, 0.f },
-	{  -1.0f, 1.0f, 1.0f , -1.f, 0.f, 0.f, 0.f, 0.f },
-
-	{  1.0f, -1.0f, 1.0f ,  1.f, 0.f, 0.f, 0.f, 0.f },
-	{  1.0f, -1.0f, -1.0f ,  1.f, 0.f, 0.f, 0.f, 0.f },
-	{  1.0f, 1.0f, -1.0f ,  1.f, 0.f, 0.f, 0.f, 0.f },
-	{  1.0f, 1.0f, 1.0f ,  1.f, 0.f, 0.f, 0.f, 0.f },
-
-	{  -1.0f, -1.0f, -1.0f ,  0.f, 0.f, -1.f , 0.f, 0.f },
-	{  1.0f, -1.0f, -1.0f ,  0.f, 0.f, -1.f , 0.f, 0.f },
-	{  1.0f, 1.0f, -1.0f ,  0.f, 0.f, -1.f, 0.f, 0.f },
-	{  -1.0f, 1.0f, -1.0f ,  0.f, 0.f, -1.f, 0.f, 0.f },
-
-	{  -1.0f, -1.0f, 1.0f , 0.f, 0.f, 1.f, 0.f, 0.f },
-	{  1.0f, -1.0f, 1.0f , 0.f, 0.f,  1.f, 0.f, 0.f },
-	{  1.0f, 1.0f, 1.0f , 0.f, 0.f, 1.f, 0.f, 0.f },
-	{  -1.0f, 1.0f, 1.0f , 0.f, 0.f, 1.f, 0.f, 0.f },
-};
+extern vertex cube_data[];
 
 // Plane geometry
-vertex plane_data[] = 
-{
-	{-15.f, 0.f, -15.f, 0.f, 1.f, 0.f, 0.f, 0.f},
-	{-15.f, 0.f,  15.f, 0.f, 1.f, 0.f, 0.f, 1.f},
-	{ 15.f, 0.f,  15.f, 0.f, 1.f, 0.f, 1.f, 1.f},
-	{ 15.f, 0.f, -15.f, 0.f, 1.f, 0.f, 1.f, 0.f},
-};
+extern vertex plane_data[];
 
 // Cube indices
-rpr_int indices[] = 
-{
-	3,1,0,
-	2,1,3,
-
-	6,4,5,
-	7,4,6,
-
-	11,9,8,
-	10,9,11,
-
-	14,12,13,
-	15,12,14,
-
-	19,17,16,
-	18,17,19,
-
-	22,20,21,
-	23,20,22
-};
+extern rpr_int indices[];
 
 // Number of vertices per face
-rpr_int num_face_vertices[] = 
-{
-	3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
-};
+extern rpr_int num_face_vertices[];
 
 
 #define CHECK(x) { if ( (x) != RPR_SUCCESS ) { ErrorManager(x,__FILE__,__LINE__); } }
@@ -141,83 +83,82 @@ rpr_int num_face_vertices[] =
 #define CHECK_GT(x,y) { if ( (x) <= (y) ) { ErrorManager(0,__FILE__,__LINE__); } }
 #define CHECK_GE(x,y) { if ( (x) <  (y) ) { ErrorManager(0,__FILE__,__LINE__); } }
 
-void ErrorManager(int errorCode, const char* fileName, int line)
-{
-	std::cout<<"ERROR detected - program will stop."<<std::endl;
-	std::cout<<"file = "<< fileName << std::endl;
-	std::cout<<"line = "<< line << std::endl;
-	std::cout<<"error code = "<< errorCode << std::endl;
-	assert(0);
-}
+void ErrorManager(int errorCode, const char* fileName, int line, rpr_context ctx=nullptr);
 
 // Number of iterations for rendering
 int const NUM_ITERATIONS = 64;
 
 
 // this is an example a good practice to check RPR memory leak
-void CheckNoLeak(rpr_context context)
+void CheckNoLeak(rpr_context context);
+
+
+// Create a scene with  or several matballs. Used by several demos.
+class MatballScene
 {
-	rpr_int status = RPR_SUCCESS;
+public:
 
-	std::vector<rpr_context_info> type;
-	type.push_back(RPR_CONTEXT_LIST_CREATED_CAMERAS);
-	type.push_back(RPR_CONTEXT_LIST_CREATED_MATERIALNODES);
-	type.push_back(RPR_CONTEXT_LIST_CREATED_LIGHTS);
-	type.push_back(RPR_CONTEXT_LIST_CREATED_SHAPES);
-	type.push_back(RPR_CONTEXT_LIST_CREATED_POSTEFFECTS);
-	type.push_back(RPR_CONTEXT_LIST_CREATED_HETEROVOLUMES);
-	type.push_back(RPR_CONTEXT_LIST_CREATED_GRIDS);
-	type.push_back(RPR_CONTEXT_LIST_CREATED_BUFFERS);
-	type.push_back(RPR_CONTEXT_LIST_CREATED_IMAGES);
-	type.push_back(RPR_CONTEXT_LIST_CREATED_FRAMEBUFFERS);
-	type.push_back(RPR_CONTEXT_LIST_CREATED_SCENES);
-	type.push_back(RPR_CONTEXT_LIST_CREATED_CURVES);
-	type.push_back(RPR_CONTEXT_LIST_CREATED_MATERIALSYSTEM);
-	type.push_back(RPR_CONTEXT_LIST_CREATED_COMPOSITE);
-	type.push_back(RPR_CONTEXT_LIST_CREATED_LUT);
+	MatballScene();
 
-	std::vector<void*> listRemainingObjects;
-
-	for(int iType=0; iType<type.size(); iType++)
+	struct MATBALL
 	{
-
-		size_t sizeParam = 0;
-		status = rprContextGetInfo(context,type[iType],0,0,&sizeParam);CHECK(status);
-		
-		unsigned int nbObject = sizeParam / sizeof(void*);
-
-		if ( nbObject > 0 )
-		{
-			std::cout<<"leak of "<< nbObject ;
-				 if ( type[iType] == RPR_CONTEXT_LIST_CREATED_CAMERAS ) std::cout<<" cameras\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_MATERIALNODES ) std::cout<<" material nodes\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_LIGHTS ) std::cout<<" lights\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_SHAPES ) std::cout<<" shapes\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_POSTEFFECTS ) std::cout<<" postEffects\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_HETEROVOLUMES ) std::cout<<" heteroVolumes\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_GRIDS ) std::cout<<" grids\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_BUFFERS ) std::cout<<" buffers\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_IMAGES ) std::cout<<" images\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_FRAMEBUFFERS ) std::cout<<" framebuffers\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_SCENES ) std::cout<<" scenes\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_CURVES ) std::cout<<" curves\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_MATERIALSYSTEM ) std::cout<<" materialsystems\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_COMPOSITE ) std::cout<<" composites\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_LUT ) std::cout<<" luts\n";
-			else 
-			{
-				std::cout<<" ???\n"; 
-			}
-
-			unsigned int idFirstTime = listRemainingObjects.size();
-			listRemainingObjects.assign( idFirstTime + nbObject, nullptr );
-			status = rprContextGetInfo(context,type[iType],sizeParam,&listRemainingObjects[idFirstTime],nullptr);CHECK(status);
+		MATBALL() 
+		{  
+			base=nullptr;
+			inner=nullptr;
+			outer=nullptr;
 		}
-	}
+		rpr_shape base;
+		rpr_shape inner;
+		rpr_shape outer;
 
-	if ( listRemainingObjects.size() != 0 )
-	{
-		std::cout<<"Warning : this context has some leak ("<< listRemainingObjects.size() <<" item(s))\n";
-	}
+		void SetMaterial(rpr_material_node mat)
+		{
+			rprShapeSetMaterial(base,mat);
+			rprShapeSetMaterial(inner,mat);
+			rprShapeSetMaterial(outer,mat);
+		}
+	};
 
-}
+	MATBALL Init(rpr_context context, bool usingHybridContext=false);
+
+	void Clean();
+
+	void Render(const std::string& outImgFileName, int iterationCount = 100);
+
+	MATBALL AddMatball(int shiftX, int shiftY, bool createAsInstance=true);
+
+	void CameraLook1Shape(int shiftX, int shiftY);
+	void CameraLook9Shape();
+
+	// create a rpr_shape from OBJ file
+	// This is a very basic importer: doesn't support of the features from the spec.
+	// This function is only developed and tested for the matball scene.
+	// For a better OBJ importer, check the project 64_mesh_obj_demo in this SDK
+	rpr_shape ImportOBJ(const std::string& file, rpr_scene scene, rpr_context ctx);
+
+
+	rpr_scene m_scene; 
+	rpr_material_system m_matsys;
+	rpr_camera m_camera;
+	rpr_context m_context;
+	rpr_shape m_shape_floor;
+	rpr_material_node m_floorMaterial;
+	rpr_image m_floorImage;
+	rpr_image m_IBLimage;
+	rpr_light m_light;
+	rpr_material_node m_floorImageMaterial;
+	rpr_framebuffer m_frame_buffer;
+	rpr_framebuffer m_frame_buffer_res;
+
+	std::vector<MATBALL> m_matballs;
+
+	const float m_matballGap = 0.6f;
+
+	const rpr_framebuffer_desc m_framebuffer_desc = { 640 , 480};
+	const rpr_framebuffer_format m_framebuffer_fmt = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
+
+	bool m_usingHybridContext;
+};
+
+

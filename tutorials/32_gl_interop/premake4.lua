@@ -2,6 +2,12 @@ project "32_gl_interop"
     kind "ConsoleApp"
     location "../build"
     files { "../32_gl_interop/**.h", "../32_gl_interop/**.cpp"} 
+    files { "../common/common.cpp","../common/common.h"}
+
+    -- remove filters for Visual Studio
+    vpaths { [""] = { "../32_gl_interop/**.h", "../32_gl_interop/**.cpp","../common/common.cpp","../common/common.h"} }
+
+
     includedirs{ "../../RadeonProRender/inc" } 
 
 	if os.istarget("windows") then

@@ -1,6 +1,6 @@
 /*****************************************************************************\
 *
-*  Module Name    simple_render.cpp
+*  Module Name    AOV demo
 *  Project        Radeon ProRender rendering tutorial
 *
 *  Description    Radeon ProRender SDK tutorials 
@@ -11,192 +11,107 @@
 #include "RadeonProRender.h"
 #include "Math/mathutils.h"
 #include "../common/common.h"
+
 #include <cassert>
 #include <iostream>
 
+
+//
+// This demo covers AOV (Arbitrary Output Variables), providing way to render different material component - mostly used for scene debugging.
+//
+//
+
+
 int main()
 {
-	//	enable Radeon ProRender API trace
-	//	set this before any rpr API calls
+
+	//	for Debugging you can enable Radeon ProRender API trace
+	//	set this before any RPR API calls
 	//	rprContextSetParameterByKey1u(0,RPR_CONTEXT_TRACING_ENABLED,1);
 
-	std::cout << "Radeon ProRender SDK simple rendering tutorial.\n";
-	// Indicates whether the last operation has suceeded or not
-	rpr_int status = RPR_SUCCESS;
-	// Create OpenCL context using a single GPU 
-	rpr_context context = NULL;
 
-	// Register Tahoe ray tracing plugin.
+	// the RPR context object.
+	rpr_context context = nullptr;
+
+	// Register the RPR DLL
 	rpr_int tahoePluginID = rprRegisterPlugin(RPR_PLUGIN_FILE_NAME); 
-	CHECK_NE(tahoePluginID , -1)
+	CHECK_NE(tahoePluginID , -1);
 	rpr_int plugins[] = { tahoePluginID };
 	size_t pluginCount = sizeof(plugins) / sizeof(plugins[0]);
 
 	// Create context using a single GPU 
+	// note that multiple GPUs can be enabled for example with creation_flags = RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GPU1
 	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, g_ContextCreationFlags, NULL, NULL, &context) );
 
-	// Set active plugin.
+	// Set the active plugin.
 	CHECK(  rprContextSetActivePlugin(context, plugins[0]) );
 
+	std::cout << "RPR Context creation succeeded." << std::endl;
 
-	rpr_material_system matsys=nullptr;
-	CHECK( rprContextCreateMaterialSystem(context, 0, &matsys) );
-	// Check if it is created successfully
-	if (status != RPR_SUCCESS)
+	MatballScene matballScene;
+
+	MatballScene::MATBALL matBall0 = matballScene.Init(context);
+
+	rpr_material_node material = nullptr;
+	CHECK(  rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_DIFFUSE, &material));
+	CHECK(  rprMaterialNodeSetInputFByKey(material, RPR_MATERIAL_INPUT_COLOR, 0.0f, 0.4f, 1.f, 0.f)); // Diffuse color
+
+	matBall0.SetMaterial(material);
+
+
+	// Define the list of AOVs we want to render
+	//
+	struct AOV_FB
 	{
-		std::cout << "Context creation failed: check your OpenCL runtime and driver versions.\n";
-		return -1;
+		AOV_FB(const std::string& name_, rpr_aov aov_)
+		{
+			framebuffer = nullptr;
+			framebuffer_res = nullptr;
+			name = name_;
+			aov = aov_;
+		}
+		rpr_framebuffer framebuffer;
+		rpr_framebuffer framebuffer_res;
+		std::string name;
+		rpr_aov aov;
+	};
+	std::vector<AOV_FB> AOVlist;
+	AOVlist.push_back(AOV_FB("geom_normal" ,RPR_AOV_GEOMETRIC_NORMAL));
+	AOVlist.push_back(AOV_FB("shad_normal" ,RPR_AOV_SHADING_NORMAL));
+	AOVlist.push_back(AOV_FB("obj_id"      ,RPR_AOV_OBJECT_ID));
+	AOVlist.push_back(AOV_FB("uv"          ,RPR_AOV_UV));
+
+	// Create the list of AOVs
+	//
+	for(auto& i : AOVlist)
+	{
+		CHECK( rprContextCreateFrameBuffer(context, matballScene.m_framebuffer_fmt, &matballScene.m_framebuffer_desc, &i.framebuffer) );
+		CHECK( rprContextSetAOV(context, i.aov, i.framebuffer) );
+		CHECK( rprContextCreateFrameBuffer(context, matballScene.m_framebuffer_fmt, &matballScene.m_framebuffer_desc, &i.framebuffer_res) );
 	}
 
-	std::cout << "Context successfully created.\n";
+	matballScene.Render("33_color.png");
 
-	// Create a scene
-	rpr_scene scene=nullptr;
-	CHECK( rprContextCreateScene(context, &scene) );
-
-	// Create point light
-	rpr_light light=nullptr;
+	// for each AOV, export it ot an image file and delete it.
+	//
+	for(auto& i : AOVlist)
 	{
-		CHECK(rprContextCreatePointLight(context, &light));
-		// Create a transform: move 5 units in X axis, 8 units up Y axis, -2 units in Z axis
-		RadeonProRender::matrix lightm = RadeonProRender::translation(RadeonProRender::float3(0, 8, 2));
-		// Set transform for the light
-		CHECK(rprLightSetTransform(light, RPR_TRUE, &lightm.m00));
-		// Set light radiant power in Watts
-		CHECK(rprPointLightSetRadiantPower3f(light, 255, 241, 224));
-		// Attach the light to the scene
-		CHECK(rprSceneAttachLight(scene, light));
+		CHECK( rprContextResolveFrameBuffer(context, i.framebuffer, i.framebuffer_res, false) );
+		CHECK( rprFrameBufferSaveToFile(i.framebuffer_res,  std::string("33_"+i.name+".png").c_str() ) );
+		CHECK( rprObjectDelete(i.framebuffer) );
+		CHECK( rprObjectDelete(i.framebuffer_res) );
 	}
-	// Create camera
-	rpr_camera camera=nullptr;
-	{
-		CHECK( rprContextCreateCamera(context, &camera) );
+	AOVlist.clear();
 
-		// Position camera in world space: 
-		// Camera position is (5,5,20)
-		// Camera aimed at (0,0,0)
-		// Camera up vector is (0,1,0)
-		CHECK( rprCameraLookAt(camera, 0, 5, 20, 0, 1, 0, 0, 1, 0) );
-
-		CHECK( rprCameraSetFocalLength(camera, 75.f) );
-
-		// Set camera for the scene
-		CHECK( rprSceneSetCamera(scene, camera) );
-	}
-	// Set scene to render for the context
-	CHECK( rprContextSetScene(context, scene) );
-
-
-	// Create cube mesh
-	rpr_shape cube=nullptr;
-	{
-		CHECK(rprContextCreateMesh(context,
-			(rpr_float const*)&cube_data[0], 24, sizeof(vertex),
-			(rpr_float const*)((char*)&cube_data[0] + sizeof(rpr_float) * 3), 24, sizeof(vertex),
-			(rpr_float const*)((char*)&cube_data[0] + sizeof(rpr_float) * 6), 24, sizeof(vertex),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			num_face_vertices, 12, &cube));
-
-		// Add cube into the scene
-		CHECK(rprSceneAttachShape(scene, cube));
-
-		// Create a transform: -2 unit along X axis and 1 unit up Y axis
-		RadeonProRender::matrix m = RadeonProRender::translation(RadeonProRender::float3(-2, 1, 0));
-
-		// Set the transform 
-		CHECK(rprShapeSetTransform(cube, RPR_TRUE, &m.m00));
-	}
-	// Create plane mesh
-	rpr_shape plane=nullptr;
-	{
-		CHECK(rprContextCreateMesh(context,
-			(rpr_float const*)&plane_data[0], 4, sizeof(vertex),
-			(rpr_float const*)((char*)&plane_data[0] + sizeof(rpr_float) * 3), 4, sizeof(vertex),
-			(rpr_float const*)((char*)&plane_data[0] + sizeof(rpr_float) * 6), 4, sizeof(vertex),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			num_face_vertices, 2, &plane));
-
-		// Add plane into the scene
-		CHECK(rprSceneAttachShape(scene, plane));
-	}
-
-	// Create simple diffuse shader
-	rpr_material_node diffuse=nullptr;
-	{
-		CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuse));
-
-		// Set diffuse color parameter to gray
-		CHECK(rprMaterialNodeSetInputFByKey(diffuse, RPR_MATERIAL_INPUT_COLOR, 0.5f, 0.5f, 0.5f, 1.f));
-
-		// Set shader for cube & plane meshes
-		CHECK(rprShapeSetMaterial(cube, diffuse));
-
-		CHECK(rprShapeSetMaterial(plane, diffuse));
-	}
-
-
-	///////// AOV Tutorial //////////
-
-	// Create framebuffer to store rendering result
-	rpr_framebuffer_desc desc = { 800,600 };
-
-	// 4 component 32-bit float value each
-	rpr_framebuffer_format fmt = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
-	rpr_framebuffer frame_buffer = nullptr;
-	rpr_framebuffer frame_buffer_resolved = nullptr;
-	rpr_framebuffer frame_buffer2 = nullptr;
-	rpr_framebuffer frame_buffer2_resolved = nullptr;
-	CHECK(rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer));
-	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer_resolved) );
-	CHECK(rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer2));
-	CHECK(rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer2_resolved));
-
-
-	// Clear framebuffer to black color
-	CHECK(rprFrameBufferClear(frame_buffer));
-	CHECK(rprFrameBufferClear(frame_buffer2));
-
-	// Set framebuffer for the context
-	CHECK(rprContextSetAOV(context, RPR_AOV_COLOR, frame_buffer));
-	CHECK(rprContextSetAOV(context, RPR_AOV_SHADING_NORMAL, frame_buffer2));
-	//CHECK(rprContextSetAOV(context, RPR_AOV_WORLD_COORDINATE, frame_buffer2));
-	//CHECK(rprContextSetAOV(context, RPR_AOV_DEPTH, frame_buffer2));
-	//CHECK(rprContextSetAOV(context, RPR_AOV_OBJECT_ID, frame_buffer2));
-
-	// Progressively render an image
-	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
-	CHECK( rprContextRender(context) );
-	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
-	CHECK(rprContextResolveFrameBuffer(context,frame_buffer2,frame_buffer2_resolved,true));
-
-	std::cout << "Rendering finished.\n";
-
-	// Save the result to file
-	CHECK( rprFrameBufferSaveToFile(frame_buffer_resolved, "33.png") );
-	CHECK( rprFrameBufferSaveToFile(frame_buffer2_resolved, "33_1.png") );
-
-	// Release the stuff we created
-	CHECK(rprObjectDelete(matsys));matsys=nullptr;
-	CHECK(rprObjectDelete(plane));plane=nullptr;
-	CHECK(rprObjectDelete(cube));cube=nullptr;
-	CHECK(rprObjectDelete(light));light=nullptr;
-	CHECK(rprObjectDelete(diffuse));diffuse=nullptr;
-	CHECK(rprObjectDelete(scene));scene=nullptr;
-	CHECK(rprObjectDelete(camera));camera=nullptr;
-	CHECK(rprObjectDelete(frame_buffer));frame_buffer=nullptr;
-	CHECK(rprObjectDelete(frame_buffer2));frame_buffer2=nullptr;
-	CHECK(rprObjectDelete(frame_buffer2_resolved));frame_buffer2_resolved=nullptr;
-	CHECK(rprObjectDelete(frame_buffer_resolved));frame_buffer_resolved=nullptr;
+	CHECK( rprObjectDelete(material)); material=nullptr;
+	matballScene.Clean();
 	CheckNoLeak(context);
-	CHECK(rprObjectDelete(context));context=nullptr; // Always delete the RPR Context in last.
+	CHECK(rprObjectDelete(context)); context=nullptr;
 	return 0;
+
 }
 
 
-// Things to try in this tutorial:
-// 1) You could try to change the AOV binding of the framebuffer2 and check the result
-// 2) You should have notice that some buffer are dark or white, this is because buffer isn't normalize
+
+
+

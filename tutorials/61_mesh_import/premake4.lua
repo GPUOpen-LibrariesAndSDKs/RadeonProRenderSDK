@@ -2,6 +2,12 @@ project "61_mesh_import"
     kind "ConsoleApp"
     location "../build"
     files { "../61_mesh_import/**.h", "../61_mesh_import/**.cpp"} 
+    files { "../common/common.cpp","../common/common.h"}
+
+    -- remove filters for Visual Studio
+    vpaths { [""] = { "../61_mesh_import/**.h", "../61_mesh_import/**.cpp","../common/common.cpp","../common/common.h"} }
+
+
     includedirs{ "../../RadeonProRender/inc" } 
     
     buildoptions "-std=c++11"
