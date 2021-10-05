@@ -3,6 +3,22 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.02.8 - 05 October 2021
+
+RPRNEXT-872 - (Bug)      - Fix crash on blender
+RPRNEXT-863 - (Bug)      - Fix incorrect render of SSS on Vega
+RPRNEXT-855 - (Task)     - Improve convergence rate of rendering
+RPRNEXT-854 - (Bug)      - Fix incorrect render in LPE
+RPRNEXT-850 - (Bug)      - Fix black render of  toon shader on macOS
+RPRNEXT-848 - (Task)     - Improve scene initialization time on CPU
+RPRNEXT-811 - (Bug)      - Fix blacn render with shadow catcher plane
+RPRNEXT-806 - (Bug)      - Fix emission shader crash with subdivision
+RPRNEXT-789 - (Task)     - Add 5 color tone on toon shader
+RPRNEXT-765 - (Task)     - Use UV to extract contour
+RPRNEXT-731 - (Task)     - Add new MaterialX nodes and improve material file parsing.
+
+
+################################################################################################################
 RPR SDK 2.02.7 - 31 August 2021
 
 RPRNEXT-847 - (Bug)      - Improve Contour rendering quality
