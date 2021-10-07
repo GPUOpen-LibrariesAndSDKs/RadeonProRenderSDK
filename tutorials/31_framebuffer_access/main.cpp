@@ -192,18 +192,20 @@ int main()
 	//
 	// We are going to take the  frame_buffer_resolved data,  and use it as a material texture for a plane.
 
+	// access framebuffer data.
 	size_t size = 0;
 	CHECK(rprFrameBufferGetInfo(frame_buffer_resolved, RPR_FRAMEBUFFER_DATA, 0, NULL, &size));
 	float* buffer = new float[size / sizeof(float)];
 	CHECK(rprFrameBufferGetInfo(frame_buffer_resolved, RPR_FRAMEBUFFER_DATA, size, buffer, 0));
 
 
-	//Apply this buffer as a texture
+	//Apply this data as a texture material to the plane.
 
 	rpr_material_node diffuse1=nullptr;
 	rpr_material_node tex=nullptr;
 	rpr_image img1=nullptr;
 	{
+		// create the image from the data of the previous framebuffer
 		rpr_image_format format;
 		format.num_components = 4;
 		format.type = RPR_COMPONENT_TYPE_FLOAT32;
@@ -213,17 +215,21 @@ int main()
 		desc2.image_row_pitch = 0;
 		desc2.image_slice_pitch = 0;
 		desc2.image_depth = 0;
-	
 		CHECK(rprContextCreateImage(context, format, &desc2, buffer, &img1));
+
+		// create the image sampler material
 		CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_IMAGE_TEXTURE, &tex));
+
 		// Set image data
 		CHECK(rprMaterialNodeSetInputImageDataByKey(tex, RPR_MATERIAL_INPUT_DATA, img1));
+		
+		// create a simple diffuse material
 		CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuse1));
-		// Set diffuse color parameter to gray
-		
+
+		// apply the built texture as color
 		CHECK(rprMaterialNodeSetInputNByKey(diffuse1, RPR_MATERIAL_INPUT_COLOR, tex));
-		//CHECK(rprMaterialNodeSetInputFByKey(diffuse1, RPR_MATERIAL_INPUT_COLOR, 1,0,0,0));
-		
+
+		// plane now uses this diffuse as material.
 		CHECK(rprShapeSetMaterial(plane, diffuse1));
 	}
 	
