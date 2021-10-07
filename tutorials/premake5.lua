@@ -74,6 +74,7 @@ solution "Tutorials"
 	defines{ "RPR_API_USE_HEADER_V2" }  -- make sure to use the API V2: it's a safer C API
 
 	include "00_context_creation"
+	include "03_parameters_enumeration"
 	include "05_basic_scene"
 	include "13_deformation_motion_blur"
 	include "21_material"

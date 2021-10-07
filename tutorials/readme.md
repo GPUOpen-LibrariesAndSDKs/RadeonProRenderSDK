@@ -6,6 +6,7 @@ List of tutorials in this SDK
 | Model                                                      | Screenshot                                          | Description |
 |------------------------------------------------------------|-----------------------------------------------------|-------------|
 | [Context Creation](00_context_creation)                    | ![](00_context_creation/screenshot.png)             | This demo shows how to create a RPR context. The RPR context is the first object that needs to be created before any RPR renderings. |
+| [Parameters Enumeration](03_parameters_enumeration)        | ![](03_parameters_enumeration/screenshot.png)       | This tutorials illustrates how to use getters of the RPR API to get current states/values of different objects. |
 | [Basic Scene](05_basic_scene)                              | ![](05_basic_scene/screenshot.png)                  | This demo is a good starting point to learn all the basic features of RPR. You'll learn how to manage  geometry, light, camera, framebuffer, materials for simple cubes renderings. |
 | [Deformation Motion Blur](13_deformation_motion_blur)      | ![](13_deformation_motion_blur/screenshot.png)      | This demo covers vertices deformation over time for a blur effect. |
 | [Material](21_material)                                    | ![](21_material/screenshot.png)                     | This demo illustrates how to create materials in RPR. It's not covering the UBER material which is used inside the 22_material_uber demo. |
