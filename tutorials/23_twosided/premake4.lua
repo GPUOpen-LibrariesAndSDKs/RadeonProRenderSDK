@@ -1,0 +1,22 @@
+project "23_twosided"
+    kind "ConsoleApp"
+    location "../build"
+    files { "../23_twosided/**.h", "../23_twosided/**.cpp"}
+    files { "../common/common.cpp","../common/common.h"} 
+
+    -- remove filters for Visual Studio
+    vpaths { [""] = { "../23_twosided/**.h", "../23_twosided/**.cpp","../common/common.cpp","../common/common.h"} }
+
+    includedirs{ "../../RadeonProRender/inc" } 
+    
+    buildoptions "-std=c++11"
+
+	configuration {"x64"}
+	links {"RadeonProRender64"}
+	
+    configuration {"x64", "Debug"}
+        targetdir "../Bin"
+    configuration {"x64", "Release"}
+        targetdir "../Bin"
+    configuration {}
+    
