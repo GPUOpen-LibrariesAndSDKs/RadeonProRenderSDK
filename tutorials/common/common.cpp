@@ -233,13 +233,13 @@ rpr_shape MatballScene::ImportOBJ(const std::string& file, rpr_scene scene, rpr_
 			face_pos.push_back(f11-1);
 			face_pos.push_back(f21-1);
 
-			face_normal.push_back(f02-1);
-			face_normal.push_back(f12-1);
-			face_normal.push_back(f22-1);
+			face_normal.push_back(f03-1);
+			face_normal.push_back(f13-1);
+			face_normal.push_back(f23-1);
 
-			face_texture.push_back(f03-1);
-			face_texture.push_back(f13-1);
-			face_texture.push_back(f23-1);
+			face_texture.push_back(f02-1);
+			face_texture.push_back(f12-1);
+			face_texture.push_back(f22-1);
 
 			face.push_back(3);
 		}

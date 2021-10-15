@@ -330,12 +330,12 @@ int main()
 		matballScene.Render("22_material_uber_04.png");
 	}
 
-
+	//
+	// Demo of a Subdiv / Displacement material
+	//
 	{
 		MatballScene::MATBALL matBall = matballScene.AddMatball( +1, -1, 
-			// as this matball is using displacement, we need to create it as non-instanced, otherwise the displacement won't work
-			// This is a known limitation inside RPR that may be fixed in the future
-			false 
+			false // Displacement doesn't work on instanced mesh
 			);
 
 		rpr_material_node uberMat = nullptr;
@@ -393,9 +393,8 @@ int main()
 		GCAdd(image_0x000001AF2F01FCD0);
 		CHECK(rprMaterialNodeSetInputImageDataByKey(materialnode_0x000001AF2F01FA60, RPR_MATERIAL_INPUT_DATA, image_0x000001AF2F01FCD0));
 
-		/*
 
-		///// TODO for RPR team : make demo for Displacement, .obj needs to be improve
+		
 
 		rpr_shape iShape[] = { matBall.base,  matBall.inner, matBall.outer };
 		for(const auto& i : iShape )
@@ -403,10 +402,9 @@ int main()
 			CHECK(rprShapeSetSubdivisionFactor(i,1));
 			CHECK(rprShapeSetSubdivisionCreaseWeight(i,0.0f));
 			CHECK(rprShapeSetSubdivisionBoundaryInterop(i,RPR_SUBDIV_BOUNDARY_INTERFOP_TYPE_EDGE_ONLY));
-			CHECK(rprShapeSetDisplacementScale(i,0.0f,0.010000f));
+			CHECK(rprShapeSetDisplacementScale(i, 0.0f, 0.004f));
 			CHECK(rprShapeSetDisplacementMaterial(i,materialnode_0x000001AF2F01FA60));
 		}
-		*/
 
 		matBall.SetMaterial(uberMat);
 		
