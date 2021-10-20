@@ -1296,7 +1296,7 @@ VISIBILITY_LIGHT = 0x421 ,
 public const uint RPR_VERSION_MAJOR = 2 ;
 public const uint RPR_VERSION_MINOR = 2 ;
 public const uint RPR_VERSION_REVISION = 8 ;
-public const uint RPR_VERSION_BUILD = 0x05e7f8bf ;
+public const uint RPR_VERSION_BUILD = 0xe865675b ;
 public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200208 ;
 // Deprecated version naming - will be removed in the future :
 
