@@ -62,7 +62,7 @@ int main()
 	CHECK(rprContextSetActivePlugin(context, plugins[0]));
 
 	MatballScene matballScene;
-	MatballScene::MATBALL matBall0 = matballScene.Init(context,true);
+	MatballScene::MATBALL matBall0 = matballScene.Init(context,0,0,true);
 
 	// flip Y, otherwise out image is reversed.
 	CHECK(rprContextSetParameterByKey1u(context, RPR_CONTEXT_Y_FLIP, 1));

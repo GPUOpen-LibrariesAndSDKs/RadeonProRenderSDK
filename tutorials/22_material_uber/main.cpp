@@ -70,7 +70,7 @@ int main()
 
 	MatballScene matballScene;
 
-	MatballScene::MATBALL matBall0 = matballScene.Init(context);
+	MatballScene::MATBALL matBall0 = matballScene.Init(context,0,0);
 
 	{ 
 		rpr_material_node material = nullptr;

@@ -334,7 +334,7 @@ void MatballScene::Clean()
 }
 
 
-MatballScene::MATBALL MatballScene::Init(rpr_context context, bool usingHybridContext)
+MatballScene::MATBALL MatballScene::Init(rpr_context context, int shapeShiftX, int shapeShiftY, bool usingHybridContext)
 {
 
 	m_usingHybridContext = usingHybridContext;
@@ -358,7 +358,7 @@ MatballScene::MATBALL MatballScene::Init(rpr_context context, bool usingHybridCo
 	CameraLook1Shape(0, 0);
 
 
-	MatballScene::MATBALL newShape = AddMatball(0, 0, false);
+	MatballScene::MATBALL newShape = AddMatball(shapeShiftX, shapeShiftY, false);
 
 	m_shape_floor = ImportOBJ("../../Resources/Meshes/matball_floor.obj",m_scene,m_context);
 

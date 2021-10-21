@@ -70,7 +70,7 @@ int main()
 
 	MatballScene matballScene;
 
-	MatballScene::MATBALL matBall0 = matballScene.Init(context);
+	MatballScene::MATBALL matBall0 = matballScene.Init(context,0,0);
 
 
 	// demo for a Layered material : blending a DIFFUSE and a MICROFACET

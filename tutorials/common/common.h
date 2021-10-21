@@ -120,7 +120,7 @@ public:
 		}
 	};
 
-	MATBALL Init(rpr_context context, bool usingHybridContext=false);
+	MATBALL Init(rpr_context context, int shapeShiftX, int shapeShiftY, bool usingHybridContext=false);
 
 	void Clean();
 
