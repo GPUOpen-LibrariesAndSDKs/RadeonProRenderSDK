@@ -457,11 +457,19 @@ Status Context::SetAOV(Aov aov, FrameBuffer* frame_buffer) {
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
-Status Context::SetAOVindexLookup(rpr_int key, rpr_float colorR, rpr_float colorG, rpr_float colorB, rpr_float colorA) {
+Status Context::SetAOVindexLookup(rpr_int key, float colorR, float colorG, float colorB, float colorA) {
     RPR_CPPWRAPER_CALL_PREFIX
     rprContextSetAOVindexLookup(m_context, key, colorR, colorG, colorB, colorA)
     RPR_CPPWRAPER_CALL_SUFFIX
 }
+
+
+Status Context::SetCuttingPlane(rpr_int index, float x, float y, float z, float w) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprContextSetCuttingPlane(m_context, index, x, y, z, w)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
 
 Status Context::SetScene(Scene* scene) {
     RPR_CPPWRAPER_CALL_PREFIX
@@ -1012,6 +1020,12 @@ Status DiskLight::SetRadius(float radius) {
 Status DiskLight::SetAngle(float angle) {
     RPR_CPPWRAPER_CALL_PREFIX
     rprDiskLightSetAngle(GetRprObject(this), angle)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
+Status DiskLight::SetInnerAngle(float angle) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprDiskLightSetInnerAngle(GetRprObject(this), angle)
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 

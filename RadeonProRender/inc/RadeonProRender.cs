@@ -119,6 +119,7 @@ ERROR_ABORTED = -29 ,
 /*rpr_parameter_type*/
 public enum ParameterType : int
 {
+UNDEF = 0x0 ,
 FLOAT = 0x1 ,
 FLOAT2 = 0x2 ,
 FLOAT3 = 0x3 ,
@@ -228,7 +229,7 @@ RENDER_MODE = 0x122 ,
 ROUGHNESS_CAP = 0x123 ,
 DISPLAY_GAMMA = 0x124 ,
 MATERIAL_STACK_SIZE = 0x125 ,
-CLIPPING_PLANE = 0x126 ,
+CUTTING_PLANES = 0x126 ,
 GPU0_NAME = 0x127 ,
 GPU1_NAME = 0x128 ,
 GPU2_NAME = 0x129 ,
@@ -542,6 +543,7 @@ SPHERE_LIGHT_RADIUS = 0x824 ,
 DISK_LIGHT_RADIANT_POWER = 0x823 ,
 DISK_LIGHT_RADIUS = 0x825 ,
 DISK_LIGHT_ANGLE = 0x826 ,
+DISK_LIGHT_INNER_ANGLE = 0x827 ,
 }
 /*rpr_parameter_info*/
 public enum Parameter : int
@@ -1295,9 +1297,9 @@ VISIBILITY_LIGHT = 0x421 ,
 }
 public const uint RPR_VERSION_MAJOR = 2 ;
 public const uint RPR_VERSION_MINOR = 2 ;
-public const uint RPR_VERSION_REVISION = 8 ;
-public const uint RPR_VERSION_BUILD = 0x05e7f8bf ;
-public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200208 ;
+public const uint RPR_VERSION_REVISION = 9 ;
+public const uint RPR_VERSION_BUILD = 0x5917ab00 ;
+public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200209 ;
 // Deprecated version naming - will be removed in the future :
 
 public const uint RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -1507,6 +1509,38 @@ return rprFrameBufferSetLPE(frame_buffer, lpe);
 public static Status ContextSetAOVindexLookup(IntPtr context, int key, float colorR, float colorG, float colorB, float colorA)
 {
 return rprContextSetAOVindexLookup(context, key, colorR, colorG, colorB, colorA);
+}
+
+    /** @brief Set a Cutting Plane (also called Clipping plane).
+    *
+    * Notes:
+    *  - In order to disable the 'index' cutting plane, set (A,B,C,D) = (0,0,0,0)
+    *    By default, on context creation all cutting planes are disabled.
+    * 
+    *  - Index can be any number. It doesn't need to define the list of plane as a contiguous list of indices.
+    *
+    *  - If the number of enabled planes is greater than the limit supported by the renderer,
+    *    then RPR_ERROR_UNSUPPORTED is return by the function.
+    *
+    *  - The normal of the equation plane points toward the area that is kept.
+    *
+    *  - If several clipping planes are used the rendered area will be the one commonly facing all the planes.
+    *
+    *  - Plane equation is Ax + By + Cz + D = 0
+    *
+    *  @param  context			The context to set the Cutting Plane
+    *  @param  index			cutting plane index ( starts from 0 )
+    *  @param  a				equation plane A
+    *  @param  b				equation plane B
+    *  @param  c				equation plane C
+    *  @param  d				equation plane D
+    *  @return					RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprContextSetCuttingPlane(IntPtr context, int index, float a, float b, float c, float d);
+public static Status ContextSetCuttingPlane(IntPtr context, int index, float a, float b, float c, float d)
+{
+return rprContextSetCuttingPlane(context, index, a, b, c, d);
 }
 
     /** @brief call a batch of rprContextSetAOVindexLookup
@@ -3128,30 +3162,86 @@ public static Status SpotLightSetImage(IntPtr light, IntPtr img)
 {
 return rprSpotLightSetImage(light, img);
 }
+
+    /** @brief Set Power for Sphere Light
+    *
+    *
+    *  @param  r R component of a radiant power vector
+    *  @param  g G component of a radiant power vector
+    *  @param  b B component of a radiant power vector
+    *  @return status RPR_SUCCESS in case of success, error code otherwise
+    */
+  
 [DllImport(dllName)] static extern Status rprSphereLightSetRadiantPower3f(IntPtr light, float r, float g, float b);
 public static Status SphereLightSetRadiantPower3f(IntPtr light, float r, float g, float b)
 {
 return rprSphereLightSetRadiantPower3f(light, r, g, b);
 }
+
+    /** @brief Set Radius for Sphere Light
+    *
+    *
+    *  @param angle  Outer angle in radians
+    *  @return status RPR_SUCCESS in case of success, error code otherwise
+    */
+  
 [DllImport(dllName)] static extern Status rprSphereLightSetRadius(IntPtr light, float angle);
 public static Status SphereLightSetRadius(IntPtr light, float angle)
 {
 return rprSphereLightSetRadius(light, angle);
 }
+
+    /** @brief Set Power for Disk Light
+    *
+    *
+    *  @param  r R component of a radiant power vector
+    *  @param  g G component of a radiant power vector
+    *  @param  b B component of a radiant power vector
+    *  @return status RPR_SUCCESS in case of success, error code otherwise
+    */
+  
 [DllImport(dllName)] static extern Status rprDiskLightSetRadiantPower3f(IntPtr light, float r, float g, float b);
 public static Status DiskLightSetRadiantPower3f(IntPtr light, float r, float g, float b)
 {
 return rprDiskLightSetRadiantPower3f(light, r, g, b);
 }
+
+    /** @brief Set Radius for Disk Light
+    *
+    *
+    *  @param radius  Radius to set
+    *  @return status RPR_SUCCESS in case of success, error code otherwise
+    */
+  
 [DllImport(dllName)] static extern Status rprDiskLightSetRadius(IntPtr light, float radius);
 public static Status DiskLightSetRadius(IntPtr light, float radius)
 {
 return rprDiskLightSetRadius(light, radius);
 }
+
+    /** @brief Set Outer Angle for Disk Light
+    *
+    *
+    *  @param  angle Outer angle in radians
+    *  @return status RPR_SUCCESS in case of success, error code otherwise
+    */
+  
 [DllImport(dllName)] static extern Status rprDiskLightSetAngle(IntPtr light, float angle);
 public static Status DiskLightSetAngle(IntPtr light, float angle)
 {
 return rprDiskLightSetAngle(light, angle);
+}
+
+    /** @brief Set Inner Angle for Disk Light
+    *
+    *  @param  innerAngle Inner angle in radians
+    *  @return status RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprDiskLightSetInnerAngle(IntPtr light, float innerAngle);
+public static Status DiskLightSetInnerAngle(IntPtr light, float innerAngle)
+{
+return rprDiskLightSetInnerAngle(light, innerAngle);
 }
 
     /** @brief Set cone shape for a spot light
