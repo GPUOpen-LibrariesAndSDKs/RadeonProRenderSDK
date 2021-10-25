@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<materialx version="1.38">
+  <xi:include href="../../Resources/Textures/matx_standard_surface.mtlx" />
+  <material name="SimpleRedBase">
+
+    <image name="image_node" type="color3">
+      <parameter name="file" type="filename" value="../../Resources/Textures/textest.png" />
+      <input name="texcoord" type="vector2" nodename="uv0" />
+    </image>
+
+
+    <shaderref name="SimpleRedBase" node="standard_surface">
+      <bindinput name="base" type="float" value="1" />
+      <bindinput name="base_color" type="color3" nodename="image_node" />
+      <bindinput name="specular" type="float" value="1" />
+      <bindinput name="specular_color" type="color3" nodename="image_node" />
+      <bindinput name="specular_roughness" type="float" value="0.02" />
+      <bindinput name="metalness" type="float" value="1" />
+    </shaderref>
+
+
+  </material>
+</materialx>

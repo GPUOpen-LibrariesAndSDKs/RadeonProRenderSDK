@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<materialx version="1.38">
+  <nodegraph name="nodegraph1">
+
+    <normal name="normal" type="vector3" />
+    <normalize name="normalize" type="vector3">
+      <input name="in" type="vector3" nodename="normal" />
+    </normalize>
+
+
+    <surface name="surf1" type="surfaceshader">
+      <input name="bsdf" type="BSDF" nodename="diff0" />
+    </surface>
+
+    <oren_nayar_diffuse_bsdf name="diff0" type="BSDF">
+      <input name="color" type="color3" nodename="normalize" />
+      <input name="weight" type="float" value="1.0" />
+    </oren_nayar_diffuse_bsdf>
+
+
+    <output name="outname" type="surfaceshader" nodename="surf1" />
+  </nodegraph>
+</materialx>

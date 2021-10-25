@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<materialx version="1.38">
+  <nodegraph name="nodegraph1">
+
+    <position name="objpos" type="vector3" />
+
+    <multiply name="scalepos" type="vector3">
+      <input name="in1" type="vector3" nodename="objpos" />
+      <input name="in2" type="float" value="20.0" />
+    </multiply>
+
+    <noise3d name="noise" type="float">
+      <input name="amplitude" type="vector3" value="1.5, 1.5, 1.5" />
+      <input name="pivot" type="vector3" value="0.5, 0.5, 0.5" />
+      <input name="position" type="vector3" nodename="scalepos" />
+    </noise3d>
+
+    <mix name="mix2" type="color3">
+      <input name="bg" type="color3" value="1.0, 0.0, 0.0" />
+      <input name="fg" type="color3" value="0.0, 1.0, 1.0" />
+      <input name="mix" type="float" nodename="noise" />
+    </mix>
+
+    <oren_nayar_diffuse_bsdf name="diff0" type="BSDF">
+      <input name="color" type="color3" nodename="mix2" />
+      <input name="weight" type="float" value="1.0" />
+    </oren_nayar_diffuse_bsdf>
+
+    <surface name="surf1" type="surfaceshader">
+      <input name="bsdf" type="BSDF" nodename="diff0" />
+    </surface>
+
+    <output name="outname" type="surfaceshader" nodename="surf1" />
+  </nodegraph>
+</materialx>
+
+
+
+
