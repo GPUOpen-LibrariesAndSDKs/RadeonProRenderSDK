@@ -193,39 +193,30 @@ int main()
 	//	set this before any rpr API calls
 	//	rprContextSetParameterByKey1u(0,RPR_CONTEXT_TRACING_ENABLED,1);
 
-	std::cout << "-- Radeon ProRender SDK Demo --" << std::endl;
-	// Indicates whether the last operation has suceeded or not
-	rpr_int status = RPR_SUCCESS;
-	// Create OpenCL context using a single GPU 
-	rpr_context context = NULL;
+	// the RPR context object.
+	rpr_context context = nullptr;
 
-	// Register Tahoe ray tracing plugin.
+	// Register the RPR DLL
 	rpr_int tahoePluginID = rprRegisterPlugin(RPR_PLUGIN_FILE_NAME); 
-	CHECK_NE(tahoePluginID , -1)
+	CHECK_NE(tahoePluginID , -1);
 	rpr_int plugins[] = { tahoePluginID };
 	size_t pluginCount = sizeof(plugins) / sizeof(plugins[0]);
 
 	// Create context using a single GPU 
+	// note that multiple GPUs can be enabled for example with creation_flags = RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GPU1
 	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, g_ContextCreationFlags, NULL, NULL, &context) );
 
-	// Set active plugin.
+	// Set the active plugin.
 	CHECK(  rprContextSetActivePlugin(context, plugins[0]) );
+
+	std::cout << "RPR Context creation succeeded." << std::endl;
 
 
 	rpr_material_system matsys = nullptr;
 	CHECK( rprContextCreateMaterialSystem(context, 0, &matsys) );
-	// Check if it is created successfully
-	if (status != RPR_SUCCESS)
-	{
-		std::cout << "Context creation failed: check your OpenCL runtime and driver versions.\n";
-		return -1;
-	}
-
-	std::cout << "Context successfully created.\n";
-
 
 	rpr_scene scene = NULL;
-	status = rprsImport("../../Resources/Meshes/matball.rprs", context, matsys, &scene, false, nullptr); CHECK(status);
+	CHECK( rprsImport("../../Resources/Meshes/matball.rprs", context, matsys, &scene, false, nullptr));
 
 
 #ifdef NO_TILE
@@ -275,8 +266,8 @@ int main()
 	// delete the RPR objects created during the last rprsImport call.
 	CHECK(rprsDeleteListImportedObjects(nullptr));
 
-	if (scene) { status = rprObjectDelete(scene); scene = NULL; CHECK(status); }
-	if (matsys) { status = rprObjectDelete(matsys); matsys = NULL; CHECK(status); }
+	if (scene) { CHECK( rprObjectDelete(scene)); }
+	if (matsys) { CHECK( rprObjectDelete(matsys)); }
 	CheckNoLeak(context);
 	CHECK(rprObjectDelete(context));context=nullptr; // Always delete the RPR Context in last.
 	return 0;
