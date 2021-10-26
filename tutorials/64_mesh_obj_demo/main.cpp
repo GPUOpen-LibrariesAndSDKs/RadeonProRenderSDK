@@ -461,7 +461,7 @@ Context createContext(const ContextSettings settings)
 
 	if (status != RPR_SUCCESS)
 	{
-		std::cout << "Context creation failed: check your OpenCL runtime and driver versions.\n";
+		std::cout << "RPR Context creation failed.\n";
 		std::exit(EXIT_FAILURE);
 	}
 
