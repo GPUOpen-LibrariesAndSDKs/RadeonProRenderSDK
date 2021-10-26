@@ -32,7 +32,7 @@ int main()
 	//	set this before any RPR API calls
 	//	rprContextSetParameterByKey1u(0,RPR_CONTEXT_TRACING_ENABLED,1);
 
-	std::cout << "Radeon ProRender SDK simple rendering tutorial.\n";
+	std::cout << "-- Radeon ProRender SDK Demo --" << std::endl;
 	// Indicates whether the last operation has suceeded or not
 	rpr_int status = RPR_SUCCESS;
 	// Create OpenCL context using a single GPU 

@@ -213,6 +213,7 @@ int main()
 	// But this time, we choose to preload the image ourselves rather than letting rprMaterialXSetFile do it.
 	// Advantage is that we have a better control of image parameters, and memory optimization if image is used in several MaterialX.
 	// However we are responsible if its release.
+	rpr_image preloadImg = nullptr;
 	{
 		MatballScene::MATBALL matBall = matballScene.AddMatball(1,-2);
 
@@ -259,7 +260,6 @@ int main()
 
 		// Most of RPR demos are using rprContextCreateImageFromFile.
 		// Here is a demo of rprContextCreateImage, creating an image directly from data instead of image file.
-		rpr_image preloadImg = nullptr;
 		CHECK( rprContextCreateImage(context, imageFormat, &imageDesc, dataImage.get(), &preloadImg));
 
 		// This rprMaterialXAddPreloadedImage specifies that any  "../../Resources/Textures/textest.png"  path used in the 
@@ -276,9 +276,6 @@ int main()
 		// Note that this call does NOT delete image data: it just clear the lookup list.
 		CHECK( rprMaterialXCleanPreloadedImages(context) );
 
-		// delete the preloaded image.
-		CHECK(rprObjectDelete(preloadImg)); preloadImg=nullptr;
-
 	}
 
 
@@ -286,14 +283,22 @@ int main()
 	// display the final scene : camera zoomed-out
 	matballScene.CameraLook9Shape();
 	matballScene.Render("26_materialx_final.png");
-
+	
+	
+	//
 	// clean everything
+	//
+
 	GCClean();
+
+	// delete the preloaded image.
+	CHECK(rprObjectDelete(preloadImg)); preloadImg=nullptr;
+
 	matballScene.Clean();
 	CheckNoLeak(context);
 	CHECK(rprObjectDelete(context)); context=nullptr;
-	return 0;
 
+	return 0;
 }
 
 

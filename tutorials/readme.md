@@ -15,6 +15,7 @@ List of tutorials in this SDK
 | [Contour](24_contour)                                      | ![](24_contour/screenshot.png)                      | Demo of the Contour Rendering (also called Outline) that allows you to render contours of 3D objects. |
 | [Toon Material](25_toon)                                   | ![](25_toon/screenshot.png)                         | This demo illustrates how to use the Toon material. |
 | [MaterialX Demo](26_materialx)                             | ![](26_materialx/screenshot.png)                    | Radeon ProRender is compatible with MaterialX. This tutorial demonstrates how to use it. |
+| [Cutting Planes](27_cutplanes)                             | ![](27_cutplanes/screenshot.png)                    | This demos shows how to add Cutting planes (also called Clipping plane). |
 | [Tiled Render](30_tiled_render)                            | ![](30_tiled_render/screenshot.png)                 | This demo illustrates how to break down the framebuffer into smaller render regions (tiles) |
 | [Framebuffer access](31_framebuffer_access)                | ![](31_framebuffer_access/screenshot.png)           | Here we demonstrate usage of rprFrameBufferGetInfo: We can access the image data of a frame buffer. In this demo, we use the data of a first rendering and use it as an input texture for a second rendering. |
 | [OpenGL interop](32_gl_interop)                            | ![](32_gl_interop/screenshot.png)                   | Demo covering an RPR rendering inside an OpenGL app. |
