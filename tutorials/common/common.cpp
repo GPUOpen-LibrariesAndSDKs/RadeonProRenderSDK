@@ -51,10 +51,10 @@ vertex cube_data[] =
 
 vertex plane_data[] = 
 {
-	{-15.f, 0.f, -15.f,    0.f, 1.f, 0.f,    0.f, 0.f},
-	{-15.f, 0.f,  15.f,    0.f, 1.f, 0.f,    0.f, 1.f},
-	{ 15.f, 0.f,  15.f,    0.f, 1.f, 0.f,    1.f, 1.f},
-	{ 15.f, 0.f, -15.f,    0.f, 1.f, 0.f,    1.f, 0.f},
+	{-15.f, 0.f, -15.f,    0.f, 1.f, 0.f,    0.f, 1.f},
+	{-15.f, 0.f,  15.f,    0.f, 1.f, 0.f,    0.f, 0.f},
+	{ 15.f, 0.f,  15.f,    0.f, 1.f, 0.f,    1.f, 0.f},
+	{ 15.f, 0.f, -15.f,    0.f, 1.f, 0.f,    1.f, 1.f},
 };
 
 
@@ -167,11 +167,15 @@ void CheckNoLeak(rpr_context context)
 
 
 // description in header.
-rpr_shape MatballScene::ImportOBJ(const std::string& file, rpr_scene scene, rpr_context ctx)
+rpr_shape ImportOBJ(const std::string& file, rpr_scene scene, rpr_context ctx)
 {
 	rpr_int status = RPR_SUCCESS;
 
 	std::ifstream infile(file.c_str());
+
+	if ( !infile.is_open() || infile.fail() )
+		return nullptr;
+
 	std::string line;
 	std::vector<rpr_float> pos;
 	std::vector<rpr_float> normal;

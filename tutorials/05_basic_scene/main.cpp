@@ -291,7 +291,7 @@ int main()
 		CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_ARITHMETIC, &uv_scaled_node));
 		CHECK(rprMaterialNodeSetInputUByKey(uv_scaled_node, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_MUL));
 		CHECK(rprMaterialNodeSetInputNByKey(uv_scaled_node, RPR_MATERIAL_INPUT_COLOR0, uv_node));
-		CHECK(rprMaterialNodeSetInputFByKey(uv_scaled_node, RPR_MATERIAL_INPUT_COLOR1, 16.0f, 16.0f, 0, 0));
+		CHECK(rprMaterialNodeSetInputFByKey(uv_scaled_node, RPR_MATERIAL_INPUT_COLOR1, 6.0f, 12.0f, 0, 0));
 
 		// apply this modified UV to the image material.
 		CHECK(rprMaterialNodeSetInputNByKey(materialImage2, RPR_MATERIAL_INPUT_UV, uv_scaled_node));
@@ -358,7 +358,7 @@ int main()
 	CHECK(rprShapeSetTransform(cube_instance, RPR_TRUE, &m.m00));
 
 	// change scaling of the AMD logo on the floor
-	CHECK(rprMaterialNodeSetInputFByKey(uv_scaled_node, RPR_MATERIAL_INPUT_COLOR1, 20.0f, 20.0f, 0, 0));
+	CHECK(rprMaterialNodeSetInputFByKey(uv_scaled_node, RPR_MATERIAL_INPUT_COLOR1, 10.0f, 20.0f, 0, 0));
 
 	// replace the material on cuve by an emissive one.
 	rpr_material_node emissive1=nullptr;

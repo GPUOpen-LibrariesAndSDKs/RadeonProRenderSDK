@@ -29,7 +29,7 @@ int main()
 	//	set this before any rpr API calls
 	//	rprContextSetParameterByKey1u(0,RPR_CONTEXT_TRACING_ENABLED,1);
 
-	std::cout << "Radeon ProRender SDK simple rendering tutorial.\n";
+	std::cout << "-- Radeon ProRender SDK Demo --" << std::endl;
 	// Indicates whether the last operation has suceeded or not
 	rpr_int status = RPR_SUCCESS;
 	// Create OpenCL context using a single GPU 
@@ -132,13 +132,22 @@ int main()
 		// Add cube into the scene
 		CHECK(rprSceneAttachShape(scene, cube));
 	}
+
+	vertex plane_data_[] = 
+	{
+		{-15.f, 0.f, -15.f,    0.f, 1.f, 0.f,    0.f, 0.f},
+		{-15.f, 0.f,  15.f,    0.f, 1.f, 0.f,    0.f, 1.f},
+		{ 15.f, 0.f,  15.f,    0.f, 1.f, 0.f,    1.f, 1.f},
+		{ 15.f, 0.f, -15.f,    0.f, 1.f, 0.f,    1.f, 0.f},
+	};
+
 	// Create plane mesh
 	rpr_shape plane=nullptr;
 	{
 		CHECK(rprContextCreateMesh(context,
-			(rpr_float const*)&plane_data[0], 4, sizeof(vertex),
-			(rpr_float const*)((char*)&plane_data[0] + sizeof(rpr_float) * 3), 4, sizeof(vertex),
-			(rpr_float const*)((char*)&plane_data[0] + sizeof(rpr_float) * 6), 4, sizeof(vertex),
+			(rpr_float const*)&plane_data_[0], 4, sizeof(vertex),
+			(rpr_float const*)((char*)&plane_data_[0] + sizeof(rpr_float) * 3), 4, sizeof(vertex),
+			(rpr_float const*)((char*)&plane_data_[0] + sizeof(rpr_float) * 6), 4, sizeof(vertex),
 			(rpr_int const*)indices, sizeof(rpr_int),
 			(rpr_int const*)indices, sizeof(rpr_int),
 			(rpr_int const*)indices, sizeof(rpr_int),

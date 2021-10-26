@@ -93,6 +93,13 @@ int const NUM_ITERATIONS = 64;
 void CheckNoLeak(rpr_context context);
 
 
+// create a rpr_shape from OBJ file
+// This is a very basic importer: doesn't support of the features from the spec.
+// This function is only developed and tested for simple meshes, like the matball scene, the teapot.
+// For a better OBJ importer, check the project 64_mesh_obj_demo in this SDK
+rpr_shape ImportOBJ(const std::string& file, rpr_scene scene, rpr_context ctx);
+
+
 // Create a scene with  or several matballs. Used by several demos.
 class MatballScene
 {
@@ -130,12 +137,6 @@ public:
 
 	void CameraLook1Shape(int shiftX, int shiftY);
 	void CameraLook9Shape();
-
-	// create a rpr_shape from OBJ file
-	// This is a very basic importer: doesn't support of the features from the spec.
-	// This function is only developed and tested for the matball scene.
-	// For a better OBJ importer, check the project 64_mesh_obj_demo in this SDK
-	rpr_shape ImportOBJ(const std::string& file, rpr_scene scene, rpr_context ctx);
 
 
 	rpr_scene m_scene; 
