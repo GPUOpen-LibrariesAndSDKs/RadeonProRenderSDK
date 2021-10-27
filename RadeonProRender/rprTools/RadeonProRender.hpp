@@ -138,6 +138,7 @@ public:
     Status GetAOV(Aov aov, FrameBuffer** out_fb);
     Status SetAOV(Aov aov, FrameBuffer* frameBuffer);
     Status SetAOVindexLookup(rpr_int key, float colorR, float colorG, float colorB, float colorA);
+    Status SetCuttingPlane(rpr_int index, float x, float y, float z, float w);
     Status SetScene(Scene* scene);
     Status GetScene(Scene** out_scene);
     Status SetParameter(ContextInfo input, rpr_uint x);
@@ -404,6 +405,7 @@ public:
     Status SetRadiantPower(float r, float g, float b) override;
     Status SetRadius(float radius);
     Status SetAngle(float angle);
+    Status SetInnerAngle(float angle);
 private:
     DiskLight(Context& ctx, rpr_light obj);
 };
