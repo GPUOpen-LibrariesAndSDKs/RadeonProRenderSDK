@@ -86,7 +86,7 @@ extern rpr_int num_face_vertices[];
 void ErrorManager(int errorCode, const char* fileName, int line, rpr_context ctx=nullptr);
 
 // Number of iterations for rendering
-int const NUM_ITERATIONS = 64;
+int const NUM_ITERATIONS = 200;
 
 
 // this is an example a good practice to check RPR memory leak
@@ -161,5 +161,45 @@ public:
 
 	bool m_usingHybridContext;
 };
+
+
+//
+// Garbage Collector functions :
+//
+class RPRGarbageCollector
+{
+public:
+
+	void GCAdd(rpr_material_node n) { m_rprNodesCollector.push_back(n); }
+	void GCAdd(rpr_image n)			{ m_rprNodesCollector.push_back(n); }
+	void GCAdd(rpr_shape n)			{ m_rprNodesCollector.push_back(n); }
+	void GCAdd(rpr_light n)			{ m_rprNodesCollector.push_back(n); }
+	
+	void GCClean()
+	{
+		for(const auto& i : m_rprNodesCollector)
+			if ( i ) { CHECK(rprObjectDelete(i));  }
+		m_rprNodesCollector.clear();
+	}
+
+private:
+
+	std::vector<void*> m_rprNodesCollector;
+};
+
+
+// Create a simple plane with RPR logo as texture. commonly used by several demos.
+rpr_status CreateAMDFloor(
+	rpr_context context, 
+	rpr_scene scene, 
+	rpr_material_system matsys, 
+	RPRGarbageCollector& gc, 
+	float scaleX, float scaleY,
+	float translationX=0.0f, float translationY=0.0f, float translationZ=0.0f
+	);
+
+// Create an environment light from an HDR image. commonly used by several demos.
+rpr_status CreateNatureEnvLight(rpr_context context, rpr_scene scene, RPRGarbageCollector& gc, float power);
+
 
 

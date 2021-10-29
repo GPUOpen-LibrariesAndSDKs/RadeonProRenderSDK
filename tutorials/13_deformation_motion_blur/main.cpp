@@ -78,9 +78,6 @@ int main()
 	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer) );
 	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer_resolved) );
 
-	// Clear framebuffer to black color
-	CHECK( rprFrameBufferClear(frame_buffer) );
-
 	// Set framebuffer for the context
 	CHECK( rprContextSetAOV(context, RPR_AOV_COLOR, frame_buffer) );
 
@@ -228,7 +225,7 @@ int main()
 		// Set transform for the light
 		CHECK(rprLightSetTransform(light, RPR_TRUE, &lightm.m00));
 
-		// Set light radiant power in Watts
+		// Set light radiant power
 		CHECK(rprPointLightSetRadiantPower3f(light, 200, 200, 200));
 
 		// Attach the light to the scene
@@ -284,6 +281,7 @@ int main()
 	// Progressively render an image
 	CHECK( rprContextSetParameterByKey1f(context, RPR_CONTEXT_DISPLAY_GAMMA , 2.2f ) ); // set display gamma
 	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
+	CHECK( rprFrameBufferClear(frame_buffer) );
 	CHECK( rprContextRender(context) );
 	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,false));
 

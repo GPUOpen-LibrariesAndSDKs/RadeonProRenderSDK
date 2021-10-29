@@ -21,7 +21,9 @@
 // In this demo, we use the data of a first rendering and use it as an input texture for a second rendering.
 //
 
-#define PI 3.1412f
+
+RPRGarbageCollector g_gc;
+
 
 int main()
 {
@@ -62,27 +64,14 @@ int main()
 		RadeonProRender::matrix lightm = RadeonProRender::translation(RadeonProRender::float3(0, 8, 10));
 		// Set transform for the light
 		CHECK(rprLightSetTransform(light, RPR_TRUE, &lightm.m00));
-		// Set light radiant power in Watts
+		// Set light radiant power
 		CHECK(rprPointLightSetRadiantPower3f(light, 80, 80, 80));
 		// Attach the light to the scene
 		CHECK(rprSceneAttachLight(scene, light));
 	}
 
-	// Create env light
-	rpr_light env_light = nullptr;
-	rpr_image env_img = nullptr;
-	{
-		CHECK(rprContextCreateEnvironmentLight(context, &env_light));
-
-		const std::string pathImageFile = "../../Resources/Textures/envLightImage.exr";
-		CHECK(rprContextCreateImageFromFile(context, pathImageFile.c_str(), &env_img));
-
-		// Set an image for the light to take the radiance values from
-		CHECK(rprEnvironmentLightSetImage(env_light, env_img));
-
-		// Set IBL as a background for the scene
-		CHECK(rprSceneAttachLight(scene, env_light));
-	}
+	// Create an environment light
+	CHECK( CreateNatureEnvLight(context, scene, g_gc, 0.8f) );
 
 	// Create camera
 	rpr_camera camera=nullptr;
@@ -100,6 +89,10 @@ int main()
 	// Set scene to render for the context
 	CHECK( rprContextSetScene(context, scene) );
 
+		
+	// create the floor
+	CHECK( CreateAMDFloor(context, scene, matsys, g_gc, 1.0f, 1.0f)  );
+
 
 	// Create cube mesh
 	rpr_shape cube=nullptr;
@@ -113,34 +106,10 @@ int main()
 			(rpr_int const*)indices, sizeof(rpr_int),
 			num_face_vertices, 12, &cube));
 
-		RadeonProRender::matrix m = RadeonProRender::translation(RadeonProRender::float3(-2, 0, 0));
+		RadeonProRender::matrix m = RadeonProRender::translation(RadeonProRender::float3(-2, 3, 0)) * RadeonProRender::scale(RadeonProRender::float3(3.0f, 3.0f, 3.0f));
 		CHECK(rprShapeSetTransform(cube, RPR_TRUE, &m.m00));
 		// Add cube into the scene
 		CHECK(rprSceneAttachShape(scene, cube));
-	}
-
-	vertex plane_data_[] = 
-	{
-		{-15.f, 0.f, -15.f,    0.f, 1.f, 0.f,    0.f, 0.f},
-		{-15.f, 0.f,  15.f,    0.f, 1.f, 0.f,    0.f, 1.f},
-		{ 15.f, 0.f,  15.f,    0.f, 1.f, 0.f,    1.f, 1.f},
-		{ 15.f, 0.f, -15.f,    0.f, 1.f, 0.f,    1.f, 0.f},
-	};
-
-	// Create plane mesh
-	rpr_shape plane=nullptr;
-	{
-		CHECK(rprContextCreateMesh(context,
-			(rpr_float const*)&plane_data_[0], 4, sizeof(vertex),
-			(rpr_float const*)((char*)&plane_data_[0] + sizeof(rpr_float) * 3), 4, sizeof(vertex),
-			(rpr_float const*)((char*)&plane_data_[0] + sizeof(rpr_float) * 6), 4, sizeof(vertex),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			num_face_vertices, 2, &plane));
-
-		// Add plane into the scene
-		CHECK(rprSceneAttachShape(scene, plane));
 	}
 
 
@@ -155,7 +124,6 @@ int main()
 		// Set shader for cube & plane meshes
 		CHECK(rprShapeSetMaterial(cube, diffuse));
 
-		CHECK(rprShapeSetMaterial(plane, diffuse));
 	}
 
 	// Create framebuffer to store rendering result
@@ -168,24 +136,27 @@ int main()
 	CHECK(rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer));
 	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer_resolved) );
 
-	// Clear framebuffer to black color
-	CHECK(rprFrameBufferClear(frame_buffer));
-
+	
 	// Set framebuffer for the context
 	CHECK(rprContextSetAOV(context, RPR_AOV_COLOR, frame_buffer));
 
+	// set rendering gamma
+	CHECK( rprContextSetParameterByKey1f(context, RPR_CONTEXT_DISPLAY_GAMMA , 2.2f ) );
 
 	// Progressively render an image
-	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,128));
+	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,200));
+	CHECK(rprFrameBufferClear(frame_buffer));
 	CHECK( rprContextRender(context) );
-	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,false));
 
 	// This can be uncommented to see the framebuffer
-	//CHECK( rprFrameBufferSaveToFile(frame_buffer_resolved, "31_temp.png") );
+	// CHECK( rprFrameBufferSaveToFile(frame_buffer_resolved, "31_temp.png") );
+
+
 
 	///////// Framebuffer Access Tutorial //////////
 	//
-	// We are going to take the  frame_buffer_resolved data,  and use it as a material texture for a plane.
+	// We are going to take the  frame_buffer_resolved data,  and use it as a material texture for the cube.
 
 	// access framebuffer data.
 	size_t size = 0;
@@ -194,7 +165,7 @@ int main()
 	CHECK(rprFrameBufferGetInfo(frame_buffer_resolved, RPR_FRAMEBUFFER_DATA, size, buffer, 0));
 
 
-	//Apply this data as a texture material to the plane.
+	//Apply this data as a texture material to the cube.
 
 	rpr_material_node diffuse1=nullptr;
 	rpr_material_node tex=nullptr;
@@ -212,6 +183,9 @@ int main()
 		desc2.image_depth = 0;
 		CHECK(rprContextCreateImage(context, format, &desc2, buffer, &img1));
 
+		// gamma of the read image is 2.2
+		CHECK( rprImageSetGamma(img1, 2.2));
+
 		// create the image sampler material
 		CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_IMAGE_TEXTURE, &tex));
 
@@ -224,34 +198,20 @@ int main()
 		// apply the built texture as color
 		CHECK(rprMaterialNodeSetInputNByKey(diffuse1, RPR_MATERIAL_INPUT_COLOR, tex));
 
-		// plane now uses this diffuse as material.
-		CHECK(rprShapeSetMaterial(plane, diffuse1));
+		// cube now uses this diffuse as material.
+		CHECK(rprShapeSetMaterial(cube, diffuse1));
 	}
 	
-	//Remove the cube and turn plane to dislay the texture in front of us like a screenshot
-	CHECK(rprSceneDetachShape(scene, cube));
-	RadeonProRender::matrix m = RadeonProRender::rotation(RadeonProRender::float3(1, 0, 0), -PI / 2.0f);
-	CHECK(rprShapeSetTransform(plane, RPR_TRUE, &m.m00));
-
-	// set camera to point on the plane
+	// change camera : getting closer to the cube
 	CHECK( rprCameraSetFocalLength(camera, 75.f) );
-	CHECK( rprCameraLookAt(camera, 0, 0, 150,  0, 0, 0,   0, 1, 0) );
+	CHECK( rprCameraLookAt(camera, 30, 14, 30,  0, 2.5, 0,   0, 1, 0) );
 
-	// move point light
-	RadeonProRender::matrix lightm = RadeonProRender::translation(RadeonProRender::float3(1, 1, 100));
-	CHECK(rprLightSetTransform(light, RPR_TRUE, &lightm.m00));
-	CHECK(rprPointLightSetRadiantPower3f(light, 30000, 30000, 30000));
 
-	// remove the env light
-	CHECK(rprSceneDetachLight(scene, env_light));
-
-	//Clear the buffer to render again
-	rprFrameBufferClear(frame_buffer);
-
-	// Progressively render an image
-	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
+	// Render the scene
+	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,200));
+	CHECK(rprFrameBufferClear(frame_buffer));
 	CHECK(rprContextRender(context));
-	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,false));
 	std::cout << "Rendering finished.\n";
 
 	//delete buffer;
@@ -265,16 +225,14 @@ int main()
 	CHECK(rprObjectDelete(img1));img1=nullptr;
 	CHECK(rprObjectDelete(diffuse1));diffuse1=nullptr;
 	CHECK(rprObjectDelete(matsys));matsys=nullptr;
-	CHECK(rprObjectDelete(env_light));env_light=nullptr;
-	CHECK(rprObjectDelete(env_img));env_img=nullptr;
-	CHECK(rprObjectDelete(plane));plane=nullptr;
 	CHECK(rprObjectDelete(cube));cube=nullptr;
 	CHECK(rprObjectDelete(light));light=nullptr;
 	CHECK(rprObjectDelete(diffuse));diffuse=nullptr;
-	CHECK(rprObjectDelete(scene));scene=nullptr;
 	CHECK(rprObjectDelete(camera));camera=nullptr;
 	CHECK(rprObjectDelete(frame_buffer));frame_buffer=nullptr;
 	CHECK(rprObjectDelete(frame_buffer_resolved));frame_buffer_resolved=nullptr;
+	g_gc.GCClean();
+	CHECK(rprObjectDelete(scene));scene=nullptr;
 	CheckNoLeak(context);
 	CHECK(rprObjectDelete(context));context=nullptr; // Always delete the RPR Context in last.
 	return 0;

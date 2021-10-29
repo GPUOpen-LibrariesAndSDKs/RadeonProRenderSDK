@@ -14,7 +14,9 @@
 
 //
 // Demo covering an RPR rendering inside an OpenGL app.
-//
+// rotate camera with mouse left-click + move
+// move camera with W/A/S/D keys
+// press X key to exit
 //
 
 
@@ -44,10 +46,11 @@
 #include <iostream>
 #include <thread>
 
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
+const unsigned int WINDOW_WIDTH = 640;
+const unsigned int WINDOW_HEIGHT = 480;
 
 void Display();
+void OnExit();
 
 class GuiRenderImpl
 {
@@ -87,16 +90,13 @@ GLuint              g_texture = NULL;
 rpr_framebuffer		g_frame_buffer = NULL;
 rpr_context         g_context = NULL;
 rpr_material_system g_matsys = NULL;
-rpr_light           g_light = NULL;
 rpr_framebuffer     g_frame_buffer_2 = NULL;
 ShaderManager       g_shader_manager;
 rpr_scene			g_scene=nullptr;
-rpr_shape			g_cube=nullptr;
 rpr_camera			g_camera=nullptr;
-rpr_material_node	g_diffuse=nullptr;
-rpr_shape			g_plane=nullptr;
-float*				g_fbdata = nullptr;
-
+std::shared_ptr<float>	g_fbdata = nullptr;
+RPRGarbageCollector g_gc;
+bool                g_askExit = false; // push X key to exit
 
 
 
@@ -193,11 +193,11 @@ void Update()
 				CHECK(RPR_ERROR_INTERNAL_ERROR)
 			}
 
-			CHECK( rprFrameBufferGetInfo( g_frame_buffer_2, RPR_FRAMEBUFFER_DATA, frame_buffer_dataSize , g_fbdata , NULL ) );
+			CHECK( rprFrameBufferGetInfo( g_frame_buffer_2, RPR_FRAMEBUFFER_DATA, frame_buffer_dataSize , g_fbdata.get() , NULL ) );
 
 			// update the OpenGL texture with the new image from RPR
 			glBindTexture(GL_TEXTURE_2D, g_texture);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA, GL_FLOAT, static_cast<const GLvoid*>(g_fbdata));         
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA, GL_FLOAT, static_cast<const GLvoid*>(g_fbdata.get()));         
 			glBindTexture(GL_TEXTURE_2D, 0);
 
 			// clear the update flag
@@ -214,6 +214,12 @@ void Update()
 
 	// wait the end of the rendering thread
 	t.join();
+
+	if ( g_askExit )
+	{
+		OnExit();
+		std::exit(EXIT_SUCCESS);
+	}
 
 	g_benchmark_numberOfRenderIteration += g_batchSize;
 
@@ -281,32 +287,66 @@ void OnKeyboardEvent(unsigned char key, int xmouse, int ymouse)
 	{
 		case 'w':
 		case 'z':
+		case 's':
+		case 'a':
+		case 'q':
+		case 'd':
 		{
+
 			rprCameraGetInfo(g_camera,RPR_CAMERA_LOOKAT,sizeof(g_mouse_camera.lookat),&g_mouse_camera.lookat,0);
+			rprCameraGetInfo(g_camera,RPR_CAMERA_UP,sizeof(g_mouse_camera.up),&g_mouse_camera.up,0);
 			rprCameraGetInfo(g_camera,RPR_CAMERA_TRANSFORM,sizeof(g_mouse_camera.mat),&g_mouse_camera.mat,0);
 			rprCameraGetInfo(g_camera,RPR_CAMERA_POSITION,sizeof(g_mouse_camera.pos),&g_mouse_camera.pos,0);
 
 			RadeonProRender::float3 lookAtVec = g_mouse_camera.lookat - g_mouse_camera.pos;
 			lookAtVec.normalize();
 
-			g_mouse_camera.pos += lookAtVec * 0.5f;
+			RadeonProRender::float3 vecRight = RadeonProRender::cross(g_mouse_camera.up,lookAtVec);
+			vecRight.normalize();
 
 			cameraMoves = true;
+
+			const float speed = 0.5f;
+
+			switch (key)
+			{
+
+				case 'w':
+				case 'z': // for azerty keyboard
+				{
+					g_mouse_camera.pos += lookAtVec * speed;
+					break;
+				}
+
+				case 's':
+				{
+					g_mouse_camera.pos -= lookAtVec * speed;
+					break;
+				}
+
+				case 'a':
+				case 'q': // for azerty keyboard
+				{
+					g_mouse_camera.pos += vecRight * speed;
+					break;
+				}
+
+				case 'd':
+				{
+					g_mouse_camera.pos -= vecRight * speed;
+					break;
+				}
+
+		
+			}
+
 			break;
 		}
 
-		case 's':
+
+		case 'x':
 		{
-			rprCameraGetInfo(g_camera,RPR_CAMERA_LOOKAT,sizeof(g_mouse_camera.lookat),&g_mouse_camera.lookat,0);
-			rprCameraGetInfo(g_camera,RPR_CAMERA_TRANSFORM,sizeof(g_mouse_camera.mat),&g_mouse_camera.mat,0);
-			rprCameraGetInfo(g_camera,RPR_CAMERA_POSITION,sizeof(g_mouse_camera.pos),&g_mouse_camera.pos,0);
-
-			RadeonProRender::float3 lookAtVec = g_mouse_camera.lookat - g_mouse_camera.pos;
-			lookAtVec.normalize();
-
-			g_mouse_camera.pos -= lookAtVec * 0.5f;
-
-			cameraMoves = true;
+			g_askExit = true;
 			break;
 		}
 
@@ -434,19 +474,14 @@ void OnExit()
 {
 	//// Release the stuff we created
 	std::cout <<"Release memory...\n";
-	
-	CHECK(rprObjectDelete(g_scene));g_scene=nullptr;
-	CHECK(rprObjectDelete(g_cube));g_cube=nullptr;
 	CHECK(rprObjectDelete(g_camera));g_camera=nullptr;
-	CHECK(rprObjectDelete(g_diffuse));g_diffuse=nullptr;
-	CHECK(rprObjectDelete(g_plane));g_plane=nullptr;
 	CHECK(rprObjectDelete(g_matsys));g_matsys=nullptr;
-	CHECK(rprObjectDelete(g_light));g_light=nullptr;
 	CHECK(rprObjectDelete(g_frame_buffer));g_frame_buffer=nullptr;
 	CHECK(rprObjectDelete(g_frame_buffer_2));g_frame_buffer_2=nullptr;
+	g_gc.GCClean();
+	CHECK(rprObjectDelete(g_scene));g_scene=nullptr;
 	CheckNoLeak(g_context);
 	CHECK(rprObjectDelete(g_context));g_context=nullptr; // Always delete the RPR Context in last.
-	delete[] g_fbdata; g_fbdata=nullptr;
 }
 
 int main(int argc, char** argv)
@@ -501,14 +536,9 @@ int main(int argc, char** argv)
 	// Create a scene
 	CHECK( rprContextCreateScene(g_context, &g_scene) );
 
-	// Create point light
-	{
-		CHECK( rprContextCreatePointLight(g_context, &g_light) );
-		RadeonProRender::matrix lightm = RadeonProRender::translation(RadeonProRender::float3(0, 8, 2));
-		CHECK(rprLightSetTransform(g_light, RPR_TRUE, &lightm.m00));
-		CHECK( rprSceneAttachLight(g_scene, g_light) );
-		CHECK(rprPointLightSetRadiantPower3f(g_light, 255, 241, 224));
-	}
+	// Create an environment light
+	CHECK( CreateNatureEnvLight(g_context, g_scene, g_gc, 0.9f) );
+
 
 	// Create camera
 	{
@@ -517,6 +547,7 @@ int main(int argc, char** argv)
 		// Position camera in world space: 
 		CHECK( rprCameraLookAt(g_camera, 0.0f, 5.0f, 20.0f,    0, 1, 0,   0, 1, 0) );
 
+		// set camera field of view
 		CHECK( rprCameraSetFocalLength(g_camera, 75.f) );
 
 		// Set camera for the scene
@@ -525,53 +556,67 @@ int main(int argc, char** argv)
 	// Set scene to render for the context
 	CHECK( rprContextSetScene(g_context, g_scene) );
 
-	// Create cube mesh
+
+	// create a teapot shape
+	rpr_shape teapot01 = nullptr;
 	{
-		CHECK(rprContextCreateMesh(g_context,
-			(rpr_float const*)&cube_data[0], 24, sizeof(vertex),
-			(rpr_float const*)((char*)&cube_data[0] + sizeof(rpr_float) * 3), 24, sizeof(vertex),
-			(rpr_float const*)((char*)&cube_data[0] + sizeof(rpr_float) * 6), 24, sizeof(vertex),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			num_face_vertices, 12, &g_cube));
+		teapot01 = ImportOBJ("../../Resources/Meshes/teapot.obj",g_scene,g_context);
+		g_gc.GCAdd(teapot01);
 
-		// Add cube into the scene
-		CHECK(rprSceneAttachShape(g_scene, g_cube));
-
-		// Create a transform: -2 unit along X axis and 1 unit up Y axis
-		RadeonProRender::matrix m = RadeonProRender::translation(RadeonProRender::float3(-2, 1, 0));
-
-		// Set the transform 
-		CHECK(rprShapeSetTransform(g_cube, RPR_TRUE, &m.m00));
-	}
-	// Create plane mesh
-	{
-		CHECK(rprContextCreateMesh(g_context,
-			(rpr_float const*)&plane_data[0], 4, sizeof(vertex),
-			(rpr_float const*)((char*)&plane_data[0] + sizeof(rpr_float) * 3), 4, sizeof(vertex),
-			(rpr_float const*)((char*)&plane_data[0] + sizeof(rpr_float) * 6), 4, sizeof(vertex),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			num_face_vertices, 2, &g_plane));
-
-		// Add plane into the scene
-		CHECK(rprSceneAttachShape(g_scene, g_plane));
+		RadeonProRender::matrix m0 = RadeonProRender::rotation_x(MY_PI);
+		CHECK(rprShapeSetTransform(teapot01, RPR_TRUE, &m0.m00));
 	}
 
-	// Create simple diffuse shader
+	// create the floor
+	CHECK( CreateAMDFloor(g_context, g_scene, g_matsys, g_gc, 1.0f, 1.0f)  );
+
+	// Create material for the teapot
 	{
-		CHECK(rprMaterialSystemCreateNode(g_matsys, RPR_MATERIAL_NODE_DIFFUSE, &g_diffuse));
+		rpr_image uberMat2_img1 = nullptr;
+		CHECK(rprContextCreateImageFromFile(g_context,"../../Resources/Textures/lead_rusted_Base_Color.jpg",&uberMat2_img1));
+		g_gc.GCAdd(uberMat2_img1);
 
-		// Set diffuse color parameter to gray
-		CHECK(rprMaterialNodeSetInputFByKey(g_diffuse, RPR_MATERIAL_INPUT_COLOR, 0.5f, 0.5f, 0.5f, 1.f));
+		rpr_image uberMat2_img2 = nullptr;
+		CHECK(rprContextCreateImageFromFile(g_context,"../../Resources/Textures/lead_rusted_Normal.jpg",&uberMat2_img2));
+		g_gc.GCAdd(uberMat2_img2);
+	
+		rpr_material_node uberMat2_imgTexture1 = nullptr;
+		CHECK(rprMaterialSystemCreateNode(g_matsys,RPR_MATERIAL_NODE_IMAGE_TEXTURE,&uberMat2_imgTexture1));
+		g_gc.GCAdd(uberMat2_imgTexture1);
+		CHECK(rprMaterialNodeSetInputImageDataByKey(uberMat2_imgTexture1,   RPR_MATERIAL_INPUT_DATA  ,uberMat2_img1));
 
-		// Set shader for cube & plane meshes
-		CHECK(rprShapeSetMaterial(g_cube, g_diffuse));
+		rpr_material_node uberMat2_imgTexture2 = nullptr;
+		CHECK(rprMaterialSystemCreateNode(g_matsys,RPR_MATERIAL_NODE_IMAGE_TEXTURE,&uberMat2_imgTexture2));
+		g_gc.GCAdd(uberMat2_imgTexture2);
+		CHECK(rprMaterialNodeSetInputImageDataByKey(uberMat2_imgTexture2,   RPR_MATERIAL_INPUT_DATA  ,uberMat2_img2));
 
-		CHECK(rprShapeSetMaterial(g_plane, g_diffuse));
+		rpr_material_node matNormalMap = nullptr;
+		CHECK( rprMaterialSystemCreateNode(g_matsys,RPR_MATERIAL_NODE_NORMAL_MAP,&matNormalMap));
+		g_gc.GCAdd(matNormalMap);
+		CHECK( rprMaterialNodeSetInputFByKey(matNormalMap,RPR_MATERIAL_INPUT_SCALE,1.0f,1.0f,1.0f,1.0f));
+		CHECK( rprMaterialNodeSetInputNByKey(matNormalMap,RPR_MATERIAL_INPUT_COLOR,uberMat2_imgTexture2));
+
+		rpr_material_node uberMat2 = nullptr;
+		CHECK(rprMaterialSystemCreateNode(g_matsys,RPR_MATERIAL_NODE_UBERV2,&uberMat2));
+		g_gc.GCAdd(uberMat2);
+
+		CHECK(rprMaterialNodeSetInputNByKey(uberMat2, RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR   ,uberMat2_imgTexture1));
+		CHECK(rprMaterialNodeSetInputNByKey(uberMat2, RPR_MATERIAL_INPUT_UBER_DIFFUSE_NORMAL   ,matNormalMap));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat2, RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT    ,1, 1, 1, 1));
+
+		CHECK(rprMaterialNodeSetInputNByKey(uberMat2, RPR_MATERIAL_INPUT_UBER_REFLECTION_COLOR  ,uberMat2_imgTexture1));
+		CHECK(rprMaterialNodeSetInputNByKey(uberMat2, RPR_MATERIAL_INPUT_UBER_REFLECTION_NORMAL   ,matNormalMap));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat2, RPR_MATERIAL_INPUT_UBER_REFLECTION_WEIGHT  ,1, 1, 1, 1));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat2, RPR_MATERIAL_INPUT_UBER_REFLECTION_ROUGHNESS     ,0, 0, 0, 0));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat2, RPR_MATERIAL_INPUT_UBER_REFLECTION_ANISOTROPY    ,0, 0, 0, 0));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat2, RPR_MATERIAL_INPUT_UBER_REFLECTION_ANISOTROPY_ROTATION  ,0, 0, 0, 0));
+		CHECK(rprMaterialNodeSetInputUByKey(uberMat2, RPR_MATERIAL_INPUT_UBER_REFLECTION_MODE   ,RPR_UBER_MATERIAL_IOR_MODE_METALNESS));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat2, RPR_MATERIAL_INPUT_UBER_REFLECTION_IOR   ,1.36, 1.36, 1.36, 1.36));
+
+		CHECK(rprShapeSetMaterial(teapot01, uberMat2));
 	}
+
+	CHECK( rprContextSetParameterByKey1f(g_context, RPR_CONTEXT_DISPLAY_GAMMA , 2.2f ) ); // set display gamma
 
 	// Create framebuffer to store rendering result
 	rpr_framebuffer_desc desc = { WINDOW_WIDTH,WINDOW_HEIGHT };
@@ -610,7 +655,7 @@ int main(int argc, char** argv)
 	CHECK(rprContextSetParameterByKey1u(g_context,RPR_CONTEXT_ITERATIONS,g_batchSize));
 
 	// allocate the data that will be used the read RPR framebuffer, and give it to OpenGL.
-	g_fbdata = new float[WINDOW_WIDTH * WINDOW_HEIGHT * 4];
+	g_fbdata = std::shared_ptr<float>(new float[WINDOW_WIDTH * WINDOW_HEIGHT * 4], std::default_delete<float[]>());
 
 	std::cout << "Press W or S to move the camera.\n";
 
@@ -623,7 +668,7 @@ int main(int argc, char** argv)
 
 
 	// this should be called when the OpenGL Application closes
-	// ( note that it may not be called, as GLUT doesn't have "Exit" callback )
+	// ( note that it may not be called, as GLUT doesn't have "Exit" callback - press X key in order to have a cleaned exit )
 	OnExit();
 
 

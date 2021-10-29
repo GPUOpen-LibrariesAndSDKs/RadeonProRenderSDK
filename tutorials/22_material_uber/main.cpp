@@ -22,23 +22,7 @@
 //
 
 
-//
-// Garbage Collector functions :
-//
-std::vector<rpr_material_node> g_rprMaterialGarbageCollector;
-std::vector<rpr_image>		   g_rprImageGarbageCollector;
-void GCAdd(rpr_material_node n) { g_rprMaterialGarbageCollector.push_back(n); }
-void GCAdd(rpr_image n)			{ g_rprImageGarbageCollector.push_back(n); }
-void GCClean()
-{
-	for(const auto& i : g_rprMaterialGarbageCollector)
-		if ( i ) { CHECK(rprObjectDelete(i));  }
-	g_rprMaterialGarbageCollector.clear();
-
-	for(const auto& i : g_rprImageGarbageCollector)
-		if ( i ) { CHECK(rprObjectDelete(i));  }
-	g_rprImageGarbageCollector.clear();
-}
+RPRGarbageCollector g_gc;
 
 
 
@@ -76,7 +60,7 @@ int main()
 		rpr_material_node material = nullptr;
 
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_UBERV2, &material));
-		GCAdd(material);
+		g_gc.GCAdd(material);
 
 		CHECK(rprMaterialNodeSetInputFByKey(material, RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR, 0.5f, 0.25f, 0.0f, 1.f));
 		CHECK(rprMaterialNodeSetInputFByKey(material, RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT, 1.f, 1.f, 1.f, 1.f));
@@ -100,7 +84,7 @@ int main()
 
 		rpr_material_node material = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_UBERV2, &material));
-		GCAdd(material);
+		g_gc.GCAdd(material);
 
 		CHECK(rprMaterialNodeSetInputFByKey(material, RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR   ,1, 1, 1, 1));
 		CHECK(rprMaterialNodeSetInputFByKey(material, RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT    ,0, 0, 0, 0));
@@ -153,21 +137,21 @@ int main()
 
 		rpr_material_node material = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_UBERV2, &material));
-		GCAdd(material);
+		g_gc.GCAdd(material);
 
 
 		rpr_image uberMat3_img = nullptr;
 		CHECK(rprContextCreateImageFromFile(context,"../../Resources/Textures/brass standard_bump.png",&uberMat3_img));
-		GCAdd(uberMat3_img);
+		g_gc.GCAdd(uberMat3_img);
 
 		rpr_material_node uberMat3_imgTexture = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_IMAGE_TEXTURE,&uberMat3_imgTexture));
-		GCAdd(uberMat3_imgTexture);
+		g_gc.GCAdd(uberMat3_imgTexture);
 		CHECK(rprMaterialNodeSetInputImageDataByKey(uberMat3_imgTexture,   RPR_MATERIAL_INPUT_DATA  ,uberMat3_img));
 
 		rpr_material_node uberMat3_bumpmap = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_BUMP_MAP,&uberMat3_bumpmap));
-		GCAdd(uberMat3_bumpmap);
+		g_gc.GCAdd(uberMat3_bumpmap);
 		CHECK(rprMaterialNodeSetInputNByKey(uberMat3_bumpmap,   RPR_MATERIAL_INPUT_COLOR  ,uberMat3_imgTexture));
 		CHECK(rprMaterialNodeSetInputFByKey(uberMat3_bumpmap,   RPR_MATERIAL_INPUT_SCALE  ,0.2, 0.2, 0.2, 0.2));
 
@@ -226,20 +210,20 @@ int main()
 
 		rpr_material_node material = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_UBERV2, &material));
-		GCAdd(material);
+		g_gc.GCAdd(material);
 
 		rpr_image image_0x000001B218D09B60 = nullptr;
 		CHECK( rprContextCreateImageFromFile(context,"../../Resources/Textures/CarbonFiber_N.jpg",&image_0x000001B218D09B60));
-		GCAdd(image_0x000001B218D09B60);
+		g_gc.GCAdd(image_0x000001B218D09B60);
 
 		rpr_material_node materialnode_0x000001B218D0A110 = nullptr;
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_IMAGE_TEXTURE,&materialnode_0x000001B218D0A110));
-		GCAdd(materialnode_0x000001B218D0A110);
+		g_gc.GCAdd(materialnode_0x000001B218D0A110);
 		CHECK( rprMaterialNodeSetInputImageDataByKey(materialnode_0x000001B218D0A110,RPR_MATERIAL_INPUT_DATA,image_0x000001B218D09B60));
 
 		rpr_material_node materialnode_0x000001B218D0A1E0 = nullptr;
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_NORMAL_MAP,&materialnode_0x000001B218D0A1E0));
-		GCAdd(materialnode_0x000001B218D0A1E0);
+		g_gc.GCAdd(materialnode_0x000001B218D0A1E0);
 		CHECK( rprMaterialNodeSetInputFByKey(materialnode_0x000001B218D0A1E0,RPR_MATERIAL_INPUT_SCALE,3.50f,3.50f,1.0f,1.0f));
 		CHECK( rprMaterialNodeSetInputNByKey(materialnode_0x000001B218D0A1E0,RPR_MATERIAL_INPUT_COLOR,materialnode_0x000001B218D0A110));
 
@@ -283,33 +267,33 @@ int main()
 
 		rpr_image uberMat2_img1 = nullptr;
 		CHECK(rprContextCreateImageFromFile(context,"../../Resources/Textures/lead_rusted_Base_Color.jpg",&uberMat2_img1));
-		GCAdd(uberMat2_img1);
+		g_gc.GCAdd(uberMat2_img1);
 
 		rpr_image uberMat2_img2 = nullptr;
 		CHECK(rprContextCreateImageFromFile(context,"../../Resources/Textures/lead_rusted_Normal.jpg",&uberMat2_img2));
-		GCAdd(uberMat2_img2);
+		g_gc.GCAdd(uberMat2_img2);
 	
 		rpr_material_node uberMat2_imgTexture1 = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_IMAGE_TEXTURE,&uberMat2_imgTexture1));
-		GCAdd(uberMat2_imgTexture1);
+		g_gc.GCAdd(uberMat2_imgTexture1);
 		CHECK(rprMaterialNodeSetInputImageDataByKey(uberMat2_imgTexture1,   RPR_MATERIAL_INPUT_DATA  ,uberMat2_img1));
 
 		rpr_material_node uberMat2_imgTexture2 = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_IMAGE_TEXTURE,&uberMat2_imgTexture2));
-		GCAdd(uberMat2_imgTexture2);
+		g_gc.GCAdd(uberMat2_imgTexture2);
 		CHECK(rprMaterialNodeSetInputImageDataByKey(uberMat2_imgTexture2,   RPR_MATERIAL_INPUT_DATA  ,uberMat2_img2));
 
 
 		rpr_material_node matNormalMap = nullptr;
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_NORMAL_MAP,&matNormalMap));
-		GCAdd(matNormalMap);
+		g_gc.GCAdd(matNormalMap);
 		CHECK( rprMaterialNodeSetInputFByKey(matNormalMap,RPR_MATERIAL_INPUT_SCALE,1.0f,1.0f,1.0f,1.0f));
 		CHECK( rprMaterialNodeSetInputNByKey(matNormalMap,RPR_MATERIAL_INPUT_COLOR,uberMat2_imgTexture2));
 
 
 		rpr_material_node uberMat2 = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_UBERV2,&uberMat2));
-		GCAdd(uberMat2);
+		g_gc.GCAdd(uberMat2);
 
 		CHECK(rprMaterialNodeSetInputNByKey(uberMat2, RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR   ,uberMat2_imgTexture1));
 		CHECK(rprMaterialNodeSetInputNByKey(uberMat2, RPR_MATERIAL_INPUT_UBER_DIFFUSE_NORMAL   ,matNormalMap));
@@ -341,7 +325,7 @@ int main()
 		rpr_material_node uberMat = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_UBERV2,&uberMat));
 		CHECK(rprObjectSetName(uberMat,"Uber_0"));
-		GCAdd(uberMat);
+		g_gc.GCAdd(uberMat);
 		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR,1.0f,1.0f,1.0f,1.0f));
 		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT,0.0f,0.0f,0.0f,0.0f));
 		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_DIFFUSE_ROUGHNESS,1.0f,1.0f,1.0f,1.0f));
@@ -385,12 +369,12 @@ int main()
 
 		rpr_material_node materialnode_0x000001AF2F01FA60 = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_IMAGE_TEXTURE,&materialnode_0x000001AF2F01FA60));
-		GCAdd(materialnode_0x000001AF2F01FA60);
+		g_gc.GCAdd(materialnode_0x000001AF2F01FA60);
 		CHECK(rprObjectSetName(materialnode_0x000001AF2F01FA60,(rpr_char*)"node0"));
 
 		rpr_image image_0x000001AF2F01FCD0 = nullptr;
 		CHECK(rprContextCreateImageFromFile(context, "../../Resources/Textures/Water_Noise_Displacement.tga", &image_0x000001AF2F01FCD0));
-		GCAdd(image_0x000001AF2F01FCD0);
+		g_gc.GCAdd(image_0x000001AF2F01FCD0);
 		CHECK(rprMaterialNodeSetInputImageDataByKey(materialnode_0x000001AF2F01FA60, RPR_MATERIAL_INPUT_DATA, image_0x000001AF2F01FCD0));
 
 
@@ -419,7 +403,7 @@ int main()
 		rpr_material_node uberMat = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_UBERV2,&uberMat));
 		CHECK(rprObjectSetName(uberMat,"Uber_0"));
-		GCAdd(uberMat);
+		g_gc.GCAdd(uberMat);
 		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR,0.270588f,0.270588f,0.270588f,0.0f));
 		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT,1.0f,1.0f,1.0f,1.0f));
 		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_DIFFUSE_ROUGHNESS,0.500000f,0.500000f,0.500000f,0.500000f));
@@ -464,27 +448,27 @@ int main()
 		rpr_image image_0x000001B091A198E0 = nullptr;
 		//ImageFromFile creation : original path : "../unittestdata/matlib/RadeonProRMaps/Aluminium Anodized roughness.png"
 		CHECK(rprContextCreateImageFromFile(context,"../../Resources/Textures/Aluminium Anodized roughness.png",&image_0x000001B091A198E0));
-		GCAdd(image_0x000001B091A198E0);
+		g_gc.GCAdd(image_0x000001B091A198E0);
 
 		rpr_material_node materialnode_0x000001B091A199B0 = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_IMAGE_TEXTURE,&materialnode_0x000001B091A199B0));
-		GCAdd(materialnode_0x000001B091A199B0);
+		g_gc.GCAdd(materialnode_0x000001B091A199B0);
 		CHECK(rprObjectSetName(materialnode_0x000001B091A199B0,"node0"));
 
 		rpr_material_node materialnode_0x000001B091A19A80 = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_BUMP_MAP,&materialnode_0x000001B091A19A80));
-		GCAdd(materialnode_0x000001B091A19A80);
+		g_gc.GCAdd(materialnode_0x000001B091A19A80);
 		CHECK(rprObjectSetName(materialnode_0x000001B091A19A80,"node1"));
 		CHECK(rprMaterialNodeSetInputFByKey(materialnode_0x000001B091A19A80,RPR_MATERIAL_INPUT_SCALE,0.010000f,0.010000f,0.010000f,0.010000f));
 		
 		rpr_material_node materialnode_0x000001B091A1AE00 = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_IMAGE_TEXTURE,&materialnode_0x000001B091A1AE00));
-		GCAdd(materialnode_0x000001B091A1AE00);
+		g_gc.GCAdd(materialnode_0x000001B091A1AE00);
 		CHECK(rprObjectSetName(materialnode_0x000001B091A1AE00,"node2"));
 
 		rpr_image image_0x000001B091A19810 = nullptr;
 		CHECK(rprContextCreateImageFromFile(context,"../../Resources/Textures/aluminium anodized_bump.png",&image_0x000001B091A19810));
-		GCAdd(image_0x000001B091A19810);
+		g_gc.GCAdd(image_0x000001B091A19810);
 		CHECK(rprMaterialNodeSetInputImageDataByKey(materialnode_0x000001B091A199B0,RPR_MATERIAL_INPUT_DATA,image_0x000001B091A19810));
 		CHECK(rprMaterialNodeSetInputNByKey(materialnode_0x000001B091A19A80,RPR_MATERIAL_INPUT_COLOR,materialnode_0x000001B091A199B0));
 		CHECK(rprMaterialNodeSetInputImageDataByKey(materialnode_0x000001B091A1AE00,RPR_MATERIAL_INPUT_DATA,image_0x000001B091A198E0));
@@ -504,7 +488,7 @@ int main()
 
 		rpr_material_node uberMat = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_UBERV2,&uberMat));
-		GCAdd(uberMat);
+		g_gc.GCAdd(uberMat);
 		CHECK(rprObjectSetName(uberMat,"Uber_0"));
 		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR,0.501961f,0.0f,0.0f,0.0f));
 		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT,1.0f,1.0f,1.0f,1.0f));
@@ -559,7 +543,7 @@ int main()
 	
 		rpr_material_node uberMat = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_UBERV2,&uberMat));
-		GCAdd(uberMat);
+		g_gc.GCAdd(uberMat);
 		CHECK(rprObjectSetName(uberMat,"Uber_0"));
 		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR,0.752941f,0.596078f,0.443137f,0.0f));
 		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT,1.0f,1.0f,1.0f,1.0f));
@@ -605,13 +589,13 @@ int main()
 
 		rpr_material_node materialnode_0x000001B091A1A2A0 = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_BUMP_MAP,&materialnode_0x000001B091A1A2A0));
-		GCAdd(materialnode_0x000001B091A1A2A0);
+		g_gc.GCAdd(materialnode_0x000001B091A1A2A0);
 		CHECK(rprObjectSetName(materialnode_0x000001B091A1A2A0,"node0"));
 		CHECK(rprMaterialNodeSetInputFByKey(materialnode_0x000001B091A1A2A0,RPR_MATERIAL_INPUT_SCALE,0.900000f,0.900000f,0.900000f,0.900000f));
 		
 		rpr_material_node materialnode_0x000001B091A1A6B0 = nullptr;
 		CHECK(rprMaterialSystemCreateNode(matballScene.m_matsys,RPR_MATERIAL_NODE_IMAGE_TEXTURE,&materialnode_0x000001B091A1A6B0));
-		GCAdd(materialnode_0x000001B091A1A6B0);
+		g_gc.GCAdd(materialnode_0x000001B091A1A6B0);
 		CHECK(rprObjectSetName(materialnode_0x000001B091A1A6B0,"node1"));
 
 
@@ -619,7 +603,7 @@ int main()
 		rpr_image image_0x000001B091A19F60 = nullptr;
 		//ImageFromFile creation : original path : "../unittestdata/matlib/RadeonProRMaps/brass polished.jpg"
 		CHECK(rprContextCreateImageFromFile(context,"../../Resources/Textures/brass polished.jpg",&image_0x000001B091A19F60));
-		GCAdd(image_0x000001B091A19F60);
+		g_gc.GCAdd(image_0x000001B091A19F60);
 		CHECK(rprMaterialNodeSetInputNByKey(materialnode_0x000001B091A1A2A0,RPR_MATERIAL_INPUT_COLOR,materialnode_0x000001B091A1A6B0));
 		CHECK(rprMaterialNodeSetInputImageDataByKey(materialnode_0x000001B091A1A6B0,RPR_MATERIAL_INPUT_DATA,image_0x000001B091A19F60));
 		CHECK(rprMaterialNodeSetInputNByKey(uberMat,RPR_MATERIAL_INPUT_UBER_DIFFUSE_NORMAL,materialnode_0x000001B091A1A2A0));
@@ -646,7 +630,7 @@ int main()
 	matballScene.Render("22_material_uber_final.png",200);
 
 	// clean everything
-	GCClean();
+	g_gc.GCClean();
 	matballScene.Clean();
 	CheckNoLeak(context);
 	CHECK(rprObjectDelete(context)); context=nullptr;

@@ -32,7 +32,7 @@
         "height":"720",
         "iterations":"100",
         "batchsize":"32",
-        "output":"test.png",
+        "output":"64.png",
         "output.json":"output.json",
         "gui":"0",
         "device": {

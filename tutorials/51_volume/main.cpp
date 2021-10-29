@@ -19,6 +19,8 @@
 // This demo demonstrates Volumes with RPR
 //
 
+RPRGarbageCollector g_gc;
+
 int main()
 {
 	//	for Debugging you can enable Radeon ProRender API trace
@@ -58,50 +60,14 @@ int main()
 	rpr_camera camera = nullptr;
 	{
 		CHECK( rprContextCreateCamera(context, &camera) );
-		CHECK( rprCameraLookAt(camera,	1.5f,1.5f,2.5f	, 0.0f, 0.1f, 0.0f,	  0, 1, 0) );
+		CHECK( rprCameraLookAt(camera,	2.5f,1.5f,3.5f	, 0.0f, 0.1f, 0.0f,	  0, 1, 0) );
 		CHECK( rprSceneSetCamera(scene, camera) );
 	}
 
+	CHECK( CreateAMDFloor(context, scene, matsys, g_gc, 0.20f, 0.20f,  0.0f,-1.0f,0.0f) );
 
-	// Create the floor mesh
-	rpr_shape plane = nullptr;
-	{
-		CHECK(rprContextCreateMesh(context,
-			(rpr_float const*)&plane_data[0], 4, sizeof(vertex),
-			(rpr_float const*)((char*)&plane_data[0] + sizeof(rpr_float) * 3), 4, sizeof(vertex),
-			(rpr_float const*)((char*)&plane_data[0] + sizeof(rpr_float) * 6), 4, sizeof(vertex),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			num_face_vertices, 2, &plane));
-		CHECK(rprSceneAttachShape(scene, plane));
-
-		
-		RadeonProRender::matrix m = RadeonProRender::translation(RadeonProRender::float3(0, -1, 0)) * RadeonProRender::scale(RadeonProRender::float3(0.5f, 1.0f, 0.5f));;
-		CHECK( rprShapeSetTransform(plane, RPR_TRUE, &m.m00));
-	}
-
-	// apply a simple diffuse material on the plane
-	rpr_material_node diffuseMaterial = nullptr;
-	CHECK(  rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuseMaterial));
-	CHECK(  rprMaterialNodeSetInputFByKey(diffuseMaterial, RPR_MATERIAL_INPUT_COLOR, 0.8f, 0.9f, 1.0f, 0.0f)); // Diffuse color
-	CHECK(  rprShapeSetMaterial(plane,diffuseMaterial));
-
-	// create an Environment light, based on a 1x1 white pixel image
-	rpr_light ibl = 0;
-	CHECK(rprContextCreateEnvironmentLight(context, &ibl));
-	float env_color[] = {1, 1, 1, 0}; // white color
-	rpr_image img = 0;
-	rpr_image_desc descImg;
-	descImg.image_width = 1;  // 1 x 1 pixel image
-	descImg.image_height = 1; //
-	descImg.image_depth = 0;
-	descImg.image_row_pitch = descImg.image_width * sizeof(rpr_float) * 4;
-	descImg.image_slice_pitch = 0;
-	CHECK(rprContextCreateImage(context, {4, RPR_COMPONENT_TYPE_FLOAT32}, &descImg, env_color, &img));
-	CHECK(rprEnvironmentLightSetImage(ibl, img));
-	CHECK(rprEnvironmentLightSetIntensityScale(ibl, 0.9));
-	CHECK(rprSceneAttachLight(scene, ibl));
+	// Create an environment light
+	CHECK( CreateNatureEnvLight(context, scene, g_gc, 0.8f) );
 
 
 	// Create framebuffer 
@@ -251,20 +217,20 @@ int main()
 	CHECK( rprContextSetParameterByKey1u(context, RPR_CONTEXT_MAX_RECURSION, (rpr_uint)5) ); // 5
 
 	// when using volumes, we usually need high number of iterations.
-	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS, 4000));
+	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS, 3000));
+
+	// set rendering gamma
+	CHECK( rprContextSetParameterByKey1f(context, RPR_CONTEXT_DISPLAY_GAMMA , 2.2f ) );
 
 	// Start the rendering. 
 	CHECK( rprContextRender(context) );
 
 	// resolve and save the rendering to an image file.
-	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,false));
 	CHECK(rprFrameBufferSaveToFile(frame_buffer_resolved,"51_00.png"));
 
 
 	// Release the stuff we created
-	CHECK(rprObjectDelete(ibl)); ibl=nullptr;
-	CHECK(rprObjectDelete(img)); img=nullptr;
-	CHECK(rprObjectDelete(diffuseMaterial)); diffuseMaterial=nullptr;
 	CHECK(rprObjectDelete(cube)); cube=nullptr;
 	CHECK(rprObjectDelete(rprgrid1)); rprgrid1=nullptr;
 	CHECK(rprObjectDelete(gridSampler1)); gridSampler1=nullptr;
@@ -276,8 +242,8 @@ int main()
 	CHECK(rprObjectDelete(camera)); camera=nullptr;
 	CHECK(rprObjectDelete(frame_buffer)); frame_buffer=nullptr;
 	CHECK(rprObjectDelete(frame_buffer_resolved)); frame_buffer_resolved=nullptr;
+	g_gc.GCClean();
 	CHECK(rprObjectDelete(scene)); scene=nullptr;
-	CHECK(rprObjectDelete(plane)); plane=nullptr;
 	CHECK(rprObjectDelete(matsys)); matsys=nullptr;
 	CheckNoLeak(context);
 	CHECK(rprObjectDelete(context)); context=nullptr;

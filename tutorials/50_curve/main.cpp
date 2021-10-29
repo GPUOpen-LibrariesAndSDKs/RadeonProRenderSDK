@@ -12,7 +12,7 @@
 
 //
 // Demo covering Curves rendering. 
-// Curves are often used for hair rendering.
+// Curves are often used for hair,grass.. rendering.
 //
 
 #include "RadeonProRender.h"
@@ -26,6 +26,10 @@
 #include <algorithm>
 #include <vector>
 
+RPRGarbageCollector g_gc;
+
+
+// return a random float between 0.0 and 1.0
 float draw()
 {
 	return (rand()&RAND_MAX)/(double)RAND_MAX;
@@ -58,7 +62,6 @@ int main()
 	std::cout << "RPR Context creation succeeded." << std::endl;
 
 
-
 	rpr_material_system matsys = nullptr;
 	CHECK( rprContextCreateMaterialSystem(context, 0, &matsys) );
 
@@ -78,58 +81,24 @@ int main()
 		// Set transform for the light
 		CHECK(rprLightSetTransform(light, RPR_TRUE, &lightm.m00));
 
-		// Set light radiant power in Watts
-		CHECK(rprPointLightSetRadiantPower3f(light, 255, 241, 224));
+		// Set light radiant power
+		CHECK(rprPointLightSetRadiantPower3f(light, 255.0f*0.9f, 241.0f*0.9f, 224.0f*0.9f));
 
 		// Attach the light to the scene
 		CHECK(rprSceneAttachLight(scene, light));
 	}
+
 	// Create camera
 	rpr_camera camera = nullptr;
-	{
-		CHECK( rprContextCreateCamera(context, &camera) );
-
-		// Position camera in world space: 
-		// Camera position is (5,5,20)
-		// Camera aimed at (0,0,0)
-		// Camera up vector is (0,1,0)
-		CHECK( rprCameraLookAt(camera, 0, 5, 20, 0, 1, 0, 0, 1, 0) );
-
-		CHECK( rprCameraSetFocalLength(camera, 75.f) );
-
-		// Set camera for the scene
-		CHECK( rprSceneSetCamera(scene, camera) );
-	}
-	// Set scene to render for the context
+	CHECK( rprContextCreateCamera(context, &camera) );
+	CHECK( rprCameraLookAt(camera, 0, 5, 20, 0, 1, 0, 0, 1, 0) );
+	CHECK( rprCameraSetFocalLength(camera, 75.f) );
+	CHECK( rprSceneSetCamera(scene, camera) );
 	CHECK( rprContextSetScene(context, scene) );
 
-	// Create plane mesh
-	rpr_shape plane = nullptr;
-	{
-		CHECK(rprContextCreateMesh(context,
-			(rpr_float const*)&plane_data[0], 4, sizeof(vertex),
-			(rpr_float const*)((char*)&plane_data[0] + sizeof(rpr_float) * 3), 4, sizeof(vertex),
-			(rpr_float const*)((char*)&plane_data[0] + sizeof(rpr_float) * 6), 4, sizeof(vertex),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			num_face_vertices, 2, &plane));
 
-		// Add plane into the scene
-		CHECK(rprSceneAttachShape(scene, plane));
-	}
+	CreateAMDFloor(context, scene, matsys, g_gc, 1.0, 1.0);
 
-	// Create simple diffuse shader
-	rpr_material_node diffuse = nullptr;
-	{
-		CHECK( rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuse) );
-
-		// Set diffuse color parameter to gray
-		CHECK( rprMaterialNodeSetInputFByKey(diffuse, RPR_MATERIAL_INPUT_COLOR, 0.5f, 0.5f, 0.5f, 1.f) );
-
-		// Set shader for cube & plane meshes
-		CHECK( rprShapeSetMaterial(plane, diffuse) );
-	}
 	// Create framebuffer to store rendering result
 	rpr_framebuffer_desc desc = { 800,600 };
 
@@ -140,8 +109,7 @@ int main()
 	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer) );
 	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer_resolved) );
 
-	// Clear framebuffer to black color
-	CHECK( rprFrameBufferClear(frame_buffer) );
+
 
 	// Set framebuffer for the context
 	CHECK( rprContextSetAOV(context, RPR_AOV_COLOR, frame_buffer) );
@@ -153,6 +121,8 @@ int main()
 	//It works with StartPoint CtrlPoint CtrlPoint EndPoint
 	rpr_curve newCurve = 0;
 	
+	const float shiftFactor = 0.2f; //  0.0:curves are aligned   -  if increased, curves are spreading on the grid
+
 	int nPoints = 0;
 	const int n = 12;
 	std::vector<float> cps;
@@ -163,8 +133,8 @@ int main()
 	for(int j=0; j<n; j++) for(int i=0; i<n; i++)
 	{
 		const float width = 5.f;
-		float x = (i/(float)n - 0.5f)*width;
-		float z = (j/(float)n - 0.5f)*width;
+		float x = (i/(float)n - 0.5f)*width  +(draw()-0.5f)*shiftFactor;
+		float z = (j/(float)n - 0.5f)*width  +(draw()-0.5f)*shiftFactor;
 
 		const float length = 0.1f;
 		int nSegs = 8;
@@ -214,13 +184,17 @@ int main()
 	CHECK(rprMaterialNodeSetInputFByKey(newDiffuse_red, RPR_MATERIAL_INPUT_COLOR, 1.0f, 0.5f, 0.5f, 1.f));
 	CHECK(rprCurveSetMaterial(newCurve, newDiffuse_red));
 
+	// like any shape, a Curve needs to be attached to scene.
 	CHECK(rprSceneAttachCurve(scene, newCurve));
 
+	// set the rendering gamma
+	CHECK( rprContextSetParameterByKey1f(context, RPR_CONTEXT_DISPLAY_GAMMA , 1.0f ) );
 
-	// Progressively render an image
+	// Render the scene
 	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
+	CHECK( rprFrameBufferClear(frame_buffer) );
 	CHECK(rprContextRender(context));
-	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,false));
 
 	std::cout << "Rendering finished.\n";
 
@@ -230,10 +204,9 @@ int main()
 	// Release the stuff we created
 	CHECK(rprObjectDelete(newDiffuse_red));newDiffuse_red=nullptr;
 	CHECK(rprObjectDelete(matsys));matsys=nullptr;
-	CHECK(rprObjectDelete(plane));plane=nullptr;
 	CHECK(rprObjectDelete(newCurve));newCurve=nullptr;
 	CHECK(rprObjectDelete(light));light=nullptr;
-	CHECK(rprObjectDelete(diffuse));diffuse=nullptr;
+	g_gc.GCClean();
 	CHECK(rprObjectDelete(scene));scene=nullptr;
 	CHECK(rprObjectDelete(camera));camera=nullptr;
 	CHECK(rprObjectDelete(frame_buffer));frame_buffer=nullptr;
