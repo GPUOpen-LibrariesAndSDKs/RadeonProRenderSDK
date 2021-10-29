@@ -172,7 +172,7 @@ int main()
 	// Execute the rendering. 
 	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS, 100));
 	CHECK( rprContextRender(context) );
-	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,false));
 	CHECK(rprFrameBufferSaveToFile(frame_buffer_resolved,"23_00.png"));
 	std::cout << "rendering finished." << std::endl;
 

@@ -21,24 +21,7 @@
 //
 
 
-
-//
-// Garbage Collector functions :
-//
-std::vector<rpr_material_node> g_rprMaterialGarbageCollector;
-std::vector<rpr_image>		   g_rprImageGarbageCollector;
-void GCAdd(rpr_material_node n) { g_rprMaterialGarbageCollector.push_back(n); }
-void GCAdd(rpr_image n)			{ g_rprImageGarbageCollector.push_back(n); }
-void GCClean()
-{
-	for(const auto& i : g_rprMaterialGarbageCollector)
-		if ( i ) { CHECK(rprObjectDelete(i));  }
-	g_rprMaterialGarbageCollector.clear();
-
-	for(const auto& i : g_rprImageGarbageCollector)
-		if ( i ) { CHECK(rprObjectDelete(i));  }
-	g_rprImageGarbageCollector.clear();
-}
+RPRGarbageCollector g_gc;
 
 
 int main()
@@ -90,7 +73,7 @@ int main()
 	{
 		rpr_material_node toonRamp = nullptr; 
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_TOON_RAMP, &toonRamp));
-		GCAdd(toonRamp);
+		g_gc.GCAdd(toonRamp);
 
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION1, 0.7f,     0.0f, 0.0f, 0.f));
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION2, 0.9f,     0.0f, 0.0f, 0.f));
@@ -106,7 +89,7 @@ int main()
 
 		rpr_material_node toonClosure = nullptr; 
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_TOON_CLOSURE, &toonClosure));
-		GCAdd(toonClosure);
+		g_gc.GCAdd(toonClosure);
 
 		CHECK( rprMaterialNodeSetInputFByKey(toonClosure,RPR_MATERIAL_INPUT_COLOR, 1.0f, 1.0f, 1.0f, 0.f));
 		CHECK( rprMaterialNodeSetInputNByKey(toonClosure,RPR_MATERIAL_INPUT_DIFFUSE_RAMP, toonRamp));
@@ -123,7 +106,7 @@ int main()
 
 		rpr_material_node toonRamp = nullptr; 
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_TOON_RAMP, &toonRamp));
-		GCAdd(toonRamp);
+		g_gc.GCAdd(toonRamp);
 
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION1, 0.6f,     0.0f, 0.0f, 0.f));
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION2, 0.9f,     0.0f, 0.0f, 0.f));
@@ -140,7 +123,7 @@ int main()
 
 		rpr_material_node toonClosure = nullptr; 
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_TOON_CLOSURE, &toonClosure));
-		GCAdd(toonClosure);
+		g_gc.GCAdd(toonClosure);
 
 		CHECK( rprMaterialNodeSetInputFByKey(toonClosure,RPR_MATERIAL_INPUT_COLOR, 1.0f, 1.0f, 1.0f, 0.f));
 		CHECK( rprMaterialNodeSetInputNByKey(toonClosure,RPR_MATERIAL_INPUT_DIFFUSE_RAMP, toonRamp));
@@ -157,7 +140,7 @@ int main()
 
 		rpr_material_node toonRamp = nullptr; 
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_TOON_RAMP, &toonRamp));
-		GCAdd(toonRamp);
+		g_gc.GCAdd(toonRamp);
 
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION1, 0.6f,     0.0f, 0.0f, 0.f));  // limit between Shadow   and Mid
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION2, 0.95f,     0.0f, 0.0f, 0.f)); // limit between Highlight and Mid
@@ -173,7 +156,7 @@ int main()
 
 		rpr_material_node toonClosure = nullptr; 
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_TOON_CLOSURE, &toonClosure));
-		GCAdd(toonClosure);
+		g_gc.GCAdd(toonClosure);
 
 		CHECK( rprMaterialNodeSetInputFByKey(toonClosure,RPR_MATERIAL_INPUT_COLOR, 1.0f, 1.0f, 1.0f, 0.f));
 		CHECK( rprMaterialNodeSetInputNByKey(toonClosure,RPR_MATERIAL_INPUT_DIFFUSE_RAMP, toonRamp));
@@ -191,7 +174,7 @@ int main()
 
 		rpr_material_node toonRamp = nullptr; 
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_TOON_RAMP, &toonRamp));
-		GCAdd(toonRamp);
+		g_gc.GCAdd(toonRamp);
 
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION1, 0.7f,     0.0f, 0.0f, 0.f));
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION2, 0.9f,     0.0f, 0.0f, 0.f));
@@ -207,7 +190,7 @@ int main()
 
 		rpr_material_node toonClosure = nullptr; 
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_TOON_CLOSURE, &toonClosure));
-		GCAdd(toonClosure);
+		g_gc.GCAdd(toonClosure);
 
 		CHECK( rprMaterialNodeSetInputFByKey(toonClosure,RPR_MATERIAL_INPUT_COLOR, 1.0f, 1.0f, 1.0f, 0.f));
 		CHECK( rprMaterialNodeSetInputNByKey(toonClosure,RPR_MATERIAL_INPUT_DIFFUSE_RAMP, toonRamp));
@@ -225,7 +208,7 @@ int main()
 
 		rpr_material_node toonRamp = nullptr; 
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_TOON_RAMP, &toonRamp));
-		GCAdd(toonRamp);
+		g_gc.GCAdd(toonRamp);
 
 		CHECK( rprMaterialNodeSetInputUByKey(toonRamp,RPR_MATERIAL_INPUT_INTERPOLATION, RPR_INTERPOLATION_MODE_NONE));
 
@@ -251,7 +234,7 @@ int main()
 
 		rpr_material_node toonClosure = nullptr; 
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_TOON_CLOSURE, &toonClosure));
-		GCAdd(toonClosure);
+		g_gc.GCAdd(toonClosure);
 
 		CHECK( rprMaterialNodeSetInputFByKey(toonClosure,RPR_MATERIAL_INPUT_COLOR, 1.0f, 1.0f, 1.0f, 0.f));
 		CHECK( rprMaterialNodeSetInputNByKey(toonClosure,RPR_MATERIAL_INPUT_DIFFUSE_RAMP, toonRamp));
@@ -275,7 +258,7 @@ int main()
 
 		rpr_material_node toonRamp = nullptr; 
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_TOON_RAMP, &toonRamp));
-		GCAdd(toonRamp);
+		g_gc.GCAdd(toonRamp);
 
 		CHECK( rprMaterialNodeSetInputUByKey(toonRamp,RPR_MATERIAL_INPUT_INTERPOLATION, RPR_INTERPOLATION_MODE_LINEAR));
 
@@ -300,7 +283,7 @@ int main()
 
 		rpr_material_node toonClosure = nullptr; 
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_TOON_CLOSURE, &toonClosure));
-		GCAdd(toonClosure);
+		g_gc.GCAdd(toonClosure);
 
 		CHECK( rprMaterialNodeSetInputFByKey(toonClosure,RPR_MATERIAL_INPUT_COLOR, 1.0f, 1.0f, 1.0f, 0.f));
 		CHECK( rprMaterialNodeSetInputNByKey(toonClosure,RPR_MATERIAL_INPUT_DIFFUSE_RAMP, toonRamp));
@@ -317,7 +300,7 @@ int main()
 
 	// clean everything
 	CHECK(rprObjectDelete(light)); light=nullptr;
-	GCClean();
+	g_gc.GCClean();
 	matballScene.Clean();
 	CheckNoLeak(context);
 	CHECK(rprObjectDelete(context)); context=nullptr;

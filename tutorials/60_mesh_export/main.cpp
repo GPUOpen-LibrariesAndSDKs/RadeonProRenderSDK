@@ -25,6 +25,8 @@
 #include <cassert>
 #include <iostream>
 
+RPRGarbageCollector g_gc;
+
 
 int main()
 {
@@ -52,115 +54,92 @@ int main()
 
 	std::cout << "RPR Context creation succeeded." << std::endl;
 
-
+	// create the material system
 	rpr_material_system matsys = nullptr;
 	CHECK(rprContextCreateMaterialSystem(context, 0, &matsys));
 
 	// Create a scene
 	rpr_scene scene = nullptr;
 	CHECK(rprContextCreateScene(context, &scene));
+
 	// Set scene to render for the context
 	CHECK(rprContextSetScene(context, scene));
 
-	// Create point light
-	rpr_light light = nullptr;
-	{
-		CHECK(rprContextCreatePointLight(context, &light));
-		// Create a transform: move 5 units in X axis, 8 units up Y axis, -2 units in Z axis
-		RadeonProRender::matrix lightm = RadeonProRender::translation(RadeonProRender::float3(0, 8, 2));
-		// Set transform for the light
-		CHECK(rprLightSetTransform(light, RPR_TRUE, &lightm.m00));
-		// Set light radiant power in Watts
-		CHECK(rprPointLightSetRadiantPower3f(light, 255, 241, 224));
-		// Attach the light to the scene
-		CHECK(rprSceneAttachLight(scene, light));
-	}
+	// create the floor
+	CHECK( CreateAMDFloor(context, scene, matsys, g_gc, 0.7f, 0.7f)  );
+	
+	// create env light
+	CHECK( CreateNatureEnvLight(context, scene, g_gc, 0.8f)  );
 
 	// Create camera
 	rpr_camera camera = nullptr;
 	{
 		CHECK(rprContextCreateCamera(context, &camera));
-
-		// Position camera in world space: 
-		// Camera position is (5,5,20)
-		// Camera aimed at (0,0,0)
-		// Camera up vector is (0,1,0)
-		CHECK(rprCameraLookAt(camera, 0, 5, 20, 0, 1, 0, 0, 1, 0));
-
+		CHECK(rprCameraLookAt(camera, 10, 6, 23,   0, 1, 0,   0, 1, 0));
 		CHECK(rprCameraSetFocalLength(camera, 75.f));
-
-		// Set camera for the scene
 		CHECK(rprSceneSetCamera(scene, camera));
 	}
-	// Set scene to render for the context
 
 
-	// Create framebuffer to store rendering result
+	// Create framebuffer
 	rpr_framebuffer_desc desc = { 800,600 };
-
-	// 4 component 32-bit float value each
 	rpr_framebuffer_format fmt = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
 	rpr_framebuffer frame_buffer = nullptr;
 	rpr_framebuffer frame_buffer_resolved = nullptr;
 	CHECK(rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer));
 	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer_resolved) );
 
-	// Clear framebuffer to black color
+	// Clear framebuffer
 	CHECK(rprFrameBufferClear(frame_buffer));
 
 	// Set framebuffer for the context
 	CHECK(rprContextSetAOV(context, RPR_AOV_COLOR, frame_buffer));
 
-	// Create cube mesh
-	rpr_shape cube = nullptr;
+
+	// create a teapot shape
+	rpr_shape teapot01 = nullptr;
 	{
-		CHECK(rprContextCreateMesh(context,
-			(rpr_float const*)&cube_data[0], 24, sizeof(vertex),
-			(rpr_float const*)((char*)&cube_data[0] + sizeof(rpr_float) * 3), 24, sizeof(vertex),
-			(rpr_float const*)((char*)&cube_data[0] + sizeof(rpr_float) * 6), 24, sizeof(vertex),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			num_face_vertices, 12, &cube));
+		teapot01 = ImportOBJ("../../Resources/Meshes/teapot.obj",scene,context);
+		g_gc.GCAdd(teapot01);
 
-		// Add cube into the scene
-		CHECK(rprSceneAttachShape(scene, cube));
-
-		// Create a transform: -2 unit along X axis and 1 unit up Y axis
-		RadeonProRender::matrix m = RadeonProRender::translation(RadeonProRender::float3(-2, 1, 0));
-
-		// Set the transform 
-		CHECK(rprShapeSetTransform(cube, RPR_TRUE, &m.m00));
-	}
-	// Create plane mesh
-	rpr_shape plane = nullptr;
-	{
-		CHECK(rprContextCreateMesh(context,
-			(rpr_float const*)&plane_data[0], 4, sizeof(vertex),
-			(rpr_float const*)((char*)&plane_data[0] + sizeof(rpr_float) * 3), 4, sizeof(vertex),
-			(rpr_float const*)((char*)&plane_data[0] + sizeof(rpr_float) * 6), 4, sizeof(vertex),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			num_face_vertices, 2, &plane));
-
-		// Add plane into the scene
-		CHECK(rprSceneAttachShape(scene, plane));
+		RadeonProRender::matrix m0 = RadeonProRender::rotation_x(MY_PI);
+		CHECK(rprShapeSetTransform(teapot01, RPR_TRUE, &m0.m00));
 	}
 
-	// Create simple diffuse shader
-	rpr_material_node diffuse = nullptr;
+
+	// Create Material
 	{
-		CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuse));
+		rpr_material_node uberMat = nullptr;
+		CHECK(rprMaterialSystemCreateNode(matsys,RPR_MATERIAL_NODE_UBERV2,&uberMat));
+		g_gc.GCAdd(uberMat);
+		CHECK(rprObjectSetName(uberMat,"Uber_0"));
 
-		// Set diffuse color parameter to gray
-		CHECK(rprMaterialNodeSetInputFByKey(diffuse, RPR_MATERIAL_INPUT_COLOR, 0.5f, 0.5f, 0.5f, 1.f));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR,0.501961f,0.0f,0.0f,0.0f));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT,1.0f,1.0f,1.0f,1.0f));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_DIFFUSE_ROUGHNESS,0.500000f,0.500000f,0.500000f,0.500000f));
 
-		// Set shader for cube & plane meshes
-		CHECK(rprShapeSetMaterial(cube, diffuse));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_REFLECTION_COLOR,0.490196f,0.490196f,0.490196f,0.0f));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_REFLECTION_WEIGHT,0.990000f,0.990000f,0.990000f,0.990000f));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_REFLECTION_ROUGHNESS,0.008000f,0.008000f,0.008000f,0.008000f));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_REFLECTION_ANISOTROPY,0.0f,0.0f,0.0f,0.0f));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_REFLECTION_ANISOTROPY_ROTATION,0.0f,0.0f,0.0f,0.0f));
+		CHECK(rprMaterialNodeSetInputUByKey(uberMat,RPR_MATERIAL_INPUT_UBER_REFLECTION_MODE,1));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_REFLECTION_IOR,1.460000f,1.460000f,1.460000f,1.460000f));
 
-		CHECK(rprShapeSetMaterial(plane, diffuse));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_COATING_COLOR,0.490196f,0.490196f,0.490196f,0.0f));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_COATING_WEIGHT,1.0f,1.0f,1.0f,1.0f));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_COATING_ROUGHNESS,0.008000f,0.008000f,0.008000f,0.008000f));
+		CHECK(rprMaterialNodeSetInputUByKey(uberMat,RPR_MATERIAL_INPUT_UBER_COATING_MODE,1));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_COATING_IOR,1.460000f,1.460000f,1.460000f,1.460000f));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_COATING_METALNESS,0.0f,0.0f,0.0f,0.0f));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_COATING_TRANSMISSION_COLOR,0.0f,0.0f,0.0f,1.0f));
+		CHECK(rprMaterialNodeSetInputFByKey(uberMat,RPR_MATERIAL_INPUT_UBER_COATING_THICKNESS,0.0f,0.0f,0.0f,0.0f));
+
+		CHECK(rprShapeSetMaterial(teapot01, uberMat));
 	}
+
+	// set display gamma
+	CHECK( rprContextSetParameterByKey1f(context, RPR_CONTEXT_DISPLAY_GAMMA , 2.2f ) );
 
 
 	///////// Mesh Export to RPRS ( native RPR file format ) //////////
@@ -172,7 +151,7 @@ int main()
 	// Progressively render an image
 	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
 	CHECK(rprContextRender(context));
-	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,false));
 	std::cout << "Rendering finished.\n";
 
 	// Save the result to file
@@ -182,13 +161,10 @@ int main()
 	// Release the stuff we created
 	CHECK(rprObjectDelete(frame_buffer));frame_buffer=nullptr;
 	CHECK(rprObjectDelete(matsys));matsys=nullptr;
-	CHECK(rprObjectDelete(plane));plane=nullptr;
-	CHECK(rprObjectDelete(cube));cube=nullptr;
-	CHECK(rprObjectDelete(light));light=nullptr;
-	CHECK(rprObjectDelete(diffuse));diffuse=nullptr;
 	CHECK(rprObjectDelete(scene));scene=nullptr;
 	CHECK(rprObjectDelete(camera));camera=nullptr;
 	CHECK(rprObjectDelete(frame_buffer_resolved));frame_buffer_resolved=nullptr;
+	g_gc.GCClean();
 	CheckNoLeak(context);
 	CHECK(rprObjectDelete(context));context=nullptr; // Always delete the RPR Context in last.
 	return 0;

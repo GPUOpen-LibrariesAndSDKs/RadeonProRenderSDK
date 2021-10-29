@@ -23,23 +23,7 @@
 
 
 
-//
-// Garbage Collector functions :
-//
-std::vector<rpr_material_node> g_rprMaterialGarbageCollector;
-std::vector<rpr_image>		   g_rprImageGarbageCollector;
-void GCAdd(rpr_material_node n) { g_rprMaterialGarbageCollector.push_back(n); }
-void GCAdd(rpr_image n)			{ g_rprImageGarbageCollector.push_back(n); }
-void GCClean()
-{
-	for(const auto& i : g_rprMaterialGarbageCollector)
-		if ( i ) { CHECK(rprObjectDelete(i));  }
-	g_rprMaterialGarbageCollector.clear();
-
-	for(const auto& i : g_rprImageGarbageCollector)
-		if ( i ) { CHECK(rprObjectDelete(i));  }
-	g_rprImageGarbageCollector.clear();
-}
+RPRGarbageCollector g_gc;
 
 
 int main()
@@ -76,7 +60,7 @@ int main()
 	{ 
 		rpr_material_node matx = nullptr;
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_MATX, &matx));
-		GCAdd(matx);
+		g_gc.GCAdd(matx);
 		CHECK( rprMaterialXSetFile(matx,"../../Resources/Textures/matx_dielectricBrdf.mtlx") );
 		matBall0.SetMaterial(matx);
 
@@ -90,7 +74,7 @@ int main()
 
 		rpr_material_node matx = nullptr;
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_MATX, &matx));
-		GCAdd(matx);
+		g_gc.GCAdd(matx);
 		CHECK( rprMaterialXSetFile(matx,"../../Resources/Textures/matx_generalizedSchlickBrdf.mtlx") );
 		matBall.SetMaterial(matx);
 
@@ -104,7 +88,7 @@ int main()
 
 		rpr_material_node matx = nullptr;
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_MATX, &matx));
-		GCAdd(matx);
+		g_gc.GCAdd(matx);
 		CHECK( rprMaterialXSetFile(matx,"../../Resources/Textures/matx_noise3d.mtlx") );
 		matBall.SetMaterial(matx);
 
@@ -118,7 +102,7 @@ int main()
 
 		rpr_material_node matx = nullptr;
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_MATX, &matx));
-		GCAdd(matx);
+		g_gc.GCAdd(matx);
 		CHECK( rprMaterialXSetFile(matx,"../../Resources/Textures/matx_normal.mtlx") );
 		matBall.SetMaterial(matx);
 
@@ -133,7 +117,7 @@ int main()
 
 		rpr_material_node matx = nullptr;
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_MATX, &matx));
-		GCAdd(matx);
+		g_gc.GCAdd(matx);
 
 		// as matx_standard_surface_gold.mtlx is going to use the "standard_surface" material, we need to include the file before
 		// calling rprMaterialXSetFile
@@ -157,7 +141,7 @@ int main()
 
 		rpr_material_node matx = nullptr;
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_MATX, &matx));
-		GCAdd(matx);
+		g_gc.GCAdd(matx);
 
 		// Note that we don't call rprMaterialXAddDependencyMtlx of "matx_standard_surface.mtlx" here.
 		// This is because the standard material is already defined inside an  <xi:include  in matx_standard_surface_xi_carPaint.mtlx
@@ -176,7 +160,7 @@ int main()
 
 		rpr_material_node matx = nullptr;
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_MATX, &matx));
-		GCAdd(matx);
+		g_gc.GCAdd(matx);
 
 		// include of the "USD Preview Surface" definition
 		CHECK( rprMaterialXAddDependencyMtlx(context,"../../Resources/Textures/matx_usd_preview_surface.mtlx") );
@@ -197,7 +181,7 @@ int main()
 
 		rpr_material_node matx = nullptr;
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_MATX, &matx));
-		GCAdd(matx);
+		g_gc.GCAdd(matx);
 
 		CHECK( rprMaterialXSetFile(matx,"../../Resources/Textures/matx_texture.mtlx") );
 		matBall.SetMaterial(matx);
@@ -219,7 +203,7 @@ int main()
 
 		rpr_material_node matx = nullptr;
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_MATX, &matx));
-		GCAdd(matx);
+		g_gc.GCAdd(matx);
 
 		// Create the rpr_image that will be used in the MaterialX rendering
 
@@ -289,7 +273,7 @@ int main()
 	// clean everything
 	//
 
-	GCClean();
+	g_gc.GCClean();
 
 	// delete the preloaded image.
 	CHECK(rprObjectDelete(preloadImg)); preloadImg=nullptr;

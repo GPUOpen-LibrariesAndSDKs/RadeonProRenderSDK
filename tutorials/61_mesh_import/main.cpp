@@ -53,26 +53,21 @@ int main()
 
 	std::cout << "RPR Context creation succeeded." << std::endl;
 
-
+	// create material system
 	rpr_material_system matsys = nullptr;
 	CHECK(rprContextCreateMaterialSystem(context, 0, &matsys));
 
-	// Create framebuffer to store rendering result
+	// Create framebuffer 
 	rpr_framebuffer_desc desc = { 800,600 };
-
-	// 4 component 32-bit float value each
 	rpr_framebuffer_format fmt = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
 	rpr_framebuffer frame_buffer = nullptr;
 	rpr_framebuffer frame_buffer_resolved = nullptr;
 	CHECK(rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer));
 	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer_resolved) );
 
-	// Clear framebuffer to black color
-	CHECK(rprFrameBufferClear(frame_buffer));
 
 	// Set framebuffer for the context
 	CHECK(rprContextSetAOV(context, RPR_AOV_COLOR, frame_buffer));
-
 
 
 	///////// RPRS file Import ( native RPR file format ) //////////
@@ -85,10 +80,11 @@ int main()
 	// make sure to execute the demo "60_mesh_export" in order to create the cube_floor.rprs file first.
 	CHECK(rprsImport("cube_floor.rprs", context, matsys, &scene_rprs, true, nullptr));
 
-	// Progressively render an image
+	// Render the scene.
 	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
+	CHECK(rprFrameBufferClear(frame_buffer));
 	CHECK(rprContextRender(context));
-	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,false));
 
 	std::cout << "Rendering RPRS scene finished.\n";
 
@@ -103,21 +99,20 @@ int main()
 
 
 
-
+	
 	///////// GLTF Import //////////
 
-	// Create a scene for the GLTF import
-	rpr_scene scene_gltf = nullptr;
-	CHECK(rprContextCreateScene(context, &scene_gltf));
-	CHECK(rprContextSetScene(context, scene_gltf));
-		
+	// the scene creation is managed inside rprImportFromGLTF
+	rpr_scene scene_gltf = nullptr; 
+	
 	// make sure to execute the demo "60_mesh_export" in order to create the cube_floor.gltf file first.
 	CHECK(rprImportFromGLTF("cube_floor.gltf", context, matsys, &scene_gltf, nullptr, 0, nullptr));
 
-	// Progressively render an image
-	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
+	// Render the scene.
+	CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS, NUM_ITERATIONS));
+	CHECK(rprFrameBufferClear(frame_buffer));
 	CHECK(rprContextRender(context));
-	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,false));
 
 	std::cout << "Rendering GLTF scene finished.\n";
 
@@ -129,7 +124,7 @@ int main()
 
 	// delete the scene
 	CHECK(rprObjectDelete(scene_gltf));scene_gltf=nullptr;
-
+	
 
 	
 

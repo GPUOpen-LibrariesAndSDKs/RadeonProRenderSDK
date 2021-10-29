@@ -527,7 +527,7 @@ void createAndAttachLight(rpr_context& context, rpr_scene& scene, const LightSet
 
 		CHECK(rprLightSetTransform(light, RPR_TRUE, &lightm.m00));
 
-		// Radiant power is in Watts
+		// Radiant power
 		CHECK(rprPointLightSetRadiantPower3f(light, settings.radiantPower.x, settings.radiantPower.x, settings.radiantPower.x));
 
 		CHECK(rprSceneAttachLight(scene, light));

@@ -286,6 +286,7 @@ MatballScene::MatballScene()
 
 void MatballScene::Render(const std::string& outImgFileName, int iterationCount)
 {
+	// clear framebuffer before starting a new rendering.
 	CHECK( rprFrameBufferClear(m_frame_buffer) );
 
 	if ( !m_usingHybridContext ) // there is no iteration for Hyrbid
@@ -467,6 +468,100 @@ MatballScene::MATBALL MatballScene::AddMatball(int shiftX, int shiftY, bool crea
 	return newShape;
 	
 }
+
+rpr_status CreateAMDFloor(rpr_context context, rpr_scene scene, rpr_material_system matsys, RPRGarbageCollector& gc, float scaleX, float scaleY, float translationX, float translationY, float translationZ)
+{
+	// Create plane mesh
+	rpr_shape plane = nullptr;
+	{
+		CHECK(rprContextCreateMesh(context,
+			(rpr_float const*)&plane_data[0], 4, sizeof(vertex),
+			(rpr_float const*)((char*)&plane_data[0] + sizeof(rpr_float) * 3), 4, sizeof(vertex),
+			(rpr_float const*)((char*)&plane_data[0] + sizeof(rpr_float) * 6), 4, sizeof(vertex),
+			(rpr_int const*)indices, sizeof(rpr_int),
+			(rpr_int const*)indices, sizeof(rpr_int),
+			(rpr_int const*)indices, sizeof(rpr_int),
+			num_face_vertices, 2, &plane));
+		gc.GCAdd(plane);
+
+		RadeonProRender::matrix mat = RadeonProRender::translation(RadeonProRender::float3(translationX, translationY, translationZ)) * RadeonProRender::scale(RadeonProRender::float3(scaleX, 1.0f, scaleY));
+		CHECK(rprShapeSetTransform(plane, RPR_TRUE, &mat.m00));
+
+		CHECK(rprSceneAttachShape(scene, plane));
+	}
+
+	// create a DIFFUSE material for the Floor
+	//
+	rpr_material_node uv_scaled_node = NULL;
+	rpr_material_node diffuse5 = nullptr;
+	rpr_image image2 = nullptr;
+	rpr_material_node materialImage2 = nullptr;
+	rpr_material_node uv_node = NULL;
+	{
+
+
+		const std::string pathImageFileA = "../../Resources/Textures/amd.png";
+		rpr_status status = rprContextCreateImageFromFile(context, pathImageFileA.c_str(), &image2);
+		gc.GCAdd(image2);
+		if (status == RPR_ERROR_IO_ERROR)
+		{
+			std::cout << "Error : " << pathImageFileA << " not found.\n";
+			return status;
+		}
+		CHECK(status);
+
+		CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_IMAGE_TEXTURE, &materialImage2));
+		gc.GCAdd(materialImage2);
+		CHECK(rprMaterialNodeSetInputImageDataByKey(materialImage2, RPR_MATERIAL_INPUT_DATA, image2)); // Set image data
+
+		CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuse5));
+		gc.GCAdd(diffuse5);
+		CHECK(rprMaterialNodeSetInputNByKey(diffuse5, RPR_MATERIAL_INPUT_COLOR, materialImage2)); // set image sampler as the color input of diffuse material
+
+		CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_INPUT_LOOKUP, &uv_node));
+		gc.GCAdd(uv_node);
+		CHECK(rprMaterialNodeSetInputUByKey(uv_node, RPR_MATERIAL_INPUT_VALUE, RPR_MATERIAL_NODE_LOOKUP_UV));
+
+		CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_ARITHMETIC, &uv_scaled_node));
+		gc.GCAdd(uv_scaled_node);
+		CHECK(rprMaterialNodeSetInputUByKey(uv_scaled_node, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_MUL));
+		CHECK(rprMaterialNodeSetInputNByKey(uv_scaled_node, RPR_MATERIAL_INPUT_COLOR0, uv_node));
+		CHECK(rprMaterialNodeSetInputFByKey(uv_scaled_node, RPR_MATERIAL_INPUT_COLOR1, 2.0f, 4.0f, 0, 0));
+
+		CHECK(rprMaterialNodeSetInputNByKey(materialImage2, RPR_MATERIAL_INPUT_UV, uv_scaled_node));
+
+		CHECK(rprShapeSetMaterial(plane, diffuse5));
+	}
+
+	return RPR_SUCCESS;
+}
+
+rpr_status CreateNatureEnvLight(rpr_context context, rpr_scene scene, RPRGarbageCollector& gc, float power)
+{
+	rpr_light lightEnv = nullptr;
+	CHECK(rprContextCreateEnvironmentLight(context, &lightEnv));
+	gc.GCAdd(lightEnv);
+
+	const std::string pathImageFile = "../../Resources/Textures/turning_area_4k.hdr";
+
+	rpr_image imgEnvLight = nullptr;
+	rpr_status status = rprContextCreateImageFromFile(context, pathImageFile.c_str(), &imgEnvLight); // import image use by the Env light
+	if (status == RPR_ERROR_IO_ERROR)
+	{
+		std::cout << "Error : " << pathImageFile << " not found.\n";
+		return status;
+	}
+	CHECK(status);
+	gc.GCAdd(imgEnvLight);
+
+	CHECK(rprEnvironmentLightSetImage(lightEnv, imgEnvLight));
+	CHECK(rprEnvironmentLightSetIntensityScale(lightEnv, power)); 
+	CHECK(rprSceneAttachLight(scene, lightEnv));
+	
+	return RPR_SUCCESS;
+}
+
+
 
 
 

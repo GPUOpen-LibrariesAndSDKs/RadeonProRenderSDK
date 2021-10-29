@@ -42,6 +42,9 @@ RadeonProRender::matrix CameraLookAtToMatrix( RadeonProRender::float3 pos ,  Rad
 }
 
 
+RPRGarbageCollector g_gc;
+
+
 int main()
 {
 	//	enable Radeon ProRender API trace
@@ -110,40 +113,11 @@ int main()
 		CHECK(rprShapeSetTransform(teapot01, RPR_TRUE, &m0.m00));
 	}
 
-	// Create plane mesh
-	rpr_shape plane = nullptr;
-	{
-		CHECK(rprContextCreateMesh(context,
-			(rpr_float const*)&plane_data[0], 4, sizeof(vertex),
-			(rpr_float const*)((char*)&plane_data[0] + sizeof(rpr_float) * 3), 4, sizeof(vertex),
-			(rpr_float const*)((char*)&plane_data[0] + sizeof(rpr_float) * 6), 4, sizeof(vertex),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			(rpr_int const*)indices, sizeof(rpr_int),
-			num_face_vertices, 2, &plane));
-		CHECK(rprSceneAttachShape(scene, plane));
-	}
+	// create the floor
+	CHECK( CreateAMDFloor(context, scene, matsys, g_gc, 1.0f, 1.0f)  );
 
-
-	// Create an Environment Light light
-	rpr_light lightEnv = nullptr;
-	rpr_image imgEnvLight = nullptr;
-	{
-		CHECK(rprContextCreateEnvironmentLight(context, &lightEnv));
-
-		const std::string pathImageFile = "../../Resources/Textures/envLightImage.exr";
-		rpr_status status = rprContextCreateImageFromFile(context, pathImageFile.c_str(), &imgEnvLight); // import image use by the Env light
-		if (status == RPR_ERROR_IO_ERROR)
-		{
-			std::cout << "Error : " << pathImageFile << " not found.\n";
-			return -1;
-		}
-		CHECK(status);
-
-		CHECK(rprEnvironmentLightSetImage(lightEnv, imgEnvLight));
-		CHECK(rprEnvironmentLightSetIntensityScale(lightEnv, 1.0f)); 
-		CHECK(rprSceneAttachLight(scene, lightEnv));
-	}
+	// Create an environment light
+	CHECK( CreateNatureEnvLight(context, scene, g_gc, 0.8f) );
 
 	
 	// create a DIFFUSE material for the Teapot
@@ -161,49 +135,9 @@ int main()
 	}
 
 
-
-	// create a DIFFUSE material for the Floor
-	//
-	rpr_material_node uv_scaled_node = NULL;
-	rpr_material_node diffuse5 = nullptr;
-	rpr_image image2 = nullptr;
-	rpr_material_node materialImage2 = nullptr;
-	rpr_material_node uv_node = NULL;
-	{
-
-
-		const std::string pathImageFileA = "../../Resources/Textures/amd.png";
-		rpr_status status = rprContextCreateImageFromFile(context, pathImageFileA.c_str(), &image2);
-		if (status == RPR_ERROR_IO_ERROR)
-		{
-			std::cout << "Error : " << pathImageFileA << " not found.\n";
-			return -1;
-		}
-		CHECK(status);
-
-		CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_IMAGE_TEXTURE, &materialImage2));
-		CHECK(rprMaterialNodeSetInputImageDataByKey(materialImage2, RPR_MATERIAL_INPUT_DATA, image2)); // Set image data
-
-		CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuse5));
-		CHECK(rprMaterialNodeSetInputNByKey(diffuse5, RPR_MATERIAL_INPUT_COLOR, materialImage2)); // set image sampler as the color input of diffuse material
-
-		CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_INPUT_LOOKUP, &uv_node));
-		CHECK(rprMaterialNodeSetInputUByKey(uv_node, RPR_MATERIAL_INPUT_VALUE, RPR_MATERIAL_NODE_LOOKUP_UV));
-
-		CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_ARITHMETIC, &uv_scaled_node));
-		CHECK(rprMaterialNodeSetInputUByKey(uv_scaled_node, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_MUL));
-		CHECK(rprMaterialNodeSetInputNByKey(uv_scaled_node, RPR_MATERIAL_INPUT_COLOR0, uv_node));
-		CHECK(rprMaterialNodeSetInputFByKey(uv_scaled_node, RPR_MATERIAL_INPUT_COLOR1, 2.0f, 4.0f, 0, 0));
-
-		CHECK(rprMaterialNodeSetInputNByKey(materialImage2, RPR_MATERIAL_INPUT_UV, uv_scaled_node));
-
-		CHECK(rprShapeSetMaterial(plane, diffuse5));
-	}
-
-
 	// First, Render scene without any motion
 	CHECK( rprContextSetParameterByKey1f(context, RPR_CONTEXT_DISPLAY_GAMMA , 2.2f ) ); // set display gamma
-	CHECK( rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,NUM_ITERATIONS));
+	CHECK( rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,200));
 	CHECK( rprContextRender(context) );
 	CHECK( rprContextResolveFrameBuffer(context,fb_color,fb_color_resolved,false));
 	CHECK( rprContextResolveFrameBuffer(context,fb_velocity,fb_velocity_resolved,false));
@@ -267,22 +201,15 @@ int main()
 	// 
 	CHECK(rprObjectDelete(img)); img=nullptr;
 	CHECK(rprObjectDelete(imgSampler)); imgSampler=nullptr;
-	CHECK(rprObjectDelete(uv_scaled_node)); uv_scaled_node=nullptr;
-	CHECK(rprObjectDelete(diffuse5)); diffuse5=nullptr;
-	CHECK(rprObjectDelete(image2)); image2=nullptr;
-	CHECK(rprObjectDelete(materialImage2)); materialImage2=nullptr;
-	CHECK(rprObjectDelete(uv_node)); uv_node=nullptr;
 	CHECK(rprObjectDelete(diffuse1)); diffuse1=nullptr;
-	CHECK(rprObjectDelete(lightEnv)); lightEnv=nullptr;
-	CHECK(rprObjectDelete(imgEnvLight)); imgEnvLight=nullptr;
 	CHECK(rprObjectDelete(camera)); camera=nullptr;
 	CHECK(rprObjectDelete(fb_color)); fb_color=nullptr;
 	CHECK(rprObjectDelete(fb_color_resolved)); fb_color_resolved=nullptr;
 	CHECK(rprObjectDelete(fb_velocity)); fb_velocity=nullptr;
 	CHECK(rprObjectDelete(fb_velocity_resolved)); fb_velocity_resolved=nullptr;
-	CHECK(rprObjectDelete(scene)); scene=nullptr;
 	CHECK(rprObjectDelete(teapot01)); teapot01=nullptr;
-	CHECK(rprObjectDelete(plane)); plane=nullptr;
+	g_gc.GCClean();
+	CHECK(rprObjectDelete(scene)); scene=nullptr;
 	CHECK(rprObjectDelete(matsys)); matsys=nullptr;
 	CheckNoLeak(context);
 	CHECK(rprObjectDelete(context));context=nullptr; // Always delete the RPR Context in last.

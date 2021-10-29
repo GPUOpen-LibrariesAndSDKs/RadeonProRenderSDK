@@ -23,23 +23,7 @@
 
 
 
-//
-// Garbage Collector functions :
-//
-std::vector<rpr_material_node> g_rprMaterialGarbageCollector;
-std::vector<rpr_image>		   g_rprImageGarbageCollector;
-void GCAdd(rpr_material_node n) { g_rprMaterialGarbageCollector.push_back(n); }
-void GCAdd(rpr_image n)			{ g_rprImageGarbageCollector.push_back(n); }
-void GCClean()
-{
-	for(const auto& i : g_rprMaterialGarbageCollector)
-		if ( i ) { CHECK(rprObjectDelete(i));  }
-	g_rprMaterialGarbageCollector.clear();
-
-	for(const auto& i : g_rprImageGarbageCollector)
-		if ( i ) { CHECK(rprObjectDelete(i));  }
-	g_rprImageGarbageCollector.clear();
-}
+RPRGarbageCollector g_gc;
 
 
 int main()
@@ -77,27 +61,27 @@ int main()
 	{ 
 		rpr_material_node base = nullptr;
 		CHECK(  rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_DIFFUSE, &base));
-		GCAdd(base);
+		g_gc.GCAdd(base);
 		CHECK(  rprMaterialNodeSetInputFByKey(base, RPR_MATERIAL_INPUT_COLOR, 0.5f, 0.25f, 0.f, 1.f)); // Diffuse color
 
 
 		rpr_material_node top = nullptr;
 		CHECK(  rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_MICROFACET, &top));
-		GCAdd(top);
+		g_gc.GCAdd(top);
 		CHECK(  rprMaterialNodeSetInputFByKey(top, RPR_MATERIAL_INPUT_COLOR, 1.f, 1.f, 1.f, 1.f)); // Specular color
 		CHECK(  rprMaterialNodeSetInputFByKey(top, RPR_MATERIAL_INPUT_ROUGHNESS, 0.05f, 0.f, 0.f, 1.f)); // Roughness
 
 
 		rpr_material_node fresnel = nullptr;
 		CHECK(  rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_FRESNEL, &fresnel)); 
-		GCAdd(fresnel);
+		g_gc.GCAdd(fresnel);
 		CHECK(  rprMaterialNodeSetInputFByKey(fresnel, RPR_MATERIAL_INPUT_IOR, 1.4f,0.0f,0.0f,0.0f )); 
 
 
 		// Create layered material
 		rpr_material_node layered = nullptr;
 		CHECK(  rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_BLEND, &layered));
-		GCAdd(layered);
+		g_gc.GCAdd(layered);
 		CHECK(  rprMaterialNodeSetInputNByKey(layered, RPR_MATERIAL_INPUT_COLOR0, base)); // Set material for base layer
 		CHECK(  rprMaterialNodeSetInputNByKey(layered, RPR_MATERIAL_INPUT_COLOR1, top)); // Set material for top layer
 		CHECK(  rprMaterialNodeSetInputNByKey(layered, RPR_MATERIAL_INPUT_WEIGHT, fresnel));
@@ -116,7 +100,7 @@ int main()
 
 		rpr_material_node material = nullptr;
 		CHECK(  rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_REFLECTION, &material));
-		GCAdd(material);
+		g_gc.GCAdd(material);
 
 		matBall1.SetMaterial(material);
 
@@ -133,23 +117,23 @@ int main()
 
 		rpr_material_node diffuseA = nullptr;
 		CHECK(  rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuseA));
-		GCAdd(diffuseA);
+		g_gc.GCAdd(diffuseA);
 		CHECK(  rprMaterialNodeSetInputFByKey(diffuseA, RPR_MATERIAL_INPUT_COLOR, 0.0f, 0.5f, 1.0f, 0.0f)); // Diffuse color
 
 		rpr_material_node diffuseB = nullptr;
 		CHECK(  rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_DIFFUSE, &diffuseB));
-		GCAdd(diffuseB);
+		g_gc.GCAdd(diffuseB);
 		CHECK(  rprMaterialNodeSetInputFByKey(diffuseB, RPR_MATERIAL_INPUT_COLOR, 0.5f, 0.20f, 1.0f, 0.0f)); // Diffuse color
 
 		rpr_material_node uv_node = NULL;
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_INPUT_LOOKUP, &uv_node));
-		GCAdd(uv_node);
+		g_gc.GCAdd(uv_node);
 		CHECK( rprMaterialNodeSetInputUByKey(uv_node, RPR_MATERIAL_INPUT_VALUE, RPR_MATERIAL_NODE_LOOKUP_UV));
 
 
 		rpr_material_node uv_scaled_node = NULL;
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_ARITHMETIC, &uv_scaled_node));
-		GCAdd(uv_scaled_node);
+		g_gc.GCAdd(uv_scaled_node);
 		CHECK( rprMaterialNodeSetInputUByKey(uv_scaled_node, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_MUL));
 		CHECK(  rprMaterialNodeSetInputNByKey(uv_scaled_node, RPR_MATERIAL_INPUT_COLOR0, uv_node));
 		CHECK( rprMaterialNodeSetInputFByKey(uv_scaled_node, RPR_MATERIAL_INPUT_COLOR1, 0.7f, 0.7f, 0.0f, 0));
@@ -157,14 +141,14 @@ int main()
 
 		rpr_material_node checker = nullptr;
 		CHECK(  rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_CHECKER_TEXTURE, &checker)); 
-		GCAdd(checker);
+		g_gc.GCAdd(checker);
 		CHECK(  rprMaterialNodeSetInputNByKey(checker, RPR_MATERIAL_INPUT_UV  , uv_scaled_node));
 
 
 		// Create layered material
 		rpr_material_node layered = nullptr;
 		CHECK(  rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_BLEND, &layered));
-		GCAdd(layered);
+		g_gc.GCAdd(layered);
 		CHECK(  rprMaterialNodeSetInputNByKey(layered, RPR_MATERIAL_INPUT_COLOR0, diffuseA)); // Set material for base layer
 		CHECK(  rprMaterialNodeSetInputNByKey(layered, RPR_MATERIAL_INPUT_COLOR1, diffuseB)); // Set material for top layer
 		CHECK(  rprMaterialNodeSetInputNByKey(layered, RPR_MATERIAL_INPUT_WEIGHT, checker));
@@ -191,7 +175,7 @@ int main()
 	matballScene.Render("21_material_final.png");
 
 	// clean everything
-	GCClean();
+	g_gc.GCClean();
 	matballScene.Clean();
 	CheckNoLeak(context);
 	CHECK(rprObjectDelete(context)); context=nullptr;

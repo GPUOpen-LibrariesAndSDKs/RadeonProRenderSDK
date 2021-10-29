@@ -132,9 +132,11 @@ int main()
 	// There are ways to call rprContextRender in a separate thread but this won't be done in this tutorial.
 	CHECK( rprContextRender(context) );
 
-	// "resolve" to create a framebuffer that can be displayed.
-	// the 'normalizeOnly' argument means we want to do the basic framebuffer resolution.
-	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
+	// 'frame_buffer' is not supposed to be used for rendering, we need to process it with rprContextResolveFrameBuffer.
+	// This function transforms the raw 'frame_buffer' into a new 'frame_buffer_resolved' that can be displayed on screen as final rendering.
+	// The 'normalizeOnly' argument means we only want to do a normalization of 'frame_buffer'.
+	// In most of cases, this argument can be left to FALSE: this lets the Renderer choose the correct operation(s) to process.
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,false));
 
 	// save the rendering to an image file.
 	CHECK(rprFrameBufferSaveToFile(frame_buffer_resolved,"05_00.png"));
@@ -226,7 +228,7 @@ int main()
 	CHECK( rprFrameBufferClear(frame_buffer) );
 
 	CHECK( rprContextRender(context) );
-	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,false));
 	CHECK(rprFrameBufferSaveToFile(frame_buffer_resolved,"05_01.png"));
 
 
@@ -263,9 +265,6 @@ int main()
 	rpr_material_node materialImage2 = nullptr;
 	rpr_material_node uv_node = NULL;
 	{
-
-
-		
 		const std::string pathImageFileA = "../../Resources/Textures/amd.png";
 		rpr_status status = rprContextCreateImageFromFile(context, pathImageFileA.c_str(), &image2);
 		if (status == RPR_ERROR_IO_ERROR)
@@ -316,7 +315,7 @@ int main()
 	{
 		CHECK(rprContextCreateEnvironmentLight(context, &lightEnv));
 
-		const std::string pathImageFile = "../../Resources/Textures/envLightImage.exr";
+		const std::string pathImageFile = "../../Resources/Textures/turning_area_4k.hdr";
 		rpr_status status = rprContextCreateImageFromFile(context, pathImageFile.c_str(), &imgEnvLight); // import image use by the Env light
 		if (status == RPR_ERROR_IO_ERROR)
 		{
@@ -329,17 +328,28 @@ int main()
 		CHECK(rprEnvironmentLightSetImage(lightEnv, imgEnvLight));
 
 		// adjust the intensity of the Env light
-		CHECK(rprEnvironmentLightSetIntensityScale(lightEnv, 1.0f)); 
+		CHECK(rprEnvironmentLightSetIntensityScale(lightEnv, 0.8f)); 
+
+		//optional: env light can be rotated :
+		//RadeonProRender::matrix lightm = RadeonProRender::rotation_y(MY_PI/2.0f);
+		//CHECK( rprLightSetTransform(lightEnv, true, &lightm.m00));
 
 		// Set Env light as a background for the scene
 		CHECK(rprSceneAttachLight(scene, lightEnv));
 	}
 
+	// move camera 
+	CHECK( rprCameraLookAt(camera,  0, 4, 10,    0, 1, 0,    0, 1, 0) );
+
+	// modify display gamma. In most of the cases, display gamma should be around 2.2.
+	// This makes image brightness looking better on majority of monitors.
+	// Gamma is applied during the "rprContextResolveFrameBuffer" call.
+	CHECK( rprContextSetParameterByKey1f(context, RPR_CONTEXT_DISPLAY_GAMMA , 2.2f ) );
 
 	// render the current scene the same way we did for 05_01.png
 	CHECK(rprFrameBufferClear(frame_buffer) );
 	CHECK(rprContextRender(context) );
-	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,false));
 	CHECK(rprFrameBufferSaveToFile(frame_buffer_resolved,"05_02.png"));
 
 
@@ -385,7 +395,7 @@ int main()
 	// render the current scene the same way we did for 05_01.png
 	CHECK(rprFrameBufferClear(frame_buffer) );
 	CHECK(rprContextRender(context) );
-	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true));
+	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,false));
 	CHECK(rprFrameBufferSaveToFile(frame_buffer_resolved,"05_03.png"));
 
 

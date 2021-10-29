@@ -24,3 +24,5 @@ FreeGLUT – MIT License - https://sourceforge.net/projects/freeglut/
 picoJson - JSON parser - 2-clause BSD license - https://github.com/kazuho/picojson
 tinyObjLoader - OBJ parser - MIT License - https://github.com/tinyobjloader/tinyobjloader
 Premake - https://github.com/premake/premake-core - BSD 3-Clause "New" or "Revised" License - https://github.com/premake/premake-core/blob/master/LICENSE.txt
+turning_area_4k.hdr image - https://polyhaven.com/a/turning_area - License: CC0 (public domain)
+
