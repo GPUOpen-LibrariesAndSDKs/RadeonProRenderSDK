@@ -174,6 +174,7 @@ public:
 	void GCAdd(rpr_image n)			{ m_rprNodesCollector.push_back(n); }
 	void GCAdd(rpr_shape n)			{ m_rprNodesCollector.push_back(n); }
 	void GCAdd(rpr_light n)			{ m_rprNodesCollector.push_back(n); }
+	void GCAdd(rpr_framebuffer n)	{ m_rprNodesCollector.push_back(n); }
 	
 	void GCClean()
 	{
