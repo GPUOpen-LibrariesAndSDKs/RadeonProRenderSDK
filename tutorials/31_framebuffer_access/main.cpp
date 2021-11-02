@@ -19,6 +19,7 @@
 //
 // Here we demonstrate usage of rprFrameBufferGetInfo: We can access the image data of a frame buffer
 // In this demo, we use the data of a first rendering and use it as an input texture for a second rendering.
+// It also contains an example of DeepEXR framebuffer export.
 //
 
 
@@ -134,7 +135,9 @@ int main()
 	rpr_framebuffer frame_buffer = nullptr;
 	rpr_framebuffer frame_buffer_resolved = nullptr;
 	CHECK(rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer));
+	g_gc.GCAdd(frame_buffer);
 	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer_resolved) );
+	g_gc.GCAdd(frame_buffer_resolved);
 
 	
 	// Set framebuffer for the context
@@ -151,6 +154,39 @@ int main()
 
 	// This can be uncommented to see the framebuffer
 	// CHECK( rprFrameBufferSaveToFile(frame_buffer_resolved, "31_temp.png") );
+
+
+	//
+	// Demo for DeepEXR export.
+	//
+	// This part of code can be ignored ( or commented-out ) if the reader is not interested by DeepEXR: it doesn't affect the rest.
+	{
+		rpr_framebuffer_format fmt_deepEXR = { 0, RPR_COMPONENT_TYPE_DEEP }; // note that rpr_framebuffer_format::num_components is not needed for deepEXR.
+		rpr_framebuffer frame_buffer_deepEXR = NULL; 
+		CHECK( rprContextCreateFrameBuffer(context, fmt_deepEXR, &desc, &frame_buffer_deepEXR));
+		g_gc.GCAdd(frame_buffer_deepEXR);
+		CHECK( rprContextSetAOV(context, RPR_AOV_DEEP_COLOR, frame_buffer_deepEXR));
+
+		// MERGE_Z_THRESHOLD : Merge close samples in order to reduce the EXR file size. Any positive value can be set.
+		CHECK( rprContextSetParameterByKey1f(context,  RPR_CONTEXT_DEEP_SUBPIXEL_MERGE_Z_THRESHOLD,  0.1f)); 
+
+		// GPU_ALLOCATION_LEVEL : this sets the speed/memory usage trade-off on GPU when generating deepEXR. Should be 1~32.
+		// It's advised to use 4 ( current default value )
+		// Modifying this value do NOT change the generated deepEXR file, it's only about performance.
+		CHECK( rprContextSetParameterByKey1u(context,  RPR_CONTEXT_DEEP_GPU_ALLOCATION_LEVEL,  4));
+
+		// COLOR_ENABLED can be set to 0 in order to remove RGB data from the deepEXR. Advantages are smaller EXR file and faster generation.
+		CHECK( rprContextSetParameterByKey1u(context,  RPR_CONTEXT_DEEP_COLOR_ENABLED,  1));
+
+		// Render the scene
+		CHECK(rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,100)); // increasing interation makes bigger deepEXR file.
+		CHECK(rprFrameBufferClear(frame_buffer));
+		CHECK( rprContextRender(context) );
+
+		CHECK( rprFrameBufferSaveToFile(frame_buffer_deepEXR, "31_deepEXR.exr"));
+
+		std::cout << "DeepEXR exported." << std::endl;
+	}
 
 
 
@@ -229,8 +265,6 @@ int main()
 	CHECK(rprObjectDelete(light));light=nullptr;
 	CHECK(rprObjectDelete(diffuse));diffuse=nullptr;
 	CHECK(rprObjectDelete(camera));camera=nullptr;
-	CHECK(rprObjectDelete(frame_buffer));frame_buffer=nullptr;
-	CHECK(rprObjectDelete(frame_buffer_resolved));frame_buffer_resolved=nullptr;
 	g_gc.GCClean();
 	CHECK(rprObjectDelete(scene));scene=nullptr;
 	CheckNoLeak(context);
