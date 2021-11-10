@@ -5,7 +5,6 @@
 
     <image name="image_node" type="color3">
       <parameter name="file" type="filename" value="../../Resources/Textures/textest.png" />
-      <input name="texcoord" type="vector2" nodename="uv0" />
     </image>
 
 
