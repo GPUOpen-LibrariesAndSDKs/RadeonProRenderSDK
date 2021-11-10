@@ -15,7 +15,7 @@
 
 #include <cassert>
 #include <iostream>
-
+#include <memory>
 
 //
 // This demo illustrates how to use MaterialX with Radeon ProRender
