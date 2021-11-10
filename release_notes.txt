@@ -3,6 +3,44 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.02.9 - 10 November 2021
+
+## NORTHSTAR :
+RPRNEXT-907 - (Bug)      - Fix cpu+gpu rendering on macOS
+RPRNEXT-903 - (Task)     - Add shadow color feature
+RPRNEXT-901 - (Task)     - Improve performance in scene with a lot of transparent materials
+RPRNEXT-898 - (Bug)      - Fix RPR_MATERIAL_NODE_GRADIENT_TEXTURE color handling
+RPRNEXT-895 - (Bug)      - Fix blurry transparent render
+RPRNEXT-890 - (Bug)      - Optimize uv scaling shader network
+RPRNEXT-889 - (Bug)      - Fix hang with curve shape
+RPRNEXT-887 - (Bug)      - Fix hang with material shader
+RPRNEXT-879 - (Bug)      - Fix border artifact with alpha masking texture
+RPRNEXT-877 - (Bug)      - Fix shadow artifact with spot light
+RPRNEXT-875 - (Bug)      - Add mixed diffuse color support with albedo AOV
+RPRNEXT-874 - (Task)     - Add fog feature
+RPRNEXT-870 - (Bug)      - Optimize material shader performance 
+RPRNEXT-866 - (Bug)      - Fix crash on viewport render with IBL
+RPRNEXT-849 - (Task)     - Add support of cutting planes on scene
+RPRNEXT-808 - (Task)     - Improve BVH vram memory usage
+RPRNEXT-805 - (Task)     - Add spot light fall off support
+RPRNEXT-800 - (Bug)      - Fix black AOV render on viewport render
+RPRNEXT-744 - (Bug)      - Fix crash with single face scene
+
+## RPR API :
+
+ * Lots of tutorials in this SDK have been added/improved. ( https://github.com/GPUOpen-LibrariesAndSDKs/RadeonProRenderSDK/tree/master/tutorials )
+
+ * Cutting planes are now working in Northstar, with new API :
+  RPR_CONTEXT_CLIPPING_PLANE replaced by RPR_CONTEXT_CUTTING_PLANES.
+  Use rprContextSetCuttingPlane to manage the planes ( there is a demo of this feature in this SDK )
+
+ * You can now set the shadow color of shapes in Northstar, with rprShapeSetShadowColor
+
+ * Fog and Atmosphere Volume are new feature in Northstar. A demo of them will be added in this SDK soon.
+
+ * Next version will be called 2.02.10 with RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200210
+
+################################################################################################################
 RPR SDK 2.02.8 - 05 October 2021
 
 RPRNEXT-872 - (Bug)      - Fix crash on blender

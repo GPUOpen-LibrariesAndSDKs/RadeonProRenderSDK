@@ -457,11 +457,19 @@ Status Context::SetAOV(Aov aov, FrameBuffer* frame_buffer) {
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
-Status Context::SetAOVindexLookup(rpr_int key, rpr_float colorR, rpr_float colorG, rpr_float colorB, rpr_float colorA) {
+Status Context::SetAOVindexLookup(rpr_int key, float colorR, float colorG, float colorB, float colorA) {
     RPR_CPPWRAPER_CALL_PREFIX
     rprContextSetAOVindexLookup(m_context, key, colorR, colorG, colorB, colorA)
     RPR_CPPWRAPER_CALL_SUFFIX
 }
+
+
+Status Context::SetCuttingPlane(rpr_int index, float x, float y, float z, float w) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprContextSetCuttingPlane(m_context, index, x, y, z, w)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
 
 Status Context::SetScene(Scene* scene) {
     RPR_CPPWRAPER_CALL_PREFIX
@@ -949,6 +957,12 @@ Status Shape::SetShadowCatcher(rpr_bool shadowCatcher) {
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
+Status Shape::SetShadowColor(rpr_float r, rpr_float g, rpr_float b) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprShapeSetShadowColor(GetRprObject(this), r,g,b)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
 Status Shape::SetReflectionCatcher(rpr_bool reflectionCatcher) {
     RPR_CPPWRAPER_CALL_PREFIX
     rprShapeSetReflectionCatcher(GetRprObject(this), reflectionCatcher)
@@ -1012,6 +1026,12 @@ Status DiskLight::SetRadius(float radius) {
 Status DiskLight::SetAngle(float angle) {
     RPR_CPPWRAPER_CALL_PREFIX
     rprDiskLightSetAngle(GetRprObject(this), angle)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
+Status DiskLight::SetInnerAngle(float angle) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprDiskLightSetInnerAngle(GetRprObject(this), angle)
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 

@@ -33,9 +33,9 @@ extern "C" {
 
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 2 
-#define RPR_VERSION_REVISION 8 
-#define RPR_VERSION_BUILD 0x05e7f8bf 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200208 
+#define RPR_VERSION_REVISION 9 
+#define RPR_VERSION_BUILD 0x0e2db417 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200209 
 
 // Deprecated version naming - will be removed in the future :
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
@@ -72,6 +72,7 @@ extern "C" {
 #define RPR_ERROR_NODETYPE -28 
 #define RPR_ERROR_ABORTED -29 
 /*rpr_parameter_type*/
+#define RPR_PARAMETER_TYPE_UNDEF 0x0 
 #define RPR_PARAMETER_TYPE_FLOAT 0x1 
 #define RPR_PARAMETER_TYPE_FLOAT2 0x2 
 #define RPR_PARAMETER_TYPE_FLOAT3 0x3 
@@ -168,7 +169,7 @@ extern "C" {
 #define RPR_CONTEXT_ROUGHNESS_CAP 0x123 
 #define RPR_CONTEXT_DISPLAY_GAMMA 0x124 
 #define RPR_CONTEXT_MATERIAL_STACK_SIZE 0x125 
-#define RPR_CONTEXT_CLIPPING_PLANE 0x126 
+#define RPR_CONTEXT_CUTTING_PLANES 0x126 
 #define RPR_CONTEXT_GPU0_NAME 0x127 
 #define RPR_CONTEXT_GPU1_NAME 0x128 
 #define RPR_CONTEXT_GPU2_NAME 0x129 
@@ -269,6 +270,11 @@ extern "C" {
 #define RPR_CONTEXT_DEEP_SUBPIXEL_MERGE_Z_THRESHOLD 0x183 
 #define RPR_CONTEXT_DEEP_GPU_ALLOCATION_LEVEL 0x184 
 #define RPR_CONTEXT_DEEP_COLOR_ENABLED 0x185 
+#define RPR_CONTEXT_FOG_COLOR 0x189 
+#define RPR_CONTEXT_FOG_DISTANCE 0x18A 
+#define RPR_CONTEXT_FOG_HEIGHT 0x18B 
+#define RPR_CONTEXT_ATMOSPHERE_VOLUME_COLOR 0x18C 
+#define RPR_CONTEXT_ATMOSPHERE_VOLUME_DENSITY 0x18D 
 #define RPR_CONTEXT_NAME RPR_OBJECT_NAME
 #define RPR_CONTEXT_UNIQUE_ID RPR_OBJECT_UNIQUE_ID
 #define RPR_CONTEXT_CUSTOM_PTR RPR_OBJECT_CUSTOM_PTR
@@ -367,6 +373,7 @@ extern "C" {
 #define RPR_SHAPE_MOTION_TRANSFORMS 0x42C 
 #define RPR_SHAPE_CONTOUR_IGNORE 0x42D 
 #define RPR_SHAPE_RENDER_LAYER_LIST 0x42E 
+#define RPR_SHAPE_SHADOW_COLOR 0x42F 
 #define RPR_SHAPE_NAME RPR_OBJECT_NAME
 #define RPR_SHAPE_UNIQUE_ID RPR_OBJECT_UNIQUE_ID
 #define RPR_SHAPE_CUSTOM_PTR RPR_OBJECT_CUSTOM_PTR
@@ -468,6 +475,7 @@ extern "C" {
 #define RPR_DISK_LIGHT_RADIANT_POWER 0x823 
 #define RPR_DISK_LIGHT_RADIUS 0x825 
 #define RPR_DISK_LIGHT_ANGLE 0x826 
+#define RPR_DISK_LIGHT_INNER_ANGLE 0x827 
 /*rpr_parameter_info*/
 #define RPR_PARAMETER_NAME 0x1201 
 #define RPR_PARAMETER_TYPE 0x1203 
@@ -675,6 +683,7 @@ extern "C" {
 #define RPR_MATERIAL_NODE_MATX_COMBINE2 0x1046
 #define RPR_MATERIAL_NODE_MATX_COMBINE3 0x1047
 #define RPR_MATERIAL_NODE_MATX_COMBINE4 0x1048
+#define RPR_MATERIAL_NODE_MATX_TRIPLANARPROJECTION 0x1049
 /*rpr_material_node_input*/
 #define RPR_MATERIAL_INPUT_COLOR 0x0 
 #define RPR_MATERIAL_INPUT_COLOR0 0x1 
@@ -781,6 +790,10 @@ extern "C" {
 #define RPR_MATERIAL_INPUT_RANGE_SHADOW 0x66 
 #define RPR_MATERIAL_INPUT_RANGE_HIGHLIGHT 0x67 
 #define RPR_MATERIAL_INPUT_TOON_5_COLORS 0x68 
+#define RPR_MATERIAL_INPUT_X 0x69 
+#define RPR_MATERIAL_INPUT_Y 0x6a 
+#define RPR_MATERIAL_INPUT_Z 0x6b 
+#define RPR_MATERIAL_INPUT_W 0x6c 
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR 0x910
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT 0x927
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_ROUGHNESS 0x911
@@ -1413,6 +1426,34 @@ typedef _rpr_ies_image_desc rpr_ies_image_desc;
     *  @return                 RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprContextSetAOVindexLookup(rpr_context context, rpr_int key, rpr_float colorR, rpr_float colorG, rpr_float colorB, rpr_float colorA);
+
+
+    /** @brief Set a Cutting Plane (also called Clipping plane).
+    *
+    * Notes:
+    *  - In order to disable the 'index' cutting plane, set (A,B,C,D) = (0,0,0,0)
+    *    By default, on context creation all cutting planes are disabled.
+    * 
+    *  - Index can be any number. It doesn't need to define the list of plane as a contiguous list of indices.
+    *
+    *  - If the number of enabled planes is greater than the limit supported by the renderer,
+    *    then RPR_ERROR_UNSUPPORTED is return by the function.
+    *
+    *  - The normal of the equation plane points toward the area that is kept.
+    *
+    *  - If several clipping planes are used the rendered area will be the one commonly facing all the planes.
+    *
+    *  - Plane equation is Ax + By + Cz + D = 0
+    *
+    *  @param  context			The context to set the Cutting Plane
+    *  @param  index			cutting plane index ( starts from 0 )
+    *  @param  a				equation plane A
+    *  @param  b				equation plane B
+    *  @param  c				equation plane C
+    *  @param  d				equation plane D
+    *  @return					RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprContextSetCuttingPlane(rpr_context context, rpr_int index, rpr_float a, rpr_float b, rpr_float c, rpr_float d);
 
 
     /** @brief call a batch of rprContextSetAOVindexLookup
@@ -2365,6 +2406,17 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
   extern RPR_API_ENTRY rpr_status rprShapeSetShadowCatcher(rpr_shape shape, rpr_bool shadowCatcher);
 
 
+    /** @brief Set shadow color
+    *
+    *  @param  shape         The shape to set shadow color for
+    *  @param  r             Red component of the color
+    *  @param  g             Green component of the color
+    *  @param  b             Blue component of the color
+    *  @return               RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprShapeSetShadowColor(rpr_shape shape, rpr_float r, rpr_float g, rpr_float b);
+
+
     /** @brief Set Reflection catcher flag
     *
     *  @param  shape             The shape to set Reflection catcher flag for
@@ -2575,11 +2627,63 @@ extern RPR_API_ENTRY rpr_status rprContextCreateDiskLight(rpr_context context, r
     * 'img' can be NULL to disable textured.
     */
   extern RPR_API_ENTRY rpr_status rprSpotLightSetImage(rpr_light light, rpr_image img);
-extern RPR_API_ENTRY rpr_status rprSphereLightSetRadiantPower3f(rpr_light light, rpr_float r, rpr_float g, rpr_float b);
-extern RPR_API_ENTRY rpr_status rprSphereLightSetRadius(rpr_light light, rpr_float angle);
-extern RPR_API_ENTRY rpr_status rprDiskLightSetRadiantPower3f(rpr_light light, rpr_float r, rpr_float g, rpr_float b);
-extern RPR_API_ENTRY rpr_status rprDiskLightSetRadius(rpr_light light, rpr_float radius);
-extern RPR_API_ENTRY rpr_status rprDiskLightSetAngle(rpr_light light, rpr_float angle);
+
+
+    /** @brief Set Power for Sphere Light
+    *
+    *
+    *  @param  r R component of a radiant power vector
+    *  @param  g G component of a radiant power vector
+    *  @param  b B component of a radiant power vector
+    *  @return status RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprSphereLightSetRadiantPower3f(rpr_light light, rpr_float r, rpr_float g, rpr_float b);
+
+
+    /** @brief Set Radius for Sphere Light
+    *
+    *
+    *  @param angle  Outer angle in radians
+    *  @return status RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprSphereLightSetRadius(rpr_light light, rpr_float angle);
+
+
+    /** @brief Set Power for Disk Light
+    *
+    *
+    *  @param  r R component of a radiant power vector
+    *  @param  g G component of a radiant power vector
+    *  @param  b B component of a radiant power vector
+    *  @return status RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprDiskLightSetRadiantPower3f(rpr_light light, rpr_float r, rpr_float g, rpr_float b);
+
+
+    /** @brief Set Radius for Disk Light
+    *
+    *
+    *  @param radius  Radius to set
+    *  @return status RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprDiskLightSetRadius(rpr_light light, rpr_float radius);
+
+
+    /** @brief Set Outer Angle for Disk Light
+    *
+    *
+    *  @param  angle Outer angle in radians
+    *  @return status RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprDiskLightSetAngle(rpr_light light, rpr_float angle);
+
+
+    /** @brief Set Inner Angle for Disk Light
+    *
+    *  @param  innerAngle Inner angle in radians
+    *  @return status RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprDiskLightSetInnerAngle(rpr_light light, rpr_float innerAngle);
 
 
     /** @brief Set cone shape for a spot light
