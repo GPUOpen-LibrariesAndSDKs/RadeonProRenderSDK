@@ -61,11 +61,10 @@ namespace RadeonProRender
         return res*=v2;
     }
 
-    inline float2 operator*(float2 const& v1, float c)
-    {
-        float2 res = v1;
-        return res*=c;
-    }
+    inline float2 operator+(float2 const& v1, float c) { return float2(v1.x+c, v1.y+c); }
+    inline float2 operator-(float2 const& v1, float c) { return float2(v1.x-c, v1.y-c); }
+    inline float2 operator*(float2 const& v1, float c) { return float2(v1.x*c, v1.y*c); }
+    inline float2 operator/(float2 const& v1, float c) { return float2(v1.x/c, v1.y/c); }
 
     inline float2 operator*(float c, float2 const& v1)
     {

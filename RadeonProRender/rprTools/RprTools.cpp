@@ -172,6 +172,7 @@ bool IsDeviceNameWhitelisted(const char* deviceName, RPR_TOOLS_OS os)
 	listOfKnownCompatibleDevices_partial.push_back("Radeon Pro 580");
 	listOfKnownCompatibleDevices_partial.push_back("FirePro D500");
 	listOfKnownCompatibleDevices_partial.push_back("FirePro D700");
+	listOfKnownCompatibleDevices_partial.push_back("W6800");
 
 
 	// partial names - WxxxM

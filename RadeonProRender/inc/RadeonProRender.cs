@@ -335,6 +335,7 @@ FOG_DISTANCE = 0x18A ,
 FOG_HEIGHT = 0x18B ,
 ATMOSPHERE_VOLUME_COLOR = 0x18C ,
 ATMOSPHERE_VOLUME_DENSITY = 0x18D ,
+FOG_HEIGHT_OFFSET = 0x18E ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -1309,7 +1310,7 @@ VISIBILITY_LIGHT = 0x421 ,
 public const uint RPR_VERSION_MAJOR = 2 ;
 public const uint RPR_VERSION_MINOR = 2 ;
 public const uint RPR_VERSION_REVISION = 9 ;
-public const uint RPR_VERSION_BUILD = 0x0e2db417 ;
+public const uint RPR_VERSION_BUILD = 0x69c3110c ;
 public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200209 ;
 // Deprecated version naming - will be removed in the future :
 

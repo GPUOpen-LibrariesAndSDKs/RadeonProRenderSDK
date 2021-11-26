@@ -17,6 +17,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #ifndef MATHUTILS_H
 #define MATHUTILS_H
 
+#include "float4.h"
 #include "float3.h"
 #include "float2.h"
 #include "quaternion.h"

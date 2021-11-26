@@ -24,7 +24,7 @@ extern "C" {
 
   /** @brief Parse a MaterialX XML data, and create the Material graph composed of rpr_material_nodes, and rpr_images
   *
-  *  -----> Note: MaterialX API is still in development, this function is part of the 'Version 1' API, it may be replaced by the 'Version 2' 
+  *  -----> This function is part of the 'Version 1' API - deprecated and replaced by the 'Version 2' API
   *
   * @param xmlData                       null-terminated string of the MaterialX XML data
   * @param resourcePaths and  resourcePathsCount   list of paths used for image loading
@@ -56,7 +56,7 @@ extern "C" {
 
   /** @brief Free the buffers allocated by rprLoadMaterialX
   *
-  *  -----> Note: MaterialX API is still in development, this function is part of the 'Version 1' API, it may be replaced by the 'Version 2' 
+  *  -----> This function is part of the 'Version 1' API - deprecated and replaced by the 'Version 2' API
   *
   * It does NOT call any rprObjectDelete
   * Internally it's doing a simple:
@@ -70,7 +70,7 @@ extern "C" {
 
   /** @brief  Add resource search path.
   *
-  * -----> Note: MaterialX API is still in development, this function is part of the 'Version 2' API that should replace 'Version 1'
+  * -----> Note: This function is part of the 'Version 2' MaterialX API that replaces 'Version 1'
   *
   * example:
   * rprMaterialXAddResourceFolder(context, "dependency/");
@@ -84,7 +84,7 @@ extern "C" {
 
   /** @brief  Clean the list created by rprMaterialXAddResourceFolder calls
   *
-  * -----> Note: MaterialX API is still in development, this function is part of the 'Version 2' API that should replace 'Version 1'
+  * -----> Note: This function is part of the 'Version 2' MaterialX API that replaces 'Version 1'
   *
   */
   extern RPR_API_ENTRY rpr_status rprMaterialXCleanResourceFolder(rpr_context in_context);
@@ -92,7 +92,7 @@ extern "C" {
 
   /** @brief  Add a dependency Mtlx file.
   *
-  * -----> Note: MaterialX API is still in development, this function is part of the 'Version 2' API that should replace 'Version 1'
+  * -----> Note: This function is part of the 'Version 2' MaterialX API that replaces 'Version 1'
   *
   * example:
   * rprMaterialXAddDependencyMtlx(context, "standard_surface.mtlx");
@@ -105,7 +105,7 @@ extern "C" {
 
   /** @brief  Clean the list created by rprMaterialXAddDependencyMtlx calls
   *
-  * -----> Note: MaterialX API is still in development, this function is part of the 'Version 2' API that should replace 'Version 1'
+  * -----> Note: This function is part of the 'Version 2' MaterialX API that replaces 'Version 1'
   *
   */
   extern RPR_API_ENTRY rpr_status rprMaterialXCleanDependencyMtlx(rpr_context in_context);
@@ -113,7 +113,7 @@ extern "C" {
 
   /** @brief  Add a pre-loaded image to the MaterialX creation.
   *
-  * -----> Note: MaterialX API is still in development, this function is part of the 'Version 2' API that should replace 'Version 1'
+  * -----> Note: This function is part of the 'Version 2' MaterialX API that replaces 'Version 1'
   *
   * example:
   * rprMaterialXAddPreloadedImage(context, "images/back.png" , imgA);
@@ -128,7 +128,7 @@ extern "C" {
 
   /** @brief  Clean the map created by rprMaterialXAddPreloadedImage calls.
   *
-  * -----> Note: MaterialX API is still in development, this function is part of the 'Version 2' API that should replace 'Version 1'
+  * -----> Note: This function is part of the 'Version 2' MaterialX API that replaces 'Version 1'
   *
   */
   extern RPR_API_ENTRY rpr_status rprMaterialXCleanPreloadedImages(rpr_context in_context);
@@ -136,7 +136,7 @@ extern "C" {
 
   /** @brief  Assign the materialX file to a RPR material.
   *
-  * -----> Note: MaterialX API is still in development, this function is part of the 'Version 2' API that should replace 'Version 1'
+  * -----> Note: This function is part of the 'Version 2' MaterialX API that replaces 'Version 1'
   *
   *  The material must be created as RPR_MATERIAL_NODE_MATX type.
   *
@@ -146,7 +146,7 @@ extern "C" {
 
   /** @brief  Same that rprMaterialXSetFile but input a file buffer instead of the file.
   *
-  * -----> Note: MaterialX API is still in development, this function is part of the 'Version 2' API that should replace 'Version 1'
+  * -----> Note: This function is part of the 'Version 2' MaterialX API that replaces 'Version 1'
   *
   * 'buffer' represents the content of a XML string defining the MaterialX material.
   *          The size of the buffer is defined by 'bufferSize', not by a null-terminated character.
