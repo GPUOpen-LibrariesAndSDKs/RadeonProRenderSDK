@@ -401,7 +401,7 @@ const Configuration loadConfigFile(const char* filepath)
 		std::cout << "Rendermode         : " << config.contextSettings.renderMode << '\n';
 		std::cout << "Recursion          : " << config.contextSettings.recursion << '\n';
 		std::cout << "Batchsize          : " << config.contextSettings.batchSize << '\n';
-		std::cout << "outImageFile       : " << config.contextSettings.outImgFile << '\n\n';
+		std::cout << "outImageFile       : " << config.contextSettings.outImgFile << "\n\n";
 	}
 
 	if (!bLight && !bIbl)
@@ -421,7 +421,7 @@ const Configuration loadConfigFile(const char* filepath)
 		std::cout << "Translation :" << config.cameraSettings.translation << '\n';
 		std::cout << "Up          :" << config.cameraSettings.up << '\n';
 		std::cout << "Focal Length:" << config.cameraSettings.focalLength << '\n';
-		std::cout << "Camera Mode :" << config.cameraSettings.cameraMode << '\n\n';
+		std::cout << "Camera Mode :" << config.cameraSettings.cameraMode << "\n\n";
 	}
 
 	if (!bShape)
@@ -432,7 +432,7 @@ const Configuration loadConfigFile(const char* filepath)
 		std::cout << "Path        :" << settings.path << '\n';
 		std::cout << "Rotation    : " << settings.rotation << '\n';
 		std::cout << "Translation : " << settings.translation << '\n';
-		std::cout << "Scale       : " << settings.scale << '\n\n';
+		std::cout << "Scale       : " << settings.scale << "\n\n";
 
 		settings.translation = RadeonProRender::float3{0.0f, -3.0f, 0.0f};
 		settings.scale = RadeonProRender::float3{1.0f, 1.0f, 1.0f};

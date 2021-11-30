@@ -45,6 +45,7 @@
 #include <cassert>
 #include <iostream>
 #include <thread>
+#include <memory>
 
 const unsigned int WINDOW_WIDTH = 640;
 const unsigned int WINDOW_HEIGHT = 480;
@@ -84,9 +85,9 @@ public:
 };
 
 
-GLuint              g_vertex_buffer_id = NULL;
-GLuint              g_index_buffer_id = NULL;
-GLuint              g_texture = NULL;
+GLuint              g_vertex_buffer_id = 0;
+GLuint              g_index_buffer_id = 0;
+GLuint              g_texture = 0;
 rpr_framebuffer		g_frame_buffer = NULL;
 rpr_context         g_context = NULL;
 rpr_material_system g_matsys = NULL;
