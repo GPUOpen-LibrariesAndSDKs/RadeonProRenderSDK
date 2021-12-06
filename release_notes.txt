@@ -3,6 +3,25 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.02.10 - 06 December 2021
+
+## NORTHSTAR :
+RPRNEXT-934 - (Bug)      - Improve render performance on vega and older cards
+RPRNEXT-933 - (Bug)      - Fix motion blur with instance on GPU
+RPRNEXT-932 - (Bug)      - Fix shader artifact
+RPRNEXT-927 - (Bug)      - Fix disappearing emission in volume
+RPRNEXT-920 - (Task)     - Add fog offset to control its starting point
+RPRNEXT-919 - (Bug)      - Fix add node of materialX
+RPRNEXT-916 - (Bug)      - Fix a crash with .tif file when using Zip compression
+RPRNEXT-914 - (Bug)      - Fix artifacts of atmosphere volume with disk lights
+RPRNEXT-857 - (Bug)      - Fix LPE to handle shadow catcher
+RPRNEXT-684 - (Bug)      - Apply OCIO color mapping to alpha channel
+
+## RPR API :
+ * RadeonProRender::float4 has now its own class ( instead of being defined as   typedef float3 float4;   ). This is to fix arithmetics with float4.W component.
+ * half is now defined inside the RadeonProRender namespace.
+
+################################################################################################################
 RPR SDK 2.02.9 - 10 November 2021
 
 ## NORTHSTAR :

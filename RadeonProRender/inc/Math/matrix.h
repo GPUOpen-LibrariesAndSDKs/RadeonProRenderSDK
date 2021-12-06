@@ -21,6 +21,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include <cstring>
 
 #include "float3.h"
+#include "float4.h"
 
 namespace RadeonProRender
 {
@@ -188,6 +189,20 @@ namespace RadeonProRender
         return res;
     }
 
+       inline float4 operator * (matrix const& m, float4 const& v)
+    {
+        float4 res;
+
+        for (int i=0;i<4;++i)
+        {
+            res[i] = 0.f;
+            for (int j=0;j<4;++j)
+                res[i] += m.m[i][j] * v[j];
+        }
+
+        return res;
+    }
+
     inline matrix inverse(matrix const& m)
     {
         int indxc[4], indxr[4];
@@ -286,7 +301,7 @@ namespace RadeonProRender
 		matrix pmat, invpmat, tinvpmat;
 		/* Vector4 type and functions need to be added to the common set. */
 		float4 prhs, psol;
-		float4 row[3], pdum3;
+		float3 row[3], pdum3;
 
 		locmat = mat;
 		/* Normalize the matrix. */

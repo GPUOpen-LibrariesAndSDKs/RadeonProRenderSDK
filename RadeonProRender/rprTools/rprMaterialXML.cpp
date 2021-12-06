@@ -16,6 +16,7 @@
 #include <fstream>
 #include <unordered_set>
 #include "Math/float3.h"
+#include "Math/float4.h"
 
 #define MACRO__IF_TYPE_THEN_SET(a)  else if ( nodeElement_type == #a ) { newNode.materialType = RPR_MATERIAL_NODE_##a; }
 

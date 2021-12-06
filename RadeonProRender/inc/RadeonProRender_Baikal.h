@@ -174,6 +174,9 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_EXPOSURE 0x1030
 #define RPR_CONTEXT_TONE_MAPPING 0x1031
 #define RPR_CONTEXT_ENABLE_VOLUMES 0x1032 // Enable volume rendering. It is recommended to turn off this feature  (if scene hasn't volumes) because it creates a small overhead
+#define RPR_CONTEXT_RESTIR_GI 0x1033
+#define RPR_CONTEXT_PSR_ATTENUATION 0x1034 // Path Space Regularization: Attenuation factor for roughness. [0.0, 1.0], 0.0 - Unbiased, high variance, 1.0 - Biased, low variance
+#define RPR_CONTEXT_MATERIAL_CACHE 0x1035 // Reduce shaders compilation time, in some cases can increase performance
 
 /* Traversal modes */
 #define RPR_HYBRID_TRAVERSAL_STATIC_TLAS_SEPARATE 0x1 ///< Use a separate acceleration structure for static objects

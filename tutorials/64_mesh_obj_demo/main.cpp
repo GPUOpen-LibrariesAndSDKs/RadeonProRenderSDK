@@ -85,6 +85,23 @@ void fill(const picojson::object& v, const char* key, T& dst)
 
 template<>
 inline
+void fill(const picojson::object& v, const char* key, RadeonProRender::float3& dst)
+{
+	auto c = v.find(key);
+	if (c != v.end())
+	{
+		int j = 0;
+		const picojson::value& d = c->second;
+		const picojson::array &a = d.get<picojson::array>();
+		for (picojson::array::const_iterator i = a.begin(); i != a.end(); ++i) {
+			dst[j++] = std::stof(i->to_str());
+		}
+		
+	}
+}
+
+template<>
+inline
 void fill(const picojson::object& v, const char* key, RadeonProRender::float4& dst)
 {
 	auto c = v.find(key);

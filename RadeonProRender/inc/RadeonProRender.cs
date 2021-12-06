@@ -153,6 +153,7 @@ ENABLE_GPU12 = (1 << 15) ,
 ENABLE_GPU13 = (1 << 16) ,
 ENABLE_GPU14 = (1 << 17) ,
 ENABLE_GPU15 = (1 << 18) ,
+ENABLE_HIP = (1 << 19) ,
 ENABLE_DEBUG = (1 << 31) ,
 }
 /*rpr_aa_filter*/
@@ -335,6 +336,7 @@ FOG_DISTANCE = 0x18A ,
 FOG_HEIGHT = 0x18B ,
 ATMOSPHERE_VOLUME_COLOR = 0x18C ,
 ATMOSPHERE_VOLUME_DENSITY = 0x18D ,
+FOG_HEIGHT_OFFSET = 0x18E ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -1308,9 +1310,9 @@ VISIBILITY_LIGHT = 0x421 ,
 }
 public const uint RPR_VERSION_MAJOR = 2 ;
 public const uint RPR_VERSION_MINOR = 2 ;
-public const uint RPR_VERSION_REVISION = 9 ;
-public const uint RPR_VERSION_BUILD = 0x0e2db417 ;
-public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200209 ;
+public const uint RPR_VERSION_REVISION = 10 ;
+public const uint RPR_VERSION_BUILD = 0xe46836cc ;
+public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200210 ;
 // Deprecated version naming - will be removed in the future :
 
 public const uint RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;

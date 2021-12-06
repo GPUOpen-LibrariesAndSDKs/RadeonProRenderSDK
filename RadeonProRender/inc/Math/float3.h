@@ -37,18 +37,18 @@ namespace RadeonProRender
         float3& operator += (float3 const& o) { x+=o.x; y+=o.y; z+= o.z; return *this;}
         float3& operator -= (float3 const& o) { x-=o.x; y-=o.y; z-= o.z; return *this;}
         float3& operator *= (float3 const& o) { x*=o.x; y*=o.y; z*= o.z; return *this;}
+        float3& operator /= (float3 const& o) { x/=o.x; y/=o.y; z/= o.z; return *this;}
         float3& operator *= (float c) { x*=c; y*=c; z*= c; return *this;}
         float3& operator /= (float c) { float cinv = 1.f/c; x*=cinv; y*=cinv; z*=cinv; return *this;}
         friend std::ostream& operator<<(std::ostream& os, const float3& o);
 
-        float x, y, z, w;
+        float x, y, z, 
+            w; // in this library, float3 is aligned on float4
     };
-
-    typedef float3 float4;
 
     inline std::ostream& operator<<(std::ostream& os, const float3& o)
     {
-        os << "[" << o.x << ", " << o.y << ", " << o.z << ", " << o.w <<  "]";
+        os << "[" << o.x << ", " << o.y << ", " << o.z <<  "]";
         return os;
     }
 
@@ -70,11 +70,16 @@ namespace RadeonProRender
         return res*=v2;
     }
 
-    inline float3 operator*(float3 const& v1, float c)
+    inline float3 operator/(float3 const& v1, float3 const& v2)
     {
         float3 res = v1;
-        return res*=c;
+        return res/=v2;
     }
+
+    inline float3 operator+(float3 const& v1, float c) { return float3(v1.x+c, v1.y+c, v1.z+c); }
+    inline float3 operator-(float3 const& v1, float c) { return float3(v1.x-c, v1.y-c, v1.z-c); }
+    inline float3 operator*(float3 const& v1, float c) { return float3(v1.x*c, v1.y*c, v1.z*c); }
+    inline float3 operator/(float3 const& v1, float c) { return float3(v1.x/c, v1.y/c, v1.z/c); }
 
     inline float3 operator*(float c, float3 const& v1)
     {
