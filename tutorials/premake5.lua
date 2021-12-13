@@ -96,6 +96,7 @@ solution "Tutorials"
 	include "61_mesh_import"
  	include "63_hybrid"
     include "64_mesh_obj_demo"
+    include "65_mesh_convert"
 
 	if fileExists("./MultiTutorials/MultiTutorials.lua") then
 		dofile("./MultiTutorials/MultiTutorials.lua")
