@@ -97,6 +97,8 @@ int main()
 	CHECK( rprContextSetAOV(context, RPR_AOV_COLOR, fb_color) );
 
 	// Optional : add a Velocity AOV. this could be useful for debugging or post processing
+	// for RPR_AOV_VELOCITY, note that the vectors are in 2d, in screen space, also the vector lenghts are in pixels 
+	// ( if translation of +10 pixels, then Velocity color will have a value of 10.0 )
 	rpr_framebuffer fb_velocity = nullptr;
 	rpr_framebuffer fb_velocity_resolved = nullptr;
 	CHECK( rprContextCreateFrameBuffer(context, fmt, &desc, &fb_velocity) );
@@ -140,7 +142,7 @@ int main()
 	CHECK( rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,200));
 	CHECK( rprContextRender(context) );
 	CHECK( rprContextResolveFrameBuffer(context,fb_color,fb_color_resolved,false));
-	CHECK( rprContextResolveFrameBuffer(context,fb_velocity,fb_velocity_resolved,false));
+	CHECK( rprContextResolveFrameBuffer(context,fb_velocity,fb_velocity_resolved,true)); // <- note that we use TRUE as we don't want DISPLAY_GAMMA to be applied on AOV_VELOCITY,
 	CHECK( rprFrameBufferSaveToFile(fb_color_resolved, "12_0.png") );
 	std::cout << "Rendering 12_0 finished." << std::endl;
 
@@ -162,7 +164,7 @@ int main()
 	CHECK( rprFrameBufferClear(fb_velocity) );
 	CHECK( rprContextRender(context) );
 	CHECK( rprContextResolveFrameBuffer(context,fb_color,fb_color_resolved,false));
-	CHECK( rprContextResolveFrameBuffer(context,fb_velocity,fb_velocity_resolved,false));
+	CHECK( rprContextResolveFrameBuffer(context,fb_velocity,fb_velocity_resolved,true));
 	CHECK( rprFrameBufferSaveToFile(fb_color_resolved, "12_1.png") );
 	CHECK( rprFrameBufferSaveToFile(fb_velocity_resolved, "12_1v.png") );
 	std::cout << "Rendering 12_1 finished." << std::endl;
@@ -176,7 +178,7 @@ int main()
 	CHECK( rprFrameBufferClear(fb_velocity) );
 	CHECK( rprContextRender(context) );
 	CHECK( rprContextResolveFrameBuffer(context,fb_color,fb_color_resolved,false));
-	CHECK( rprContextResolveFrameBuffer(context,fb_velocity,fb_velocity_resolved,false));
+	CHECK( rprContextResolveFrameBuffer(context,fb_velocity,fb_velocity_resolved,true));
 	CHECK( rprFrameBufferSaveToFile(fb_color_resolved, "12_2.png") );
 	CHECK( rprFrameBufferSaveToFile(fb_velocity_resolved, "12_2v.png") );
 	std::cout << "Rendering 12_2 finished." << std::endl;
@@ -190,7 +192,7 @@ int main()
 	CHECK( rprFrameBufferClear(fb_velocity) );
 	CHECK( rprContextRender(context) );
 	CHECK( rprContextResolveFrameBuffer(context,fb_color,fb_color_resolved,false));
-	CHECK( rprContextResolveFrameBuffer(context,fb_velocity,fb_velocity_resolved,false));
+	CHECK( rprContextResolveFrameBuffer(context,fb_velocity,fb_velocity_resolved,true));
 	CHECK( rprFrameBufferSaveToFile(fb_color_resolved, "12_3.png") );
 	CHECK( rprFrameBufferSaveToFile(fb_velocity_resolved, "12_3v.png") );
 	std::cout << "Rendering 12_3 finished." << std::endl;
