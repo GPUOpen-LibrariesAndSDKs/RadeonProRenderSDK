@@ -1311,7 +1311,7 @@ VISIBILITY_LIGHT = 0x421 ,
 public const uint RPR_VERSION_MAJOR = 2 ;
 public const uint RPR_VERSION_MINOR = 2 ;
 public const uint RPR_VERSION_REVISION = 10 ;
-public const uint RPR_VERSION_BUILD = 0xe46836cc ;
+public const uint RPR_VERSION_BUILD = 0xa44a80cf ;
 public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200210 ;
 // Deprecated version naming - will be removed in the future :
 
@@ -4022,24 +4022,24 @@ return rprFrameBufferSaveToFileEx(framebufferList, framebufferCount, filePath, e
 
     /** @brief Resolve framebuffer
     *
-    *   Resolve applies AA filters and tonemapping operators to the framebuffer data
+    * Convert the input Renderer's native raw format 'src_frame_buffer' into an output 'dst_frame_buffer' that can be used for final rendering.
     *
-    *   Possible error codes:
-    *      RPR_ERROR_OUT_OF_SYSTEM_MEMORY
-    *      RPR_ERROR_OUT_OF_VIDEO_MEMORY
+    * src_frame_buffer and dst_frame_buffer should usually have the same dimension/format.
+    * src_frame_buffer is the result of a rprContextRender and should be attached to an AOV with rprContextSetAOV before the rprContextRender call.
+    * dst_frame_buffer should not be attached to any AOV.
     *
-    * if normalizeOnly is TRUE : it only normalizes src_frame_buffer, and write the result in dst_frame_buffer.
-    * if normalizeOnly is FALSE : it applies all the rpr_post_process attached to the context with rprContextAttachPostEffect
+    * The post process that is applied to src_frame_buffer depends on the AOV it's attached to. So it's important to not modify its AOV ( with rprContextSetAOV )
+    * between the rprContextRender and rprContextResolveFrameBuffer calls.
     *
-    * Note: in RPR API 1.310, the default value of normalizeOnly has been removed.
-    *       Set it to FALSE, if you don't use this argument.
+    * If noDisplayGamma=FALSE, then RPR_CONTEXT_DISPLAY_GAMMA is applied to the dst_frame_buffer otherwise, display gamma is not used.
+    * It's recommended to set it to FALSE for AOVs representing colors ( like RPR_AOV_COLOR ) and use TRUE for other AOVs.
     *
     */
   
-[DllImport(dllName)] static extern Status rprContextResolveFrameBuffer(IntPtr context, IntPtr src_frame_buffer, IntPtr dst_frame_buffer, bool normalizeOnly);
-public static Status ContextResolveFrameBuffer(IntPtr context, IntPtr src_frame_buffer, IntPtr dst_frame_buffer, bool normalizeOnly)
+[DllImport(dllName)] static extern Status rprContextResolveFrameBuffer(IntPtr context, IntPtr src_frame_buffer, IntPtr dst_frame_buffer, bool noDisplayGamma);
+public static Status ContextResolveFrameBuffer(IntPtr context, IntPtr src_frame_buffer, IntPtr dst_frame_buffer, bool noDisplayGamma)
 {
-return rprContextResolveFrameBuffer(context, src_frame_buffer, dst_frame_buffer, normalizeOnly);
+return rprContextResolveFrameBuffer(context, src_frame_buffer, dst_frame_buffer, noDisplayGamma);
 }
 
     /** @brief Create material system
