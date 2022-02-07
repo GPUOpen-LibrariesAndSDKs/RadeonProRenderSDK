@@ -58,6 +58,7 @@ using ImageFilterType = rpr_image_filter_type;
 using ImageFormat = rpr_image_format;
 using ImageInfo = rpr_image_info;
 using ImageWrapType = rpr_image_wrap_type;
+using PrimvarInterpolationType = rpr_primvar_interpolation_type;
 using LightInfo = rpr_light_info;
 using MaterialNodeArithmeticOperation = rpr_material_node_arithmetic_operation;
 using MaterialNodeInfo = rpr_material_node_info;
@@ -152,7 +153,7 @@ public:
     Status RenderTile(rpr_uint xmin, rpr_uint xmax, rpr_uint ymin, rpr_uint ymax);
     Status ClearMemory();
     Status GetFunctionPtr(rpr_char const* functionName, void** out_functionPtr);
-    Status ResolveFrameBuffer(FrameBuffer* srcFrameBuffer, FrameBuffer* dstFrameBuffer, rpr_bool normalizeOnly);
+    Status ResolveFrameBuffer(FrameBuffer* srcFrameBuffer, FrameBuffer* dstFrameBuffer, rpr_bool noDisplayGamma);
     Status AttachPostEffect(PostEffect* effect);
     Status DetachPostEffect(PostEffect* effect);
     Status GetAttachedPostEffectCount(rpr_uint* nb);
@@ -316,12 +317,12 @@ class Shape : public SceneObject {
 public:
     virtual ~Shape() = default;
 
-    Status SetVertexValue(rpr_int setIndex, rpr_int const* indices, float const* values, rpr_int indicesCount);
+    Status SetVertexValue(rpr_int setIndex, rpr_int const* indices, rpr_float const* values, rpr_int indicesCount);
     Status SetSubdivisionFactor(rpr_uint factor);
-    Status SetSubdivisionCreaseWeight(float factor);
+    Status SetSubdivisionCreaseWeight(rpr_float factor);
     Status SetSubdivisionBoundaryInterop(SubdivBoundaryInterfopType type);
     Status AutoAdaptSubdivisionFactor(FrameBuffer* framebuffer, Camera* camera, rpr_int factor);
-    Status SetDisplacementScale(float minscale, float maxscale);
+    Status SetDisplacementScale(rpr_float minscale, rpr_float maxscale);
     Status SetObjectGroupID(rpr_uint objectGroupID);
     Status SetObjectID(rpr_uint objectID);
     Status SetLightGroupID(rpr_uint lightGroupID);
@@ -329,9 +330,9 @@ public:
     Status SetDisplacementMaterial(MaterialNode* materialNode);
     Status SetMaterialFaces(MaterialNode* node, rpr_int const* faceIndices, size_t numFaces);
     Status SetVolumeMaterial(MaterialNode* node);
-    Status SetLinearMotion(float x, float y, float z);
-    Status SetAngularMotion(float x, float y, float z, float w);
-    Status SetScaleMotion(float x, float y, float z);
+    Status SetLinearMotion(rpr_float x, rpr_float y, rpr_float z);
+    Status SetAngularMotion(rpr_float x, rpr_float y, rpr_float z, rpr_float w);
+    Status SetScaleMotion(rpr_float x, rpr_float y, rpr_float z);
     Status SetVisibilityFlag(ShapeInfo visibilityFlag, rpr_bool visible);
     Status SetVisibility(rpr_bool visible);
     Status SetVisibilityInSpecular(rpr_bool visible);
@@ -342,6 +343,7 @@ public:
     Status GetInfo(ShapeInfo arg1, size_t arg2, void* arg3, size_t* arg4);
     Status SetHeteroVolume(HeteroVolume* heteroVolume);
     Status SetMaterial(MaterialNode* material);
+    Status SetPrimvar(rpr_uint key, rpr_float const * data, rpr_uint floatCount, rpr_uint componentCount, PrimvarInterpolationType interop);
 
     Status SetTransform(float const* transform, rpr_bool transpose) override;
 

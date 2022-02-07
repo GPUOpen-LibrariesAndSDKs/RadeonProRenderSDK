@@ -33,9 +33,9 @@ extern "C" {
 
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 2 
-#define RPR_VERSION_REVISION 10 
-#define RPR_VERSION_BUILD 0xe46836cc 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200210 
+#define RPR_VERSION_REVISION 11 
+#define RPR_VERSION_BUILD 0xfd9fa61e 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200211 
 
 // Deprecated version naming - will be removed in the future :
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
@@ -117,6 +117,12 @@ extern "C" {
 #define RPR_CONTEXT_SAMPLER_TYPE_SOBOL 0x1 
 #define RPR_CONTEXT_SAMPLER_TYPE_RANDOM 0x2 
 #define RPR_CONTEXT_SAMPLER_TYPE_CMJ 0x3 
+/*rpr_primvar_interpolation_type*/
+#define RPR_PRIMVAR_INTERPOLATION_CONSTANT 0x1 
+#define RPR_PRIMVAR_INTERPOLATION_UNIFORM 0x2 
+#define RPR_PRIMVAR_INTERPOLATION_VERTEX 0x3 
+#define RPR_PRIMVAR_INTERPOLATION_FACEVARYING_NORMAL 0x4 
+#define RPR_PRIMVAR_INTERPOLATION_FACEVARYING_UV 0x5 
 /*rpr_shape_type*/
 #define RPR_SHAPE_TYPE_MESH 0x1 
 #define RPR_SHAPE_TYPE_INSTANCE 0x2 
@@ -276,7 +282,10 @@ extern "C" {
 #define RPR_CONTEXT_FOG_HEIGHT 0x18B 
 #define RPR_CONTEXT_ATMOSPHERE_VOLUME_COLOR 0x18C 
 #define RPR_CONTEXT_ATMOSPHERE_VOLUME_DENSITY 0x18D 
+#define RPR_CONTEXT_ATMOSPHERE_VOLUME_RADIANCE_CLAMP 0x18F 
 #define RPR_CONTEXT_FOG_HEIGHT_OFFSET 0x18E 
+#define RPR_CONTEXT_CRYPTOMATTE_EXTENDED 0x191 
+#define RPR_CONTEXT_CRYPTOMATTE_SPLIT_INDIRECT 0x192 
 #define RPR_CONTEXT_NAME RPR_OBJECT_NAME
 #define RPR_CONTEXT_UNIQUE_ID RPR_OBJECT_UNIQUE_ID
 #define RPR_CONTEXT_CUSTOM_PTR RPR_OBJECT_CUSTOM_PTR
@@ -376,6 +385,8 @@ extern "C" {
 #define RPR_SHAPE_CONTOUR_IGNORE 0x42D 
 #define RPR_SHAPE_RENDER_LAYER_LIST 0x42E 
 #define RPR_SHAPE_SHADOW_COLOR 0x42F 
+#define RPR_SHAPE_VISIBILITY_RECEIVE_SHADOW 0x430 
+#define RPR_SHAPE_PRIMVARS 0x431
 #define RPR_SHAPE_NAME RPR_OBJECT_NAME
 #define RPR_SHAPE_UNIQUE_ID RPR_OBJECT_UNIQUE_ID
 #define RPR_SHAPE_CUSTOM_PTR RPR_OBJECT_CUSTOM_PTR
@@ -610,6 +621,8 @@ extern "C" {
 #define RPR_MATERIAL_NODE_VORONOI_TEXTURE 0x32 
 #define RPR_MATERIAL_NODE_GRID_SAMPLER 0x33 
 #define RPR_MATERIAL_NODE_BLACKBODY 0x34 
+#define RPR_MATERIAL_NODE_RAMP 0x35 
+#define RPR_MATERIAL_NODE_PRIMVAR_LOOKUP 0x36 
 
     
 #define RPR_MATERIAL_NODE_MATX_DIFFUSE_BRDF 0x1000
@@ -925,6 +938,14 @@ extern "C" {
 #define RPR_MATERIAL_NODE_LOOKUP_SHAPE_RANDOM_COLOR 0xb 
 #define RPR_MATERIAL_NODE_LOOKUP_OBJECT_ID 0xc 
 #define RPR_MATERIAL_NODE_LOOKUP_PRIMITIVE_RANDOM_COLOR 0xd 
+/*rpr_material_gradient_procedural_type*/
+#define RPR_MATERIAL_GRADIENT_PROCEDURAL_TYPE_LINEAR 0x1 
+#define RPR_MATERIAL_GRADIENT_PROCEDURAL_TYPE_QUADRATIC 0x2 
+#define RPR_MATERIAL_GRADIENT_PROCEDURAL_TYPE_EASING 0x3 
+#define RPR_MATERIAL_GRADIENT_PROCEDURAL_TYPE_DIAGONAL 0x4 
+#define RPR_MATERIAL_GRADIENT_PROCEDURAL_TYPE_SPHERICAL 0x5 
+#define RPR_MATERIAL_GRADIENT_PROCEDURAL_TYPE_QUAD_SPHERE 0x6 
+#define RPR_MATERIAL_GRADIENT_PROCEDURAL_TYPE_RADIAL 0x7 
 /*rpr_material_node_uvtype_value*/
 #define RPR_MATERIAL_NODE_UVTYPE_PLANAR 0x0 
 #define RPR_MATERIAL_NODE_UVTYPE_CYLINDICAL 0x1 
@@ -991,9 +1012,15 @@ extern "C" {
 #define RPR_AOV_CRYPTOMATTE_MAT0 0x30
 #define RPR_AOV_CRYPTOMATTE_MAT1 0x31
 #define RPR_AOV_CRYPTOMATTE_MAT2 0x32
+#define RPR_AOV_CRYPTOMATTE_MAT3 0x33
+#define RPR_AOV_CRYPTOMATTE_MAT4 0x34
+#define RPR_AOV_CRYPTOMATTE_MAT5 0x35
 #define RPR_AOV_CRYPTOMATTE_OBJ0 0x38
 #define RPR_AOV_CRYPTOMATTE_OBJ1 0x39
 #define RPR_AOV_CRYPTOMATTE_OBJ2 0x3a
+#define RPR_AOV_CRYPTOMATTE_OBJ3 0x3b
+#define RPR_AOV_CRYPTOMATTE_OBJ4 0x3c
+#define RPR_AOV_CRYPTOMATTE_OBJ5 0x3d
 #define RPR_AOV_DEEP_COLOR 0x40
 #define RPR_AOV_LIGHT_GROUP4 0x50 
 #define RPR_AOV_LIGHT_GROUP5 0x51 
@@ -1028,6 +1055,7 @@ extern "C" {
 #define RPR_MATERIAL_NODE_INPUT_TYPE_IMAGE 0x4 
 #define RPR_MATERIAL_NODE_INPUT_TYPE_BUFFER 0x5 
 #define RPR_MATERIAL_NODE_INPUT_TYPE_GRID 0x6 
+#define RPR_MATERIAL_NODE_INPUT_TYPE_DATA 0x7 
 /*rpr_subdiv_boundary_interfop_type*/
 #define RPR_SUBDIV_BOUNDARY_INTERFOP_TYPE_EDGE_AND_CORNER 0x1 
 #define RPR_SUBDIV_BOUNDARY_INTERFOP_TYPE_EDGE_ONLY 0x2 
@@ -1136,6 +1164,7 @@ extern "C" {
 #define RPR_CURVE_VISIBILITY_GLOSSY_REFLECTION RPR_SHAPE_VISIBILITY_GLOSSY_REFLECTION
 #define RPR_CURVE_VISIBILITY_GLOSSY_REFRACTION RPR_SHAPE_VISIBILITY_GLOSSY_REFRACTION
 #define RPR_CURVE_VISIBILITY_LIGHT RPR_SHAPE_VISIBILITY_LIGHT
+#define RPR_CURVE_VISIBILITY_RECEIVE_SHADOW RPR_SHAPE_VISIBILITY_RECEIVE_SHADOW
 
 /* rpr_bool */
 #define RPR_FALSE 0u
@@ -1180,6 +1209,7 @@ typedef rpr_uint rpr_context_type;
 typedef rpr_bitfield rpr_creation_flags;
 typedef rpr_uint rpr_aa_filter;
 typedef rpr_uint rpr_context_sampler_type;
+typedef rpr_uint rpr_primvar_interpolation_type;
 typedef rpr_uint rpr_context_info;
 typedef rpr_uint rpr_camera_info;
 typedef rpr_uint rpr_image_info;
@@ -1218,6 +1248,7 @@ typedef rpr_uint rpr_environment_override;
 typedef rpr_uint rpr_subdiv_boundary_interfop_type;
 typedef rpr_uint rpr_material_node_lookup_value;
 typedef rpr_uint rpr_material_node_uvtype_value;
+typedef rpr_uint rpr_material_gradient_procedural_type;
 typedef rpr_uint rpr_material_node_transform_op;
 typedef rpr_uint rpr_image_wrap_type;
 typedef rpr_uint rpr_voronoi_out_type;
@@ -2113,6 +2144,19 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
   extern RPR_API_ENTRY rpr_status rprShapeSetVertexValue(rpr_shape in_shape, rpr_int setIndex, rpr_int const * indices, rpr_float const * values, rpr_int indicesCount);
 
 
+    /* @brief set primvars data for a specific 'key'
+    * 
+    * A shape can have several primvars data. Each primvar of the shape is identified with a 'key'
+    * 'data' is a list of float
+    * 'floatCount' is a number of float in the 'data' buffer
+    * 'componentCount' specifies the number of float(s) per component.  For example if you want to attach an RGB color to vertices, you need 'componentCount'=3  and  'floatCount' = 3 * 'number of vertices'
+    * 'interop' defines how the data is interpolated.
+    * 
+    * @return             RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprShapeSetPrimvar(rpr_shape in_shape, rpr_uint key, rpr_float const * data, rpr_uint floatCount, rpr_uint componentCount, rpr_primvar_interpolation_type  interop);
+
+
     /** @brief Set shape subdivision
     *
     *
@@ -2347,6 +2391,7 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
     *                             RPR_SHAPE_VISIBILITY_GLOSSY_REFLECTION
     *                             RPR_SHAPE_VISIBILITY_GLOSSY_REFRACTION
     *                             RPR_SHAPE_VISIBILITY_LIGHT
+    *                             RPR_SHAPE_VISIBILITY_RECEIVE_SHADOW
     *  @param  visible          set the flag to TRUE or FALSE
     *  @return                  RPR_SUCCESS in case of success, error code otherwise
     */
@@ -2366,6 +2411,7 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
     *                             RPR_CURVE_VISIBILITY_GLOSSY_REFLECTION
     *                             RPR_CURVE_VISIBILITY_GLOSSY_REFRACTION
     *                             RPR_CURVE_VISIBILITY_LIGHT
+    *                             RPR_CURVE_VISIBILITY_RECEIVE_SHADOW
     *  @param  visible          set the flag to TRUE or FALSE
     *  @return                  RPR_SUCCESS in case of success, error code otherwise
     */
@@ -2373,6 +2419,9 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
 
 
     /** @brief Set visibility flag
+    *
+    * This function sets all RPR_SHAPE_VISIBILITY_* flags to the 'visible' argument value
+    * Calling rprShapeSetVisibilityFlag(xxx,visible); on each flags would lead to the same result.
     *
     *  @param  shape       The shape to set visibility for
     *  @param  visible     Determines if the shape is visible or not
@@ -2383,6 +2432,9 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
 
     /** @brief Set visibility flag
     *
+    * This function sets all RPR_CURVE_VISIBILITY_* flags to the 'visible' argument value
+    * Calling rprCurveSetVisibilityFlag(xxx,visible); on each flags would lead to the same result.
+    *
     *  @param  curve       The curve to set visibility for
     *  @param  visible     Determines if the curve is visible or not
     *  @return             RPR_SUCCESS in case of success, error code otherwise
@@ -2391,6 +2443,9 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
 
 
     /** @brief Set visibility flag for specular refleacted\refracted rays
+    *
+    * This function sets both RPR_SHAPE_VISIBILITY_REFLECTION and RPR_SHAPE_VISIBILITY_REFRACTION flags to the 'visible' argument value
+    * Calling rprShapeSetVisibilityFlag(xxx,visible); on those 2 flags would lead to the same result.
     *
     *  @param  shape       The shape to set visibility for
     *  @param  visible     Determines if the shape is visible or not
@@ -3237,20 +3292,20 @@ extern RPR_API_ENTRY rpr_status rprSceneGetEnvironmentLight(rpr_scene in_scene, 
 
     /** @brief Resolve framebuffer
     *
-    *   Resolve applies AA filters and tonemapping operators to the framebuffer data
+    * Convert the input Renderer's native raw format 'src_frame_buffer' into an output 'dst_frame_buffer' that can be used for final rendering.
     *
-    *   Possible error codes:
-    *      RPR_ERROR_OUT_OF_SYSTEM_MEMORY
-    *      RPR_ERROR_OUT_OF_VIDEO_MEMORY
+    * src_frame_buffer and dst_frame_buffer should usually have the same dimension/format.
+    * src_frame_buffer is the result of a rprContextRender and should be attached to an AOV with rprContextSetAOV before the rprContextRender call.
+    * dst_frame_buffer should not be attached to any AOV.
     *
-    * if normalizeOnly is TRUE : it only normalizes src_frame_buffer, and write the result in dst_frame_buffer.
-    * if normalizeOnly is FALSE : it applies all the rpr_post_process attached to the context with rprContextAttachPostEffect
+    * The post process that is applied to src_frame_buffer depends on the AOV it's attached to. So it's important to not modify its AOV ( with rprContextSetAOV )
+    * between the rprContextRender and rprContextResolveFrameBuffer calls.
     *
-    * Note: in RPR API 1.310, the default value of normalizeOnly has been removed.
-    *       Set it to FALSE, if you don't use this argument.
+    * If noDisplayGamma=FALSE, then RPR_CONTEXT_DISPLAY_GAMMA is applied to the dst_frame_buffer otherwise, display gamma is not used.
+    * It's recommended to set it to FALSE for AOVs representing colors ( like RPR_AOV_COLOR ) and use TRUE for other AOVs.
     *
     */
-  extern RPR_API_ENTRY rpr_status rprContextResolveFrameBuffer(rpr_context context, rpr_framebuffer src_frame_buffer, rpr_framebuffer dst_frame_buffer, rpr_bool normalizeOnly);
+  extern RPR_API_ENTRY rpr_status rprContextResolveFrameBuffer(rpr_context context, rpr_framebuffer src_frame_buffer, rpr_framebuffer dst_frame_buffer, rpr_bool noDisplayGamma);
 
 
     /** @brief Create material system
@@ -3317,6 +3372,14 @@ extern RPR_API_ENTRY rpr_status rprSceneGetEnvironmentLight(rpr_scene in_scene, 
     *
     */
   extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputFByKey(rpr_material_node in_node, rpr_material_node_input in_input, rpr_float in_value_x, rpr_float in_value_y, rpr_float in_value_z, rpr_float in_value_w);
+
+
+    /** @brief Set generic data input value: Some complex materials inputs may need more than 4-floats or int.
+    *  This API can be used to set any generic input data.
+    *  Use it only when documentation requests to do it for specific material inputs.
+    *
+    */
+  extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputDataByKey(rpr_material_node in_node, rpr_material_node_input in_input, void const * data, size_t dataSizeByte);
 
 
     /** @brief Set uint input value

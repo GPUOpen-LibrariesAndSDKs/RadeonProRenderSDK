@@ -1213,7 +1213,7 @@ extern RPR_API_ENTRY fr_int frFrameBufferGetInfo(fr_framebuffer framebuffer, fr_
 extern RPR_API_ENTRY fr_int frFrameBufferClear(fr_framebuffer frame_buffer);
 extern RPR_API_ENTRY fr_int frFrameBufferFillWithColor(fr_framebuffer frame_buffer, fr_float r, fr_float g, fr_float b, fr_float a);
 extern RPR_API_ENTRY fr_int frFrameBufferSaveToFile(fr_framebuffer frame_buffer, fr_char const * file_path);
-extern RPR_API_ENTRY fr_int frContextResolveFrameBuffer(fr_context context, fr_framebuffer src_frame_buffer, fr_framebuffer dst_frame_buffer, fr_bool normalizeOnly);
+extern RPR_API_ENTRY fr_int frContextResolveFrameBuffer(fr_context context, fr_framebuffer src_frame_buffer, fr_framebuffer dst_frame_buffer, fr_bool noDisplayGamma);
 extern RPR_API_ENTRY fr_int frMaterialSystemGetInfo(fr_material_system in_material_system, fr_material_system_info type, size_t in_size, void * in_data, size_t * out_size);
 extern RPR_API_ENTRY fr_int frContextCreateMaterialSystem(fr_context in_context, fr_material_system_type type, fr_material_system * out_matsys);
 extern RPR_API_ENTRY fr_int frMaterialSystemGetSize(fr_context in_context, fr_uint * out_size);

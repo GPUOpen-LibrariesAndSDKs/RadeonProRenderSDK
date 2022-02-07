@@ -174,6 +174,15 @@ SOBOL = 0x1 ,
 RANDOM = 0x2 ,
 CMJ = 0x3 ,
 }
+/*rpr_primvar_interpolation_type*/
+public enum PrimvarInterpolationType : int
+{
+CONSTANT = 0x1 ,
+UNIFORM = 0x2 ,
+VERTEX = 0x3 ,
+FACEVARYING_NORMAL = 0x4 ,
+FACEVARYING_UV = 0x5 ,
+}
 /*rpr_shape_type*/
 public enum ShapeType : int
 {
@@ -336,7 +345,10 @@ FOG_DISTANCE = 0x18A ,
 FOG_HEIGHT = 0x18B ,
 ATMOSPHERE_VOLUME_COLOR = 0x18C ,
 ATMOSPHERE_VOLUME_DENSITY = 0x18D ,
+ATMOSPHERE_VOLUME_RADIANCE_CLAMP = 0x18F ,
 FOG_HEIGHT_OFFSET = 0x18E ,
+CRYPTOMATTE_EXTENDED = 0x191 ,
+CRYPTOMATTE_SPLIT_INDIRECT = 0x192 ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -446,6 +458,8 @@ MOTION_TRANSFORMS = 0x42C ,
 CONTOUR_IGNORE = 0x42D ,
 RENDER_LAYER_LIST = 0x42E ,
 SHADOW_COLOR = 0x42F ,
+VISIBILITY_RECEIVE_SHADOW = 0x430 ,
+PRIMVARS = 0x431,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -710,6 +724,8 @@ TOON_RAMP = 0x31,
 VORONOI_TEXTURE = 0x32 ,
 GRID_SAMPLER = 0x33 ,
 BLACKBODY = 0x34 ,
+RAMP = 0x35 ,
+PRIMVAR_LOOKUP = 0x36 ,
 
 	// MaterialX materials
 MATX_DIFFUSE_BRDF = 0x1000,
@@ -1047,6 +1063,17 @@ SHAPE_RANDOM_COLOR = 0xb ,
 OBJECT_ID = 0xc ,
 PRIMITIVE_RANDOM_COLOR = 0xd ,
 }
+/*rpr_material_gradient_procedural_type*/
+public enum MaterialGradientProceduralType : int
+{
+LINEAR = 0x1 ,
+QUADRATIC = 0x2 ,
+EASING = 0x3 ,
+DIAGONAL = 0x4 ,
+SPHERICAL = 0x5 ,
+QUAD_SPHERE = 0x6 ,
+RADIAL = 0x7 ,
+}
 /*rpr_material_node_uvtype_value*/
 public enum MaterialNodeUvtype : int
 {
@@ -1124,9 +1151,15 @@ CAMERA_NORMAL = 0x29 ,
 CRYPTOMATTE_MAT0 = 0x30,
 CRYPTOMATTE_MAT1 = 0x31,
 CRYPTOMATTE_MAT2 = 0x32,
+CRYPTOMATTE_MAT3 = 0x33,
+CRYPTOMATTE_MAT4 = 0x34,
+CRYPTOMATTE_MAT5 = 0x35,
 CRYPTOMATTE_OBJ0 = 0x38,
 CRYPTOMATTE_OBJ1 = 0x39,
 CRYPTOMATTE_OBJ2 = 0x3a,
+CRYPTOMATTE_OBJ3 = 0x3b,
+CRYPTOMATTE_OBJ4 = 0x3c,
+CRYPTOMATTE_OBJ5 = 0x3d,
 DEEP_COLOR = 0x40,
 LIGHT_GROUP4 = 0x50 ,
 LIGHT_GROUP5 = 0x51 ,
@@ -1169,6 +1202,7 @@ NODE = 0x3 ,
 IMAGE = 0x4 ,
 BUFFER = 0x5 ,
 GRID = 0x6 ,
+DATA = 0x7 ,
 }
 /*rpr_subdiv_boundary_interfop_type*/
 public enum SubdivBoundaryInteropType : int
@@ -1307,12 +1341,13 @@ VISIBILITY_DIFFUSE = 0x41E ,
 VISIBILITY_GLOSSY_REFLECTION = 0x41F ,
 VISIBILITY_GLOSSY_REFRACTION = 0x420 ,
 VISIBILITY_LIGHT = 0x421 ,
+VISIBILITY_RECEIVE_SHADOW = 0x430 ,
 }
 public const uint RPR_VERSION_MAJOR = 2 ;
 public const uint RPR_VERSION_MINOR = 2 ;
-public const uint RPR_VERSION_REVISION = 10 ;
-public const uint RPR_VERSION_BUILD = 0xe46836cc ;
-public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200210 ;
+public const uint RPR_VERSION_REVISION = 11 ;
+public const uint RPR_VERSION_BUILD = 0xfd9fa61e ;
+public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200211 ;
 // Deprecated version naming - will be removed in the future :
 
 public const uint RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -2474,6 +2509,23 @@ public static Status ShapeSetVertexValue(IntPtr in_shape, int setIndex, IntPtr i
 return rprShapeSetVertexValue(in_shape, setIndex, indices, values, indicesCount);
 }
 
+    /* @brief set primvars data for a specific 'key'
+    * 
+    * A shape can have several primvars data. Each primvar of the shape is identified with a 'key'
+    * 'data' is a list of float
+    * 'floatCount' is a number of float in the 'data' buffer
+    * 'componentCount' specifies the number of float(s) per component.  For example if you want to attach an RGB color to vertices, you need 'componentCount'=3  and  'floatCount' = 3 * 'number of vertices'
+    * 'interop' defines how the data is interpolated.
+    * 
+    * @return             RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprShapeSetPrimvar(IntPtr in_shape, uint key, IntPtr data, uint floatCount, uint componentCount, PrimvarInterpolationType interop);
+public static Status ShapeSetPrimvar(IntPtr in_shape, uint key, IntPtr data, uint floatCount, uint componentCount, PrimvarInterpolationType interop)
+{
+return rprShapeSetPrimvar(in_shape, key, data, floatCount, componentCount, interop);
+}
+
     /** @brief Set shape subdivision
     *
     *
@@ -2800,6 +2852,7 @@ return rprShapeSetMotionTransform(shape, transpose, transform, timeIndex);
     *                             RPR_SHAPE_VISIBILITY_GLOSSY_REFLECTION
     *                             RPR_SHAPE_VISIBILITY_GLOSSY_REFRACTION
     *                             RPR_SHAPE_VISIBILITY_LIGHT
+    *                             RPR_SHAPE_VISIBILITY_RECEIVE_SHADOW
     *  @param  visible          set the flag to TRUE or FALSE
     *  @return                  RPR_SUCCESS in case of success, error code otherwise
     */
@@ -2823,6 +2876,7 @@ return rprShapeSetVisibilityFlag(shape, visibilityFlag, visible);
     *                             RPR_CURVE_VISIBILITY_GLOSSY_REFLECTION
     *                             RPR_CURVE_VISIBILITY_GLOSSY_REFRACTION
     *                             RPR_CURVE_VISIBILITY_LIGHT
+    *                             RPR_CURVE_VISIBILITY_RECEIVE_SHADOW
     *  @param  visible          set the flag to TRUE or FALSE
     *  @return                  RPR_SUCCESS in case of success, error code otherwise
     */
@@ -2834,6 +2888,9 @@ return rprCurveSetVisibilityFlag(curve, visibilityFlag, visible);
 }
 
     /** @brief Set visibility flag
+    *
+    * This function sets all RPR_SHAPE_VISIBILITY_* flags to the 'visible' argument value
+    * Calling rprShapeSetVisibilityFlag(xxx,visible); on each flags would lead to the same result.
     *
     *  @param  shape       The shape to set visibility for
     *  @param  visible     Determines if the shape is visible or not
@@ -2848,6 +2905,9 @@ return rprShapeSetVisibility(shape, visible);
 
     /** @brief Set visibility flag
     *
+    * This function sets all RPR_CURVE_VISIBILITY_* flags to the 'visible' argument value
+    * Calling rprCurveSetVisibilityFlag(xxx,visible); on each flags would lead to the same result.
+    *
     *  @param  curve       The curve to set visibility for
     *  @param  visible     Determines if the curve is visible or not
     *  @return             RPR_SUCCESS in case of success, error code otherwise
@@ -2860,6 +2920,9 @@ return rprCurveSetVisibility(curve, visible);
 }
 
     /** @brief Set visibility flag for specular refleacted\refracted rays
+    *
+    * This function sets both RPR_SHAPE_VISIBILITY_REFLECTION and RPR_SHAPE_VISIBILITY_REFRACTION flags to the 'visible' argument value
+    * Calling rprShapeSetVisibilityFlag(xxx,visible); on those 2 flags would lead to the same result.
     *
     *  @param  shape       The shape to set visibility for
     *  @param  visible     Determines if the shape is visible or not
@@ -4022,24 +4085,24 @@ return rprFrameBufferSaveToFileEx(framebufferList, framebufferCount, filePath, e
 
     /** @brief Resolve framebuffer
     *
-    *   Resolve applies AA filters and tonemapping operators to the framebuffer data
+    * Convert the input Renderer's native raw format 'src_frame_buffer' into an output 'dst_frame_buffer' that can be used for final rendering.
     *
-    *   Possible error codes:
-    *      RPR_ERROR_OUT_OF_SYSTEM_MEMORY
-    *      RPR_ERROR_OUT_OF_VIDEO_MEMORY
+    * src_frame_buffer and dst_frame_buffer should usually have the same dimension/format.
+    * src_frame_buffer is the result of a rprContextRender and should be attached to an AOV with rprContextSetAOV before the rprContextRender call.
+    * dst_frame_buffer should not be attached to any AOV.
     *
-    * if normalizeOnly is TRUE : it only normalizes src_frame_buffer, and write the result in dst_frame_buffer.
-    * if normalizeOnly is FALSE : it applies all the rpr_post_process attached to the context with rprContextAttachPostEffect
+    * The post process that is applied to src_frame_buffer depends on the AOV it's attached to. So it's important to not modify its AOV ( with rprContextSetAOV )
+    * between the rprContextRender and rprContextResolveFrameBuffer calls.
     *
-    * Note: in RPR API 1.310, the default value of normalizeOnly has been removed.
-    *       Set it to FALSE, if you don't use this argument.
+    * If noDisplayGamma=FALSE, then RPR_CONTEXT_DISPLAY_GAMMA is applied to the dst_frame_buffer otherwise, display gamma is not used.
+    * It's recommended to set it to FALSE for AOVs representing colors ( like RPR_AOV_COLOR ) and use TRUE for other AOVs.
     *
     */
   
-[DllImport(dllName)] static extern Status rprContextResolveFrameBuffer(IntPtr context, IntPtr src_frame_buffer, IntPtr dst_frame_buffer, bool normalizeOnly);
-public static Status ContextResolveFrameBuffer(IntPtr context, IntPtr src_frame_buffer, IntPtr dst_frame_buffer, bool normalizeOnly)
+[DllImport(dllName)] static extern Status rprContextResolveFrameBuffer(IntPtr context, IntPtr src_frame_buffer, IntPtr dst_frame_buffer, bool noDisplayGamma);
+public static Status ContextResolveFrameBuffer(IntPtr context, IntPtr src_frame_buffer, IntPtr dst_frame_buffer, bool noDisplayGamma)
 {
-return rprContextResolveFrameBuffer(context, src_frame_buffer, dst_frame_buffer, normalizeOnly);
+return rprContextResolveFrameBuffer(context, src_frame_buffer, dst_frame_buffer, noDisplayGamma);
 }
 
     /** @brief Create material system
@@ -4134,6 +4197,18 @@ return rprMaterialNodeSetInputNByKey(in_node, in_input, in_input_node);
 public static Status MaterialNodeSetInputFByKey(IntPtr in_node, MaterialInput in_input, float in_value_x, float in_value_y, float in_value_z, float in_value_w)
 {
 return rprMaterialNodeSetInputFByKey(in_node, in_input, in_value_x, in_value_y, in_value_z, in_value_w);
+}
+
+    /** @brief Set generic data input value: Some complex materials inputs may need more than 4-floats or int.
+    *  This API can be used to set any generic input data.
+    *  Use it only when documentation requests to do it for specific material inputs.
+    *
+    */
+  
+[DllImport(dllName)] static extern Status rprMaterialNodeSetInputDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr data, long dataSizeByte);
+public static Status MaterialNodeSetInputDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr data, long dataSizeByte)
+{
+return rprMaterialNodeSetInputDataByKey(in_node, in_input, data, dataSizeByte);
 }
 
     /** @brief Set uint input value

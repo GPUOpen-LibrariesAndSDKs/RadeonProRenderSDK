@@ -552,9 +552,9 @@ Status Context::GetFunctionPtr(rpr_char const* function_name, void** out_functio
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
-Status Context::ResolveFrameBuffer(FrameBuffer* src_frame_buffer, FrameBuffer* dst_frame_buffer, rpr_bool normalizeOnly) {
+Status Context::ResolveFrameBuffer(FrameBuffer* src_frame_buffer, FrameBuffer* dst_frame_buffer, rpr_bool noDisplayGamma) {
     RPR_CPPWRAPER_CALL_PREFIX
-    rprContextResolveFrameBuffer(m_context, GetRprObject(src_frame_buffer), GetRprObject(dst_frame_buffer), normalizeOnly)
+    rprContextResolveFrameBuffer(m_context, GetRprObject(src_frame_buffer), GetRprObject(dst_frame_buffer), noDisplayGamma)
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
@@ -840,6 +840,12 @@ Status Shape::SetTransform(float const* transform, rpr_bool transpose) {
 Status Shape::SetVertexValue(rpr_int setIndex, rpr_int const* indices, rpr_float const* values, rpr_int indicesCount) {
     RPR_CPPWRAPER_CALL_PREFIX
     rprShapeSetVertexValue(GetRprObject(this), setIndex, indices, values, indicesCount)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
+Status Shape::SetPrimvar(rpr_uint key, rpr_float const * data, rpr_uint floatCount, rpr_uint componentCount, PrimvarInterpolationType interop) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprShapeSetPrimvar(GetRprObject(this), key, data, floatCount, componentCount, interop )
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 

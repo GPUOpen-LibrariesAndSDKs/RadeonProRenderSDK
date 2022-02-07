@@ -3,6 +3,37 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.02.11 - 07 Febrary 2022
+
+## NORTHSTAR :
+RPR-502 - (Bug)      - Fix darkening artifact at override_reflecttransparent
+RPR-551 - (Bug)      - Fix Inconsistent bilinear interpolation between GPU and CPU
+RPR-81  - (Bug)      - Fix Incorrect motion blur by rotating
+RPR-45  - (Bug)      - Fix multi-transparent black artifact
+RPR-85  - (Bug)      - Add clamp parameter of atmosphere volume
+RPR-88  - (Bug)      - Fix incorrect render of mix standard surface in MaterialX
+RPR-60  - (Task)     - A new visibility flag RPR_SHAPE_VISIBILITY_RECEIVE_SHADOW / RPR_CURVE_VISIBILITY_RECEIVE_SHADOW
+RPR-74  - (Bug)      - Fix crash in contour debug mode
+RPR-62  - (Task)     - Extend cryptomatte for indirect reflection and refraction
+RPR-80  - (Task)     - Add ramp node support
+RPR-61  - (Task)     - Add vertex value (prim var) support
+RPR-38  - (Bug)      - Fix the issue that uber emissive is always in double-sided mode
+
+## RPR API :
+ * Add of new API for Primvar: rpr_primvar_interpolation_type , RPR_SHAPE_PRIMVARS , RPR_MATERIAL_NODE_PRIMVAR_LOOKUP , rprShapeSetPrimvar.
+   A tutorial demo will be added in the future to illustrate this feature.
+
+ * New context parameter: RPR_CONTEXT_ATMOSPHERE_VOLUME_RADIANCE_CLAMP : clamp the radiance for atmosphere volume.
+
+ * A new RPR_MATERIAL_NODE_RAMP node has been exposed. This Ramp can use N control points and we can change the interpolation type.
+   A tutorial demo will be added in the future to illustrate this feature.
+
+ * New "visibility" flag: RPR_SHAPE_VISIBILITY_RECEIVE_SHADOW / RPR_CURVE_VISIBILITY_RECEIVE_SHADOW. 
+   If turned to FALSE, the shape / curve doesn't receive shadow. 
+   Like all other RPR_SHAPE_VISIBILITY_* / RPR_CURVE_VISIBILITY_* flags, it will be modified when calling rprShapeSetVisibility / rprCurveSetVisibility.
+
+
+################################################################################################################
 RPR SDK 2.02.10 - 06 December 2021
 
 ## NORTHSTAR :

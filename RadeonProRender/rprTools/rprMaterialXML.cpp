@@ -735,6 +735,14 @@ void XMLExporter_fillMaterialList(
 			newNode.paramList.push_back(newParam);
 
 		}
+		else if ( nodeInputType == RPR_MATERIAL_NODE_INPUT_TYPE_DATA )
+		{
+			RPRTOOLS_NODE_EXPORT_DEFINE::RPRTOOLS_MATERIAL_PARAM_EXPORT_DEFINE newParam;
+			newParam.name = paramName_;
+			newParam.type = "data";
+			newParam.value = "TODO_TYPE_DATA";
+			newNode.paramList.push_back(newParam);
+		}
 
 		delete[] shaderParameterValue; shaderParameterValue = NULL;
 	}
