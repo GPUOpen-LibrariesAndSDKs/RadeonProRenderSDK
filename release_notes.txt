@@ -32,6 +32,19 @@ RPR-38  - (Bug)      - Fix the issue that uber emissive is always in double-side
    If turned to FALSE, the shape / curve doesn't receive shadow. 
    Like all other RPR_SHAPE_VISIBILITY_* / RPR_CURVE_VISIBILITY_* flags, it will be modified when calling rprShapeSetVisibility / rprCurveSetVisibility.
 
+ * Revisiting cryptomatte. 
+   New paramters: RPR_CONTEXT_CRYPTOMATTE_EXTENDED, PR_CONTEXT_CRYPTOMATTE_SPLIT_INDIRECT,
+                  RPR_AOV_CRYPTOMATTE_MAT3, RPR_AOV_CRYPTOMATTE_MAT4, RPR_AOV_CRYPTOMATTE_MAT5,
+                  RPR_AOV_CRYPTOMATTE_OBJ3, RPR_AOV_CRYPTOMATTE_OBJ4, RPR_AOV_CRYPTOMATTE_OBJ5.
+   RPR_CONTEXT_CRYPTOMATTE_EXTENDED : Activate the Extended mode ( default value is 0 ).
+                                      rprContextSetParameterByKey1u(ctx, RPR_CONTEXT_CRYPTOMATTE_EXTENDED, v);
+                                      If the Extended Mode is enabled, the 6 new AOV (MAT3~MAT5 and OBJ3~OBJ5) must be attached to context ( with rprContextSetAOV ).
+   PR_CONTEXT_CRYPTOMATTE_SPLIT_INDIRECT : If you set PR_CONTEXT_CRYPTOMATTE_SPLIT_INDIRECT = 1 with RPR_CONTEXT_CRYPTOMATTE_EXTENDED = 1 
+                                           then indirect reflections/refractions of objects have different id from direct visibility. 
+                                           The default value is 0.
+                                           rprContextSetParameterByKey1u(ctx, PR_CONTEXT_CRYPTOMATTE_SPLIT_INDIRECT, v);
+
+
 
 ################################################################################################################
 RPR SDK 2.02.10 - 06 December 2021
