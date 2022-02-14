@@ -134,8 +134,8 @@ int main()
 
 	// 'frame_buffer' is not supposed to be used for rendering, we need to process it with rprContextResolveFrameBuffer.
 	// This function transforms the raw 'frame_buffer' into a new 'frame_buffer_resolved' that can be displayed on screen as final rendering.
-	// The 'normalizeOnly' argument means we only want to do a normalization of 'frame_buffer'.
-	// In most of cases, this argument can be left to FALSE: this lets the Renderer choose the correct operation(s) to process.
+	// The 'noDisplayGamma'=false argument means we want to use display gamma (defined by RPR_CONTEXT_DISPLAY_GAMMA) which makes sense in this case as 'frame_buffer' represents COLOR.
+	// If the framebuffer doesn't represent Color ( for example: Normals, Depth, UVs ... ) then 'noDisplayGamma' should be set to true. 
 	CHECK(rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,false));
 
 	// save the rendering to an image file.

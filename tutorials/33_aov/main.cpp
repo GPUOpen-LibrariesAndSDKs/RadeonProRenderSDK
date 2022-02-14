@@ -63,23 +63,25 @@ int main()
 	//
 	struct AOV_FB
 	{
-		AOV_FB(const std::string& name_, rpr_aov aov_)
+		AOV_FB(const std::string& name_, rpr_aov aov_, bool useDisplayGamma_)
 		{
 			framebuffer = nullptr;
 			framebuffer_res = nullptr;
 			name = name_;
 			aov = aov_;
+			useDisplayGamma = useDisplayGamma_; 
 		}
 		rpr_framebuffer framebuffer;
 		rpr_framebuffer framebuffer_res;
 		std::string name;
 		rpr_aov aov;
+		bool useDisplayGamma; // Set this parameter to TRUE for AOV representing Colors. For other AOVs storing data ( Normals, Depth ... ) make sure to set it to FALSE.
 	};
 	std::vector<AOV_FB> AOVlist;
-	AOVlist.push_back(AOV_FB("geom_normal" ,RPR_AOV_GEOMETRIC_NORMAL));
-	AOVlist.push_back(AOV_FB("shad_normal" ,RPR_AOV_SHADING_NORMAL));
-	AOVlist.push_back(AOV_FB("obj_id"      ,RPR_AOV_OBJECT_ID));
-	AOVlist.push_back(AOV_FB("uv"          ,RPR_AOV_UV));
+	AOVlist.push_back(AOV_FB("geom_normal" ,RPR_AOV_GEOMETRIC_NORMAL, false));
+	AOVlist.push_back(AOV_FB("shad_normal" ,RPR_AOV_SHADING_NORMAL, false));
+	AOVlist.push_back(AOV_FB("obj_id"      ,RPR_AOV_OBJECT_ID, false));
+	AOVlist.push_back(AOV_FB("uv"          ,RPR_AOV_UV, false));
 
 	// Create the list of AOVs
 	//
@@ -96,7 +98,7 @@ int main()
 	//
 	for(auto& i : AOVlist)
 	{
-		CHECK( rprContextResolveFrameBuffer(context, i.framebuffer, i.framebuffer_res, false) );
+		CHECK( rprContextResolveFrameBuffer(context, i.framebuffer, i.framebuffer_res, !i.useDisplayGamma) );
 		CHECK( rprFrameBufferSaveToFile(i.framebuffer_res,  std::string("33_"+i.name+".png").c_str() ) );
 		CHECK( rprObjectDelete(i.framebuffer) );
 		CHECK( rprObjectDelete(i.framebuffer_res) );

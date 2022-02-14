@@ -299,7 +299,7 @@ void MatballScene::Render(const std::string& outImgFileName, int iterationCount)
 	
 	if ( !m_usingHybridContext ) // There is no framebuffer resolve for Hyrbid
 	{
-		// last argument is FALSE because we don't want a simple normalization: we also want to apply the display gamma (changed with RPR_CONTEXT_DISPLAY_GAMMA)
+		// last argument is FALSE because we want to apply the display gamma (changed with RPR_CONTEXT_DISPLAY_GAMMA) to this COLOR AOV.
 		CHECK( rprContextResolveFrameBuffer(m_context, m_frame_buffer, m_frame_buffer_res, false) );
 
 		CHECK( rprFrameBufferSaveToFile(m_frame_buffer_res, outImgFileName.c_str() ) );
