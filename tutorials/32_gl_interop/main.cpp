@@ -113,13 +113,11 @@ struct MOUSE_DRAG_INFO
 {
 	MOUSE_DRAG_INFO()
 	{
-		dragging = false;
 		leftMouseButtonDown = false;
 		mousePosAtMouseButtonDown_X = -1;
 		mousePosAtMouseButtonDown_Y = -1;
 	}
 
-	bool dragging;
 	RadeonProRender::float3 lookat;
 	RadeonProRender::float3 up;
 	RadeonProRender::float3 pos;
