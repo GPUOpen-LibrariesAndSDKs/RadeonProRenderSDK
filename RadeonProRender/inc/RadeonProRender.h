@@ -34,7 +34,7 @@ extern "C" {
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 2 
 #define RPR_VERSION_REVISION 11 
-#define RPR_VERSION_BUILD 0xfd9fa61e 
+#define RPR_VERSION_BUILD 0x042509e5 
 #define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200211 
 
 // Deprecated version naming - will be removed in the future :
@@ -809,6 +809,7 @@ extern "C" {
 #define RPR_MATERIAL_INPUT_Y 0x6a 
 #define RPR_MATERIAL_INPUT_Z 0x6b 
 #define RPR_MATERIAL_INPUT_W 0x6c 
+#define RPR_MATERIAL_INPUT_LIGHT 0x6d 
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR 0x910
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT 0x927
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_ROUGHNESS 0x911
@@ -1056,6 +1057,7 @@ extern "C" {
 #define RPR_MATERIAL_NODE_INPUT_TYPE_BUFFER 0x5 
 #define RPR_MATERIAL_NODE_INPUT_TYPE_GRID 0x6 
 #define RPR_MATERIAL_NODE_INPUT_TYPE_DATA 0x7 
+#define RPR_MATERIAL_NODE_INPUT_TYPE_LIGHT 0x8 
 /*rpr_subdiv_boundary_interfop_type*/
 #define RPR_SUBDIV_BOUNDARY_INTERFOP_TYPE_EDGE_AND_CORNER 0x1 
 #define RPR_SUBDIV_BOUNDARY_INTERFOP_TYPE_EDGE_ONLY 0x2 
@@ -3400,8 +3402,24 @@ extern RPR_API_ENTRY rpr_status rprSceneGetEnvironmentLight(rpr_scene in_scene, 
     *
     */
   extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputImageDataByKey(rpr_material_node in_node, rpr_material_node_input in_input, rpr_image image);
-extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputBufferDataByKey(rpr_material_node in_node, rpr_material_node_input in_input, rpr_buffer buffer);
-extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputGridDataByKey(rpr_material_node in_node, rpr_material_node_input in_input, rpr_grid grid);
+
+
+    /** @brief Set light input value
+    *
+    */
+  extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputLightDataByKey(rpr_material_node in_node, rpr_material_node_input in_input, rpr_light light);
+
+
+    /** @brief Set Buffer input value
+    *
+    */
+  extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputBufferDataByKey(rpr_material_node in_node, rpr_material_node_input in_input, rpr_buffer buffer);
+
+
+    /** @brief Set Grid input value
+    *
+    */
+  extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputGridDataByKey(rpr_material_node in_node, rpr_material_node_input in_input, rpr_grid grid);
 extern RPR_API_ENTRY rpr_status rprMaterialNodeGetInfo(rpr_material_node in_node, rpr_material_node_info in_info, size_t in_size, void * in_data, size_t * out_size);
 extern RPR_API_ENTRY rpr_status rprMaterialNodeGetInputInfo(rpr_material_node in_node, rpr_int in_input_idx, rpr_material_node_input_info in_info, size_t in_size, void * in_data, size_t * out_size);
 extern RPR_API_ENTRY rpr_status rprContextCreateComposite(rpr_context context, rpr_composite_type in_type, rpr_composite * out_composite);
