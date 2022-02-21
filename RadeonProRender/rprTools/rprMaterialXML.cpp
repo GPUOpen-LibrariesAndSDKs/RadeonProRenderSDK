@@ -404,6 +404,11 @@ rpr_int rprtools_MaterialXMLImport(
 						status = rprMaterialNodeSetInputImageDataByKey(matNodeList[iNode_].matNode,  strIdMapper.RPRMaterialInput_string_to_id(paramName), matNodeList[nodeToConnect].image );  
 						MACRO_CHECK_RPR_STATUS;
 					}
+					else if ( matNodeList[nodeToConnect].light )
+					{
+						status = rprMaterialNodeSetInputLightDataByKey(matNodeList[iNode_].matNode,  strIdMapper.RPRMaterialInput_string_to_id(paramName), matNodeList[nodeToConnect].light );  
+						MACRO_CHECK_RPR_STATUS;
+					}
 					else 
 					{
 						throw (rpr_int)RPR_ERROR_INTERNAL_ERROR;
@@ -708,6 +713,22 @@ void XMLExporter_fillMaterialList(
 			{
 				rpr_grid* grid = (rpr_grid*)shaderParameterValue;
 				if (*grid != NULL)
+				{
+					// TODO
+				}
+				MACRO_CHECK_RPR_STATUS;
+			}
+		}
+		else if (nodeInputType == RPR_MATERIAL_NODE_INPUT_TYPE_LIGHT)
+		{
+			if (shaderParameterValue_lenght != sizeof(rpr_light))
+			{
+				throw (rpr_int)RPR_ERROR_INTERNAL_ERROR;
+			}
+			else
+			{
+				rpr_light* light = (rpr_light*)shaderParameterValue;
+				if (*light != NULL)
 				{
 					// TODO
 				}

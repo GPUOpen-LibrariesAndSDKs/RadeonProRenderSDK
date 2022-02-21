@@ -915,6 +915,8 @@ X = 0x69 ,
 Y = 0x6a ,
 Z = 0x6b ,
 W = 0x6c ,
+LIGHT = 0x6d ,
+MID_IS_ALBEDO = 0x6e ,
 UBER_DIFFUSE_COLOR = 0x910,
 UBER_DIFFUSE_WEIGHT = 0x927,
 UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -1203,6 +1205,7 @@ IMAGE = 0x4 ,
 BUFFER = 0x5 ,
 GRID = 0x6 ,
 DATA = 0x7 ,
+LIGHT = 0x8 ,
 }
 /*rpr_subdiv_boundary_interfop_type*/
 public enum SubdivBoundaryInteropType : int
@@ -1345,9 +1348,9 @@ VISIBILITY_RECEIVE_SHADOW = 0x430 ,
 }
 public const uint RPR_VERSION_MAJOR = 2 ;
 public const uint RPR_VERSION_MINOR = 2 ;
-public const uint RPR_VERSION_REVISION = 11 ;
-public const uint RPR_VERSION_BUILD = 0xfd9fa61e ;
-public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200211 ;
+public const uint RPR_VERSION_REVISION = 12 ;
+public const uint RPR_VERSION_BUILD = 0x5a93a28a ;
+public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200212 ;
 // Deprecated version naming - will be removed in the future :
 
 public const uint RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -4238,11 +4241,31 @@ public static Status MaterialNodeSetInputImageDataByKey(IntPtr in_node, Material
 {
 return rprMaterialNodeSetInputImageDataByKey(in_node, in_input, image);
 }
+
+    /** @brief Set light input value
+    *
+    */
+  
+[DllImport(dllName)] static extern Status rprMaterialNodeSetInputLightDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr light);
+public static Status MaterialNodeSetInputLightDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr light)
+{
+return rprMaterialNodeSetInputLightDataByKey(in_node, in_input, light);
+}
+
+    /** @brief Set Buffer input value
+    *
+    */
+  
 [DllImport(dllName)] static extern Status rprMaterialNodeSetInputBufferDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr buffer);
 public static Status MaterialNodeSetInputBufferDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr buffer)
 {
 return rprMaterialNodeSetInputBufferDataByKey(in_node, in_input, buffer);
 }
+
+    /** @brief Set Grid input value
+    *
+    */
+  
 [DllImport(dllName)] static extern Status rprMaterialNodeSetInputGridDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr grid);
 public static Status MaterialNodeSetInputGridDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr grid)
 {
