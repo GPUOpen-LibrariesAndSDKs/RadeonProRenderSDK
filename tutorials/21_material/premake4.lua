@@ -12,12 +12,10 @@ project "21_material"
     
     buildoptions "-std=c++11"
 
-	configuration {"x64"}
 	links {"RadeonProRender64"}
-	
-    configuration {"x64", "Debug"}
+    filter "configurations:Debug"
         targetdir "../Bin"
-    configuration {"x64", "Release"}
+    filter "configurations:Release"
         targetdir "../Bin"
-    configuration {}
+    filter {}
     

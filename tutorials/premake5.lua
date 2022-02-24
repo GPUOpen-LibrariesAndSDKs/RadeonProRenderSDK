@@ -33,7 +33,6 @@ solution "Tutorials"
         if _ACTION == "vs2010" then
             buildoptions { "/MP"  } --multiprocessor build
             defines {"_CRT_SECURE_NO_WARNINGS"}
-            configuration {"Release"}
         end
 	end
 
@@ -46,19 +45,19 @@ solution "Tutorials"
 		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\ProRenderGLTF.dll\" \".\\Bin\\\"")
 	end
 
-    configuration "Debug"
+
+
+	filter "configurations:Debug"
 		defines { "_DEBUG" }
 		symbols "On"
-	configuration "Release"
-		defines { "NDEBUG" }
-
-	configuration {"x64", "Debug"}
 		targetsuffix "64D"
 
-	configuration {"x64", "Release"}
+	filter "configurations:Release"
+		defines { "NDEBUG" }
 		targetsuffix "64"
-    
-    configuration {} -- back to all configurations
+
+
+    filter {} -- back to all configurations
 	if os.istarget("windows") then
                 systemversion(os.winSdkVersion() .. ".0")
                 libdirs {"../RadeonProRender/libWin64" }
@@ -94,8 +93,8 @@ solution "Tutorials"
 	include "51_volume"
 	include "60_mesh_export"
 	include "61_mesh_import"
- 	include "63_hybrid"
-    include "64_mesh_obj_demo"
+	include "63_hybrid"
+	include "64_mesh_obj_demo"
 
 	if fileExists("./MultiTutorials/MultiTutorials.lua") then
 		dofile("./MultiTutorials/MultiTutorials.lua")

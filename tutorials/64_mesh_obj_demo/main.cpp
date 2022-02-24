@@ -465,10 +465,10 @@ Context createContext(const ContextSettings settings)
 
 	rpr_int status = RPR_SUCCESS;
 
-	rpr_int tahoePluginID = rprRegisterPlugin(RPR_PLUGIN_FILE_NAME);
-	CHECK_NE(tahoePluginID, -1);
+	rpr_int pluginID = rprRegisterPlugin(RPR_PLUGIN_FILE_NAME);
+	CHECK_NE(pluginID, -1);
 
-	rpr_int plugins[] = { tahoePluginID };
+	rpr_int plugins[] = { pluginID };
 	size_t pluginCount = sizeof(plugins) / sizeof(plugins[0]);
 
 	// Create context using single GPU 

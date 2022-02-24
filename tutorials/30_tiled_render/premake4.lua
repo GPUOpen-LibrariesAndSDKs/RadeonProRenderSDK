@@ -12,13 +12,14 @@ project "30_tiled_render"
 
     buildoptions "-std=c++11"
 
-    configuration {"x64"}
-    links {"RadeonProRender64"}
-    links {"RprLoadStore64"}
+	links {"RadeonProRender64","RprLoadStore64"}
+    filter "configurations:Debug"
+        targetdir "../Bin"
+    filter "configurations:Release"
+        targetdir "../Bin"
+    filter {}
 
-    configuration {"x64", "Debug"}
-        targetdir "../Bin"
-    configuration {"x64", "Release"}
-        targetdir "../Bin"
-    configuration {}
+
+
+
 

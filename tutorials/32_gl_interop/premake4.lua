@@ -19,8 +19,6 @@ project "32_gl_interop"
 	
     buildoptions "-std=c++11"
 
-	configuration {"x64"}
-
 	links {"RadeonProRender64", "GLEW"}
 
 	if os.istarget("windows") then
@@ -43,8 +41,8 @@ project "32_gl_interop"
 		libdirs {"../../3rdParty/glew/libOsx64"}
 	end
     
-    configuration {"x64", "Debug"}
+    filter "configurations:Debug"
         targetdir "../Bin"
-    configuration {"x64", "Release"}
+    filter "configurations:Release"
         targetdir "../Bin"
-    configuration {}
+    filter {}

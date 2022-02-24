@@ -34,10 +34,9 @@ int main()
 	//	set this before any RPR API calls
 	//	rprContextSetParameterByKey1u(0,RPR_CONTEXT_TRACING_ENABLED,1);
 
-	std::cout << "Radeon ProRender SDK matball scene rendering tutorial.\n";
-	// Indicates whether the last operation has suceeded or not
+	std::cout << "-- Radeon ProRender SDK Demo --" << std::endl;
+
 	rpr_int status = RPR_SUCCESS;
-	// Create RPR context using a single GPU 
 	rpr_context context = nullptr;
 	
 	std::string hybridPluginName = 
@@ -49,10 +48,10 @@ int main()
 	""; // no Hybrid plugin released on MacOS
 	#endif
 	
-	// Register Tahoe ray tracing plugin.
-	rpr_int tahoePluginID = rprRegisterPlugin(hybridPluginName.c_str());
-	CHECK_NE(tahoePluginID , -1)
-	rpr_int plugins[] = { tahoePluginID };
+	// Register the RPR DLL
+	rpr_int pluginID = rprRegisterPlugin(hybridPluginName.c_str());
+	CHECK_NE(pluginID , -1)
+	rpr_int plugins[] = { pluginID };
 	size_t pluginCount = sizeof(plugins) / sizeof(plugins[0]);
 
 	// Create context using a single GPU 
