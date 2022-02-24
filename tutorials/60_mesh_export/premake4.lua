@@ -14,7 +14,10 @@ project "60_mesh_export"
 
     links {"RadeonProRender64", "RprLoadStore64", "ProRenderGLTF"}
 
+
+
     if os.istarget("linux") then
+	    linkoptions {"-pthread"}
         linkoptions "-fopenmp"
     end
 

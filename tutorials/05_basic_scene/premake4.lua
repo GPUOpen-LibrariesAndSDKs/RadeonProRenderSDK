@@ -11,6 +11,11 @@ project "05_basic_scene"
     
     buildoptions "-std=c++11"
 
+
+	if os.istarget("linux") then
+	    linkoptions {"-pthread"}
+    end
+
 	links {"RadeonProRender64"}
     filter "configurations:Debug"
         targetdir "../Bin"

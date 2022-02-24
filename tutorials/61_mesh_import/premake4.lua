@@ -18,6 +18,11 @@ project "61_mesh_import"
         linkoptions "-fopenmp"
     end
 
+	if os.istarget("linux") then
+	    linkoptions {"-pthread"}
+    end
+
+
     filter "configurations:Debug"
         targetdir "../Bin"
     filter "configurations:Release"

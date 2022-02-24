@@ -12,6 +12,11 @@ project "22_material_uber"
     
     buildoptions "-std=c++11"
 
+
+	if os.istarget("linux") then
+	    linkoptions {"-pthread"}
+    end
+
 	links {"RadeonProRender64"}
     filter "configurations:Debug"
         targetdir "../Bin"

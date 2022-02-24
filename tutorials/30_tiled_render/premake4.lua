@@ -12,6 +12,11 @@ project "30_tiled_render"
 
     buildoptions "-std=c++11"
 
+
+	if os.istarget("linux") then
+	    linkoptions {"-pthread"}
+    end
+
 	links {"RadeonProRender64","RprLoadStore64"}
     filter "configurations:Debug"
         targetdir "../Bin"

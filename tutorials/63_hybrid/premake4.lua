@@ -14,6 +14,11 @@ project "63_hybrid"
 
 	links {"RadeonProRender64", "RprLoadStore64"}
 	
+
+	if os.istarget("linux") then
+	    linkoptions {"-pthread"}
+    end
+
     filter "configurations:Debug"
         targetdir "../Bin"
     filter "configurations:Release"

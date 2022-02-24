@@ -13,6 +13,12 @@ project "64_mesh_obj_demo"
     buildoptions "-std=c++11"
 
 	links {"RadeonProRender64", "RprLoadStore64"}
+
+
+	if os.istarget("linux") then
+	    linkoptions {"-pthread"}
+    end
+
 	
     filter "configurations:Debug"
         targetdir "../Bin"

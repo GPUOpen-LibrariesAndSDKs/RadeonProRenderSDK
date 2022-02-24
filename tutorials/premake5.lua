@@ -72,6 +72,9 @@ solution "Tutorials"
 
 	defines{ "RPR_API_USE_HEADER_V2" }  -- make sure to use the API V2: it's a safer C API
 
+
+
+
 	include "00_context_creation"
 	include "03_parameters_enumeration"
 	include "05_basic_scene"
@@ -104,5 +107,6 @@ solution "Tutorials"
 	if fileExists("./parameters_enumeration/parameters_enumeration.lua") then
 		dofile("./parameters_enumeration/parameters_enumeration.lua")	
 	end
+
 
 
