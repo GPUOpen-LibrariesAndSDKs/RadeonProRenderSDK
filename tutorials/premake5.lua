@@ -42,6 +42,7 @@ solution "Tutorials"
 		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\Tahoe64.dll\" \".\\Bin\\\"")
 		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\Northstar64.dll\" \".\\Bin\\\"")
 		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\Hybrid.dll\" \".\\Bin\\\"")
+		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\HybridPro.dll\" \".\\Bin\\\"")
 		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\ProRenderGLTF.dll\" \".\\Bin\\\"")
 	end
 
@@ -98,15 +99,9 @@ solution "Tutorials"
 	include "61_mesh_import"
 	include "63_hybrid"
 	include "64_mesh_obj_demo"
+	include "65_light_baking"
 
-	if fileExists("./MultiTutorials/MultiTutorials.lua") then
-		dofile("./MultiTutorials/MultiTutorials.lua")
-	end
-		
-	
-	if fileExists("./parameters_enumeration/parameters_enumeration.lua") then
-		dofile("./parameters_enumeration/parameters_enumeration.lua")	
-	end
+
 
 
 
