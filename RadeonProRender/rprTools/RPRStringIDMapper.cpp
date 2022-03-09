@@ -10,7 +10,7 @@
 \*****************************************************************************/
 
 #include "RPRStringIDMapper.h"
-
+#include "RadeonProRender_Baikal.h"
 #include <algorithm>
 #include <cctype>
 #include <string>
@@ -136,6 +136,8 @@ RPRStringIDMapper::RPRStringIDMapper()
 	MACRO_LINK_STR_ID("y",RPR_MATERIAL_INPUT_Y);
 	MACRO_LINK_STR_ID("z",RPR_MATERIAL_INPUT_Z);
 	MACRO_LINK_STR_ID("w",RPR_MATERIAL_INPUT_W);
+	MACRO_LINK_STR_ID("light",RPR_MATERIAL_INPUT_LIGHT);
+	MACRO_LINK_STR_ID("mid_is_albedo",RPR_MATERIAL_INPUT_MID_IS_ALBEDO);
 
 	//
 	//list of RPR_MATERIAL_INPUT_UBER_ from RPRHybrid
@@ -363,6 +365,10 @@ RPRStringIDMapper::RPRStringIDMapper()
 	MACRO_LINK_STR_ID("fog.height_offset",RPR_CONTEXT_FOG_HEIGHT_OFFSET);
 	MACRO_LINK_STR_ID("cryptomatte.extended",RPR_CONTEXT_CRYPTOMATTE_EXTENDED);
 	MACRO_LINK_STR_ID("cryptomatte.split_indirect",RPR_CONTEXT_CRYPTOMATTE_SPLIT_INDIRECT);
+	MACRO_LINK_STR_ID("fog.direction",RPR_CONTEXT_FOG_DIRECTION);
+
+	// parameters from Baikal header
+	MACRO_LINK_STR_ID("randseed",(rpr_context_info)RPR_CONTEXT_RANDOM_SEED);
 
 
 	#undef MACRO_LINK_STR_ID

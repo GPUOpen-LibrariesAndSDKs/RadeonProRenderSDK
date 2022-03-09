@@ -155,6 +155,17 @@ extern "C" {
   extern RPR_API_ENTRY rpr_status rprMaterialXSetFileAsBuffer(rpr_material_node material, rpr_char const * buffer, size_t bufferSize);
 
 
+  /** @brief   Return the Warning/Error messages from the last MaterialX Loading.
+  *            This function helps to debug.
+  *            If  rprMaterialXSetFile/rprMaterialXSetFileAsBuffer fails, it's a good practice to call rprMaterialXGetLoaderMessages just after.
+  *
+  *  'size' is the size of allocated 'data' buffer.
+  *  'data' can be nullptr if we only want to get 'size_ret'.
+  *  'size_ret' is the actual size of the out buffer - can be nullptr.
+  */
+  extern RPR_API_ENTRY rpr_status rprMaterialXGetLoaderMessages(rpr_context in_context, size_t size, void * data, size_t * size_ret);
+
+
 
 
   #ifdef __cplusplus

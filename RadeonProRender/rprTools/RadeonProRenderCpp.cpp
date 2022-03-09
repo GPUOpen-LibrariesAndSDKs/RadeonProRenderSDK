@@ -1370,6 +1370,12 @@ Status MaterialNode::SetInput(MaterialNodeInput in_input, Image* image) {
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
+Status MaterialNode::SetInput(MaterialNodeInput in_input, Light* light) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprMaterialNodeSetInputLightDataByKey(GetRprObject(this), in_input, GetRprObject(light))
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
 Status MaterialNode::SetInput(MaterialNodeInput in_input, Buffer* buffer) {
     RPR_CPPWRAPER_CALL_PREFIX
     rprMaterialNodeSetInputBufferDataByKey(GetRprObject(this), in_input, GetRprObject(buffer))

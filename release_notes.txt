@@ -3,6 +3,20 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.02.12 - 09 March 2022
+
+## NORTHSTAR :
+RPR-1001 - (Bug)      - Fix the crash with a curve scene
+RPR-993  - (Bug)      - Fix atmosphere volume effect with IES light
+RPR-264  - (Task)     - Use mid color of toon shader as albedo AOV
+RPR-149  - (Task)     - Add editable fog direction
+RPR-83   - (Bug)      - Fix transparent artifact inside volume
+RPR-57   - (Task)     - Add light linking support for toon shader
+
+## RPR API :
+ * MaterialX loader improvements for Northstar renderer: more materials are now supported.
+
+################################################################################################################
 RPR SDK 2.02.11 - 07 Febrary 2022
 
 ## NORTHSTAR :

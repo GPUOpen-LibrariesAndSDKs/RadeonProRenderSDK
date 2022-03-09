@@ -590,6 +590,7 @@ public:
     Status SetInput(MaterialNodeInput input, rpr_uint value);
     Status SetInput(MaterialNodeInput input, Image* image);
     Status SetInput(MaterialNodeInput input, Buffer* buffer);
+    Status SetInput(MaterialNodeInput input, Light* light);
     Status GetInfo(MaterialNodeInfo info, size_t size, void* data, size_t* size_ret);
     Status GetInputInfo(rpr_int inputIdx, MaterialNodeInputInfo info, size_t size, void* data, size_t* out_size);
 
