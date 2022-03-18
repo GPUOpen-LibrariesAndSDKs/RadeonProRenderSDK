@@ -124,7 +124,6 @@ struct RPRHybridKernelsPathInfo
 };
 
 //to avoid overlap
-#define RPR_CONTEXT_RANDOM_SEED     0x1000 // name: "randseed"
 #define RPR_CONTEXT_RENDER_QUALITY  0x1001 // name: "render_quality"
 #define RPR_CONTEXT_NUMBER_PRERENDERED_FRAMES 0x1002 // name: "num_prerendered_frames"
 #define RPR_CONTEXT_SSAO_RADIUS     0x1003 // name: "ssao.radius"

@@ -366,9 +366,7 @@ RPRStringIDMapper::RPRStringIDMapper()
 	MACRO_LINK_STR_ID("cryptomatte.extended",RPR_CONTEXT_CRYPTOMATTE_EXTENDED);
 	MACRO_LINK_STR_ID("cryptomatte.split_indirect",RPR_CONTEXT_CRYPTOMATTE_SPLIT_INDIRECT);
 	MACRO_LINK_STR_ID("fog.direction",RPR_CONTEXT_FOG_DIRECTION);
-
-	// parameters from Baikal header
-	MACRO_LINK_STR_ID("randseed",(rpr_context_info)RPR_CONTEXT_RANDOM_SEED);
+	MACRO_LINK_STR_ID("randseed",RPR_CONTEXT_RANDOM_SEED);
 
 
 	#undef MACRO_LINK_STR_ID

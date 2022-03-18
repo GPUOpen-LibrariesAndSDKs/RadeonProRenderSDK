@@ -350,6 +350,7 @@ FOG_HEIGHT_OFFSET = 0x18E ,
 CRYPTOMATTE_EXTENDED = 0x191 ,
 CRYPTOMATTE_SPLIT_INDIRECT = 0x192 ,
 FOG_DIRECTION = 0x193 ,
+RANDOM_SEED = 0x1000 ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -1350,7 +1351,7 @@ VISIBILITY_RECEIVE_SHADOW = 0x430 ,
 public const uint RPR_VERSION_MAJOR = 2 ;
 public const uint RPR_VERSION_MINOR = 2 ;
 public const uint RPR_VERSION_REVISION = 12 ;
-public const uint RPR_VERSION_BUILD = 0x4382e327 ;
+public const uint RPR_VERSION_BUILD = 0x3c23d2bd ;
 public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200212 ;
 // Deprecated version naming - will be removed in the future :
 
