@@ -29,8 +29,8 @@ Dependencies on Linux for the tutorials: GLEW, GLUT, Pthread.
 > make -j config=release_x64
 ```
 
-On Centos 7:
-Same dependencies than Ubuntu.
+On Centos 7:  
+Same dependencies than Ubuntu.  
 You should also update your GCC, we have tested it with devtoolset-10 (yum install devtoolset-10)
 ```
 > cd tutorials
