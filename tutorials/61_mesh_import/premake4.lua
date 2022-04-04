@@ -10,7 +10,6 @@ project "61_mesh_import"
 
     includedirs{ "../../RadeonProRender/inc" } 
     
-    buildoptions "-std=c++11"
 
     configuration {"x64"}
     links {"RadeonProRender64", "RprLoadStore64", "ProRenderGLTF"}

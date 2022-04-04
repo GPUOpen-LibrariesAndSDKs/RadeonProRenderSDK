@@ -17,7 +17,6 @@ project "32_gl_interop"
     	includedirs{ "../../3rdParty/glew/include"} 	
 	end
 	
-    buildoptions "-std=c++11"
 
 	configuration {"x64"}
 

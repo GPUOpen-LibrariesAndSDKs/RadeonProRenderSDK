@@ -10,7 +10,6 @@ project "64_mesh_obj_demo"
 
     includedirs{ "../../RadeonProRender/inc" } 
     
-    buildoptions "-std=c++11"
 
 	configuration {"x64"}
 	links {"RadeonProRender64", "RprLoadStore64"}

@@ -9,7 +9,6 @@ project "23_twosided"
 
     includedirs{ "../../RadeonProRender/inc" } 
     
-    buildoptions "-std=c++11"
 
 	configuration {"x64"}
 	links {"RadeonProRender64"}
