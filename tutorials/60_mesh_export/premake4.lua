@@ -17,7 +17,11 @@ project "60_mesh_export"
 
     if os.istarget("linux") then
         linkoptions "-fopenmp"
+		links {"pthread"}
     end
+
+
+
 
     configuration {"x64", "Debug"}
         targetdir "../Bin"

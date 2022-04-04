@@ -13,6 +13,10 @@ project "23_twosided"
 
 	configuration {"x64"}
 	links {"RadeonProRender64"}
+
+    if os.istarget("linux") then
+	    links {"pthread"}
+    end
 	
     configuration {"x64", "Debug"}
         targetdir "../Bin"

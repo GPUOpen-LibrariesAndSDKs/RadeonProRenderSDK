@@ -14,6 +14,10 @@ project "64_mesh_obj_demo"
 
 	configuration {"x64"}
 	links {"RadeonProRender64", "RprLoadStore64"}
+
+    if os.istarget("linux") then
+		links {"pthread"}
+    end
 	
     configuration {"x64", "Debug"}
         targetdir "../Bin"

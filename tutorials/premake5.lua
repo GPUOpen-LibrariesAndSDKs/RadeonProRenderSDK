@@ -1,3 +1,10 @@
+
+newoption {
+	trigger = "centos",
+	description = "needed for CentOS 7 OS"
+}
+
+
 function fileExists(name)
    local f=io.open(name,"r")
    if f~=nil then io.close(f) return true else return false end
@@ -65,7 +72,11 @@ solution "Tutorials"
 	end
 	if os.istarget("linux") then
 		defines{ "__LINUX__" }
-		libdirs {"../RadeonProRender/binUbuntu18" }
+		if _OPTIONS["centos"] ~= nil then
+			libdirs {"../RadeonProRender/binCentOS7" }
+		else
+			libdirs {"../RadeonProRender/binUbuntu18" }
+		end
 	end
 	if os.istarget("macosx") then
 		libdirs {"../RadeonProRender/binMacOS" }

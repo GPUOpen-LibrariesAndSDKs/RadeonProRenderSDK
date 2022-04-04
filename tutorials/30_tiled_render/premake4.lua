@@ -16,6 +16,10 @@ project "30_tiled_render"
     links {"RadeonProRender64"}
     links {"RprLoadStore64"}
 
+    if os.istarget("linux") then
+	    links {"pthread"}
+    end
+
     configuration {"x64", "Debug"}
         targetdir "../Bin"
     configuration {"x64", "Release"}

@@ -17,6 +17,7 @@ project "61_mesh_import"
 
     if os.istarget("linux") then
         linkoptions "-fopenmp"
+		links {"pthread"}
     end
 
     configuration {"x64", "Debug"}
