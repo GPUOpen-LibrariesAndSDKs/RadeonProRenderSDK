@@ -10,6 +10,7 @@ project "30_tiled_render"
 
     includedirs{ "../../RadeonProRender/inc" } 
 
+    buildoptions "-std=c++14"
 
     configuration {"x64"}
     links {"RadeonProRender64"}
