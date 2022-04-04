@@ -10,12 +10,6 @@ function fileExists(name)
    if f~=nil then io.close(f) return true else return false end
 end
 
-function os.winSdkVersion()
-   local reg_arch = iif( os.is64bit(), "\\Wow6432Node\\", "\\" )
-   local sdk_version = os.getWindowsRegistry( "HKLM:SOFTWARE" .. reg_arch .."Microsoft\\Microsoft SDKs\\Windows\\v10.0\\ProductVersion" )
-   if sdk_version ~= nil then return sdk_version end
-end
-
 solution "Tutorials"
 	configurations { "Debug", "Release" }    		
 	language "C++"
@@ -67,7 +61,6 @@ solution "Tutorials"
     
     configuration {} -- back to all configurations
 	if os.istarget("windows") then
-                systemversion(os.winSdkVersion() .. ".0")
                 libdirs {"../RadeonProRender/libWin64" }
 	end
 	if os.istarget("linux") then
