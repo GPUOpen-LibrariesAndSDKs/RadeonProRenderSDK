@@ -10,11 +10,15 @@ project "30_tiled_render"
 
     includedirs{ "../../RadeonProRender/inc" } 
 
-    buildoptions "-std=c++11"
+    buildoptions "-std=c++14"
 
     configuration {"x64"}
     links {"RadeonProRender64"}
     links {"RprLoadStore64"}
+
+    if os.istarget("linux") then
+	    links {"pthread"}
+    end
 
     configuration {"x64", "Debug"}
         targetdir "../Bin"
