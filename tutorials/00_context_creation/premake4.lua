@@ -9,10 +9,13 @@ project "00_context_creation"
 
     includedirs{ "../../RadeonProRender/inc" } 
     
-    buildoptions "-std=c++11"
 
 	configuration {"x64"}
 	links {"RadeonProRender64"}
+
+    if os.istarget("linux") then
+	    links {"pthread"}
+    end
 	
     configuration {"x64", "Debug"}
         targetdir "../Bin"

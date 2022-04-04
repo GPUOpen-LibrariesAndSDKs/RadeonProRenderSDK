@@ -1,12 +1,13 @@
+
+newoption {
+	trigger = "centos",
+	description = "needed for CentOS 7 OS"
+}
+
+
 function fileExists(name)
    local f=io.open(name,"r")
    if f~=nil then io.close(f) return true else return false end
-end
-
-function os.winSdkVersion()
-   local reg_arch = iif( os.is64bit(), "\\Wow6432Node\\", "\\" )
-   local sdk_version = os.getWindowsRegistry( "HKLM:SOFTWARE" .. reg_arch .."Microsoft\\Microsoft SDKs\\Windows\\v10.0\\ProductVersion" )
-   if sdk_version ~= nil then return sdk_version end
 end
 
 solution "Tutorials"
@@ -60,12 +61,15 @@ solution "Tutorials"
     
     configuration {} -- back to all configurations
 	if os.istarget("windows") then
-                systemversion(os.winSdkVersion() .. ".0")
                 libdirs {"../RadeonProRender/libWin64" }
 	end
 	if os.istarget("linux") then
 		defines{ "__LINUX__" }
-		libdirs {"../RadeonProRender/binUbuntu18" }
+		if _OPTIONS["centos"] ~= nil then
+			libdirs {"../RadeonProRender/binCentOS7" }
+		else
+			libdirs {"../RadeonProRender/binUbuntu18" }
+		end
 	end
 	if os.istarget("macosx") then
 		libdirs {"../RadeonProRender/binMacOS" }
