@@ -16,7 +16,8 @@ This repo contains :
 On Visual Studio:
 ```
 > cd tutorials
-> ..\premake5\win\premake5.exe vs2019
+> ..\premake5\win\premake5.exe vs2022
+( replace vs2022 by the version of your choice: vs2019, vs2017... )
 then open tutorials/Tutorials.sln
 ```
 
