@@ -104,18 +104,16 @@ extern "C" {
 /* rpr_context_properties names */
 #define RPR_CONTEXT_CREATEPROP_HYBRID_KERNELS_PATH_INFO 0x1600
 #define RPR_CONTEXT_CREATEPROP_HYBRID_ACC_MEMORY_SIZE 0x1601
-#define RPR_CONTEXT_CREATEPROP_HYBRID_VERTEX_MEMORY_SIZE 0x1602
-#define RPR_CONTEXT_CREATEPROP_HYBRID_INDEX_MEMORY_SIZE 0x1603
-#define RPR_CONTEXT_CREATEPROP_HYBRID_STAGING_MEMORY_SIZE 0x1604
-#define RPR_CONTEXT_CREATEPROP_HYBRID_ATTRIBUTE_MEMORY_SIZE 0x1605
-#define RPR_CONTEXT_CREATEPROP_HYBRID_ENABLE_VCT 0x1606 // Tells Hybrid to enable support for VCT(Voxel Cone Tracing).
+#define RPR_CONTEXT_CREATEPROP_HYBRID_MESH_MEMORY_SIZE 0x1602
+#define RPR_CONTEXT_CREATEPROP_HYBRID_STAGING_MEMORY_SIZE 0x1603
+#define RPR_CONTEXT_CREATEPROP_HYBRID_SCRATCH_MEMORY_SIZE 0x1604 // Size of acceleration scratch pool
+#define RPR_CONTEXT_CREATEPROP_HYBRID_ENABLE_VCT 0x1605 // Tells Hybrid to enable support for VCT(Voxel Cone Tracing).
                                                         // Enabling this requires vulkan implementation to support VK_EXT_consevative_rasterisation
                                                         // and in case of VK inter-op mode it must be enabled on provided device
-#define RPR_CONTEXT_CREATEPROP_HYBRID_ENABLE_PER_FACE_MATERIALS 0x1607 // Tells Hybrid to enable support for per-face materials.
+#define RPR_CONTEXT_CREATEPROP_HYBRID_ENABLE_PER_FACE_MATERIALS 0x1606 // Tells Hybrid to enable support for per-face materials.
                                                                        // This functionality requires additional memory on both -
                                                                        // CPU and GPU even when no per-face materials set in scene.
-#define RPR_CONTEXT_CREATEPROP_HYBRID_FACE_MEMORY_SIZE 0x1608 // Size of per-face memory buffer in bytes. Used only if per-face materials enabled
-#define RPR_CONTEXT_CREATEPROP_HYBRID_ENABLE_RADEON_RAYS 0x1609 // Use RadeonRays instead of native Vulkan VK_KHR_ray_tracing extension for raytracing.
+#define RPR_CONTEXT_CREATEPROP_HYBRID_ENABLE_RADEON_RAYS 0x1607 // Use RadeonRays instead of native Vulkan VK_KHR_ray_tracing extension for raytracing.
 
 struct RPRHybridKernelsPathInfo
 {
@@ -124,7 +122,6 @@ struct RPRHybridKernelsPathInfo
 };
 
 //to avoid overlap
-#define RPR_CONTEXT_RANDOM_SEED     0x1000 // name: "randseed"
 #define RPR_CONTEXT_RENDER_QUALITY  0x1001 // name: "render_quality"
 #define RPR_CONTEXT_NUMBER_PRERENDERED_FRAMES 0x1002 // name: "num_prerendered_frames"
 #define RPR_CONTEXT_SSAO_RADIUS     0x1003 // name: "ssao.radius"
@@ -180,6 +177,7 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_ENABLE_RASTERIZATION 0x1036 // Enable first hit rasterization
 #define RPR_CONTEXT_RESTIR_SPATIAL_RESAMPLE_ITERATIONS 0x1037 // World space ReSTIR spatial resample iteration count
 #define RPR_CONTEXT_RESTIR_MAX_RESERVOIRS_PER_CELL 0x1038 // Max reservoirs per world space hash grid cell
+#define RPR_CONTEXT_ENABLE_HALFRES_INDIRECT 0x1039 // Enable indirect downsample
 
 /* Traversal modes */
 #define RPR_HYBRID_TRAVERSAL_STATIC_TLAS_SEPARATE 0x1 ///< Use a separate acceleration structure for static objects
@@ -415,6 +413,46 @@ typedef struct //rpr_comressed_image_desc
  */
 typedef rpr_int(*rprContextCreateCompressedImage_func)(rpr_context context, rpr_compressed_format format, const rpr_comressed_image_desc* image_desc, const void** mip_data, const size_t* data_size, rpr_image* out_image);
 #define RPR_CONTEXT_CREATE_COMPRESSED_IMAGE "rprContextCreateCompressedImage"
+
+struct rpr_stats
+{
+    rpr_uint primitives;
+    rpr_uint draw_calls;
+    rpr_uint vw_images;
+    rpr_uint vw_buffers;
+    rpr_uint vw_vertex_buffers;
+    rpr_uint vw_index_buffers;
+    rpr_uint vw_acceleration_buffers;
+    rpr_uint vw_acc_scratch_buffers;
+    rpr_uint vw_framebuffer_images;
+    rpr_uint vw_cpu_buffers;
+    rpr_uint vw_cpu_to_gpu_buffers;
+    rpr_uint vw_gpu_to_cpu_buffers;
+    rpr_uint baikal_face_material_buffers;
+
+    size_t mesh_vertex_data_pool_size;
+    size_t mesh_attribute_data_pool_size;
+    size_t mesh_index_data_pool_size;
+    size_t acceleration_structure_pool_size;
+    size_t face_data_pool_size;
+    size_t staging_pool_size;
+    size_t acc_scratch_pool_size;
+
+    size_t vw_total_allocated;
+    size_t vw_total_used;
+    size_t vw_total_free;
+    size_t vw_images_size;
+    size_t vw_buffers_size;
+    size_t vw_vertex_buffers_size;
+    size_t vw_index_buffers_size;
+    size_t vw_acceleration_buffers_size;
+    size_t vw_acc_scratch_buffers_size;
+    size_t vw_framebuffer_images_size;
+    size_t vw_cpu_buffers_size;
+    size_t vw_cpu_to_gpu_buffers_size;
+    size_t vw_gpu_to_cpu_buffers_size;
+    size_t baikal_face_material_buffers_size;
+};
 
 #ifdef __cplusplus
 }
