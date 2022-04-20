@@ -34,7 +34,7 @@ extern "C" {
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 2 
 #define RPR_VERSION_REVISION 13 
-#define RPR_VERSION_BUILD 0x055cc524 
+#define RPR_VERSION_BUILD 0xef86aa54 
 #define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200213 
 
 // Deprecated version naming - will be removed in the future :
