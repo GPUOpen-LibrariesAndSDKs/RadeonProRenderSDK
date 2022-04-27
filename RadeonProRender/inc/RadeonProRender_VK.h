@@ -46,43 +46,34 @@ extern "C" {
  * @li each call to this function will return NEW buffer even if it is requested for same mesh
  * (e.g. no caching performed on plugin side)
  */
-#define RPR_MESH_VK_VERTEX_BUFFER 0x5501    // Provides access to vkBuffer with vertex data for mesh (on main instance)
-                                            // Access is read only.
-                                            // This info can be requested only in VK interop mode
-#define RPR_MESH_VK_ATTRIBUTE_BUFFER 0x5502 // Provides access to vkBuffer with vertex data for mesh (on main instance)
-                                            // Access is read only.
-                                            // This info can be requested only in VK interop mode
-#define RPR_MESH_VK_INDEX_BUFFER 0x5503     // Provides access to vkBuffer with index data for mesh (on main instance)
+#define RPR_MESH_VK_MESH_BUFFER 0x5501      // Provides access to vkBuffer with mesh data (on main instance)
                                             // Access is read only.
                                             // This info can be requested only in VK interop mode
 
 // rpr_mesh_info extensions
-#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFERS 0x5504       // Provides access to all vkBuffer-s with vertex data for mesh
-                                                        // (on main instance), which created with RPR_MESH_IS_DYNAMIC_MESH flag
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFERS 0x5502         // Provides access to all vkBuffer-s with mesh data (on main instance),
+                                                        // which created with RPR_MESH_IS_DYNAMIC_MESH flag
                                                         // Write to buffer with index RPR_MESH_DYNAMIC_MESH_INDEX_TO_MODIFY,
                                                         // signal to semaphore, then call rprVkDynamicMeshModified()
-#define RPR_MESH_VK_DYNAMIC_ATTRIBUTE_BUFFERS 0x5505    // Provides access to all vkBuffer-s with attribute data for mesh
-                                                        // (on main instance), which created with RPR_MESH_IS_DYNAMIC_MESH flag
-                                                        // Write to buffer with index RPR_MESH_DYNAMIC_MESH_INDEX_TO_MODIFY,
-                                                        // signal to semaphore, then call rprVkDynamicMeshModified()
-#define RPR_MESH_VK_DYNAMIC_INDEX_BUFFERS 0x5506        // Provides access to all vkBuffer-s with index data for mesh
-                                                        // (on main instance), which created with RPR_MESH_IS_DYNAMIC_MESH flag
-                                                        // Write to buffer with index RPR_MESH_DYNAMIC_MESH_INDEX_TO_MODIFY,
-                                                        // signal to semaphore, then call rprVkDynamicMeshModified()
-#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFER_INDEX_TO_MODIFY 0x5507 // Index of dynamic vertex buffer that we can modify
-#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFER_SIGNAL_SEMAPHORES 0x5508 // Index of semaphore to be signaled when the dynamic buffer modification is complete
-#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFER_POSITION_OFFSET 0x5509 // Offset of position's float3 relative to the beginning of the buffer (in bytes)
-#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFER_NORMAL_OFFSET 0x550A // Offset of normal's float3 relative to the beginning of the buffer (in bytes)
-#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFER_UV0_OFFSET 0x550B // Offset of first UV set's float2 relative to the beginning of the buffer (in bytes)
-#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFER_UV1_OFFSET 0x550C // Offset of second UV set's float2 relative to the beginning of the buffer (in bytes)
-#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFER_ATTRIBUTE0_OFFSET 0x550D // Offset of first attribute relative to the beginning of the buffer (in bytes)
-#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFER_ATTRIBUTE1_OFFSET 0x550E // Offset of second attribute relative to the beginning of the buffer (in bytes)
-#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFER_ATTRIBUTE2_OFFSET 0x550F // Offset of third attribute relative to the beginning of the buffer (in bytes)
-#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFER_ATTRIBUTE3_OFFSET 0x5510 // Offset of fourth attribute relative to the beginning of the buffer (in bytes)
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_INDEX_TO_MODIFY 0x5503 // Index of dynamic vertex buffer that we can modify
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_SIGNAL_SEMAPHORES 0x5504 // Index of semaphore to be signaled when the dynamic buffer modification is complete
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_POSITION_OFFSET 0x5505 // Offset of position's float3 relative to the beginning of the buffer (in bytes)
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_POSITION_STRIDE 0x5506 // Stride of the position (in bytes)
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_NORMAL_OFFSET 0x5507 // Offset of normal's float3 relative to the beginning of the buffer (in bytes)
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_NORMAL_STRIDE 0x5508 // Stride of the normal (in bytes)
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_UV0_OFFSET 0x5509 // Offset of first UV set's float2 relative to the beginning of the buffer (in bytes)
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_UV0_STRIDE 0x550A // Stride of the first UV set (in bytes)
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_UV1_OFFSET 0x550B // Offset of second UV set's float2 relative to the beginning of the buffer (in bytes)
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_UV1_STRIDE 0x550C // Offset of the second UV set (in bytes)
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_ATTRIBUTE0_OFFSET 0x550D // Offset of first attribute relative to the beginning of the buffer (in bytes)
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_ATTRIBUTE1_OFFSET 0x550E // Offset of second attribute relative to the beginning of the buffer (in bytes)
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_ATTRIBUTE2_OFFSET 0x550F // Offset of third attribute relative to the beginning of the buffer (in bytes)
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_ATTRIBUTE3_OFFSET 0x5510 // Offset of fourth attribute relative to the beginning of the buffer (in bytes)
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_ATTRIBUTE_STRIDE 0x5511 // Stride of the attributes (in bytes)
 
 typedef rpr_int(*rprVkDynamicMeshModified_func)(rpr_shape mesh, size_t num_vertices, size_t num_indices); // Notify rpr that dynamic vertex buffer was modifed.
                                                                                                           // Semaphore with appropriate index must be signaled before this call
-#define RPR_MESH_VK_DYNAMIC_VERTEX_BUFFER_MODIFED_FUNC_NAME "rprVkDynamicMeshModified"
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_MODIFED_FUNC_NAME "rprVkDynamicMeshModified"
 
 
 /* rpr_context_properties names */

@@ -85,7 +85,7 @@ extern "C" {
 #define RPR_MATERIAL_NODE_OP_SMOOTH_STEP 0x105a
 #define RPR_MATERIAL_NODE_OP_ATAN2 0x105b
 
-#define RPR_MATERIAL_INPUT_UBER_MATERIAL_ID_COLOR 0x1100
+#define RPR_MATERIAL_INPUT_UBER_TRANSPARENCY_MASK 0x1500
 
 /*rpr_material_node_arithmetic_operation*/
 #define RPR_MATERIAL_NODE_OP_SAMPLER 0x1000
@@ -104,18 +104,16 @@ extern "C" {
 /* rpr_context_properties names */
 #define RPR_CONTEXT_CREATEPROP_HYBRID_KERNELS_PATH_INFO 0x1600
 #define RPR_CONTEXT_CREATEPROP_HYBRID_ACC_MEMORY_SIZE 0x1601
-#define RPR_CONTEXT_CREATEPROP_HYBRID_VERTEX_MEMORY_SIZE 0x1602
-#define RPR_CONTEXT_CREATEPROP_HYBRID_INDEX_MEMORY_SIZE 0x1603
-#define RPR_CONTEXT_CREATEPROP_HYBRID_STAGING_MEMORY_SIZE 0x1604
-#define RPR_CONTEXT_CREATEPROP_HYBRID_ATTRIBUTE_MEMORY_SIZE 0x1605
-#define RPR_CONTEXT_CREATEPROP_HYBRID_ENABLE_VCT 0x1606 // Tells Hybrid to enable support for VCT(Voxel Cone Tracing).
+#define RPR_CONTEXT_CREATEPROP_HYBRID_MESH_MEMORY_SIZE 0x1602
+#define RPR_CONTEXT_CREATEPROP_HYBRID_STAGING_MEMORY_SIZE 0x1603
+#define RPR_CONTEXT_CREATEPROP_HYBRID_SCRATCH_MEMORY_SIZE 0x1604 // Size of acceleration scratch pool
+#define RPR_CONTEXT_CREATEPROP_HYBRID_ENABLE_VCT 0x1605 // Tells Hybrid to enable support for VCT(Voxel Cone Tracing).
                                                         // Enabling this requires vulkan implementation to support VK_EXT_consevative_rasterisation
                                                         // and in case of VK inter-op mode it must be enabled on provided device
-#define RPR_CONTEXT_CREATEPROP_HYBRID_ENABLE_PER_FACE_MATERIALS 0x1607 // Tells Hybrid to enable support for per-face materials.
+#define RPR_CONTEXT_CREATEPROP_HYBRID_ENABLE_PER_FACE_MATERIALS 0x1606 // Tells Hybrid to enable support for per-face materials.
                                                                        // This functionality requires additional memory on both -
                                                                        // CPU and GPU even when no per-face materials set in scene.
-#define RPR_CONTEXT_CREATEPROP_HYBRID_FACE_MEMORY_SIZE 0x1608 // Size of per-face memory buffer in bytes. Used only if per-face materials enabled
-#define RPR_CONTEXT_CREATEPROP_HYBRID_ENABLE_RADEON_RAYS 0x1609 // Use RadeonRays instead of native Vulkan VK_KHR_ray_tracing extension for raytracing.
+#define RPR_CONTEXT_CREATEPROP_HYBRID_ENABLE_RADEON_RAYS 0x1607 // Use RadeonRays instead of native Vulkan VK_KHR_ray_tracing extension for raytracing.
 
 struct RPRHybridKernelsPathInfo
 {
@@ -124,7 +122,6 @@ struct RPRHybridKernelsPathInfo
 };
 
 //to avoid overlap
-#define RPR_CONTEXT_RANDOM_SEED     0x1000 // name: "randseed"
 #define RPR_CONTEXT_RENDER_QUALITY  0x1001 // name: "render_quality"
 #define RPR_CONTEXT_NUMBER_PRERENDERED_FRAMES 0x1002 // name: "num_prerendered_frames"
 #define RPR_CONTEXT_SSAO_RADIUS     0x1003 // name: "ssao.radius"
@@ -180,6 +177,8 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_ENABLE_RASTERIZATION 0x1036 // Enable first hit rasterization
 #define RPR_CONTEXT_RESTIR_SPATIAL_RESAMPLE_ITERATIONS 0x1037 // World space ReSTIR spatial resample iteration count
 #define RPR_CONTEXT_RESTIR_MAX_RESERVOIRS_PER_CELL 0x1038 // Max reservoirs per world space hash grid cell
+#define RPR_CONTEXT_ENABLE_HALFRES_INDIRECT 0x1039 // Enable indirect downsample
+#define RPR_MAX_REGISTABLE_ID_COUNT 0x103A // Define maximum size of the table used to associate color with it by calling rprContextSetAOVindexLookup
 
 /* Traversal modes */
 #define RPR_HYBRID_TRAVERSAL_STATIC_TLAS_SEPARATE 0x1 ///< Use a separate acceleration structure for static objects
@@ -395,6 +394,14 @@ typedef enum
     RPR_FORMAT_BC7_UNORM_SRGB = 0x1013,
 } rpr_compressed_format ;
 
+typedef enum
+{
+    RPR_VECTOR_COMPONENT_TYPE_UNDEFINED = 0x0,
+    RPR_VECTOR_COMPONENT_TYPE_FLOAT32 = 0x1,
+    RPR_VECTOR_COMPONENT_TYPE_UINT32 =  0x2,
+    RPR_VECTOR_COMPONENT_TYPE_INT32 =   0x3,
+} rpr_vector_component_type ;
+
 typedef struct //rpr_comressed_image_desc
 {
     rpr_uint image_width;
@@ -415,6 +422,49 @@ typedef struct //rpr_comressed_image_desc
  */
 typedef rpr_int(*rprContextCreateCompressedImage_func)(rpr_context context, rpr_compressed_format format, const rpr_comressed_image_desc* image_desc, const void** mip_data, const size_t* data_size, rpr_image* out_image);
 #define RPR_CONTEXT_CREATE_COMPRESSED_IMAGE "rprContextCreateCompressedImage"
+
+struct rpr_stats
+{
+    struct rpr_stat
+    {
+        rpr_uint count;
+        size_t size;
+    };
+
+    rpr_uint primitives;
+    rpr_uint draw_calls;
+
+    struct rpr_stat images;
+    struct rpr_stat images_cpu;
+    struct rpr_stat images_cpu_gpu;
+    struct rpr_stat images_gpu_cpu;
+    struct rpr_stat images_gpu;
+    struct rpr_stat buffers;
+    struct rpr_stat buffers_cpu;
+    struct rpr_stat buffers_cpu_gpu;
+    struct rpr_stat buffers_gpu_cpu;
+    struct rpr_stat buffers_gpu;
+    struct rpr_stat staging_buffers;
+    struct rpr_stat vertex_buffers;
+    struct rpr_stat index_buffers;
+    struct rpr_stat as_scratch_buffers;
+    struct rpr_stat face_material_buffers;
+    struct rpr_stat mesh_buffers;
+    struct rpr_stat color_attachments;
+    struct rpr_stat depth_attachments;
+    struct rpr_stat storage_images;
+    struct rpr_stat blas;
+    struct rpr_stat tlas;
+
+    size_t mesh_data_pool_size;
+    size_t acceleration_structure_pool_size;
+    size_t staging_pool_size;
+    size_t acc_scratch_pool_size;
+
+    size_t total_allocated;
+    size_t total_used;
+    size_t total_free;
+};
 
 #ifdef __cplusplus
 }

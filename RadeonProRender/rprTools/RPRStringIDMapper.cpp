@@ -341,6 +341,7 @@ RPRStringIDMapper::RPRStringIDMapper()
 	MACRO_LINK_STR_ID("contour.use_uv",RPR_CONTEXT_CONTOUR_USE_UV);
 	MACRO_LINK_STR_ID("contour.normal_threshold",RPR_CONTEXT_CONTOUR_NORMAL_THRESHOLD);
 	MACRO_LINK_STR_ID("contour.uv_threshold",RPR_CONTEXT_CONTOUR_UV_THRESHOLD);
+	MACRO_LINK_STR_ID("contour.uv_secondary",RPR_CONTEXT_CONTOUR_UV_SECONDARY);
 	MACRO_LINK_STR_ID("contour.linewidth_objectid",RPR_CONTEXT_CONTOUR_LINEWIDTH_OBJECTID);
 	MACRO_LINK_STR_ID("contour.linewidth_materialid",RPR_CONTEXT_CONTOUR_LINEWIDTH_MATERIALID);
 	MACRO_LINK_STR_ID("contour.linewidth_normal",RPR_CONTEXT_CONTOUR_LINEWIDTH_NORMAL);
@@ -366,9 +367,7 @@ RPRStringIDMapper::RPRStringIDMapper()
 	MACRO_LINK_STR_ID("cryptomatte.extended",RPR_CONTEXT_CRYPTOMATTE_EXTENDED);
 	MACRO_LINK_STR_ID("cryptomatte.split_indirect",RPR_CONTEXT_CRYPTOMATTE_SPLIT_INDIRECT);
 	MACRO_LINK_STR_ID("fog.direction",RPR_CONTEXT_FOG_DIRECTION);
-
-	// parameters from Baikal header
-	MACRO_LINK_STR_ID("randseed",(rpr_context_info)RPR_CONTEXT_RANDOM_SEED);
+	MACRO_LINK_STR_ID("randseed",RPR_CONTEXT_RANDOM_SEED);
 
 
 	#undef MACRO_LINK_STR_ID

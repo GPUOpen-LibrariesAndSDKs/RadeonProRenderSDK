@@ -3,6 +3,19 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.02.13 - 27 April 2022
+
+## NORTHSTAR :
+Fix render artifact with primvars on RX6800XT
+Fix transparency artifact with background override
+Add option to choose UV set for contour extraction ( RPR_CONTEXT_CONTOUR_UV_SECONDARY )
+Improve performance of HIP backend
+Fix volume border cutting artifact
+MaterialX loader improvements for Northstar renderer: more materials are now supported - 'place2d' is now supported.
+with RPR_CONTEXT_RANDOM_SEED we can set the random seed of the renderer.
+
+
+################################################################################################################
 RPR SDK 2.02.12 - 09 March 2022
 
 ## NORTHSTAR :
