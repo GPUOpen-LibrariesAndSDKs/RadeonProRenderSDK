@@ -257,6 +257,22 @@ extern RPR_API_ENTRY rpr_status rprDirectionalLightSetShadowSoftness(rpr_light l
 #define RPR_AOV_MATERIAL_IDX RPR_AOV_MATERIAL_ID
 
 
+
+
+// DEPRECATED - will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
+// RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also deprecated
+extern RPR_API_ENTRY rpr_status rprShapeSetLinearMotion(rpr_shape shape, rpr_float x, rpr_float y, rpr_float z);
+extern RPR_API_ENTRY rpr_status rprShapeSetAngularMotion(rpr_shape shape, rpr_float x, rpr_float y, rpr_float z, rpr_float w);
+extern RPR_API_ENTRY rpr_status rprShapeSetScaleMotion(rpr_shape shape, rpr_float x, rpr_float y, rpr_float z);
+ 
+// DEPRECATED - will be removed in the future - please use rprCameraSetMotionTransform and rprCameraSetMotionTransformCount instead.
+// RPR_CAMERA_LINEAR_MOTION , RPR_CAMERA_ANGULAR_MOTION  are also deprecated
+extern RPR_API_ENTRY rpr_status rprCameraSetLinearMotion(rpr_camera camera, rpr_float x, rpr_float y, rpr_float z);
+extern RPR_API_ENTRY rpr_status rprCameraSetAngularMotion(rpr_camera camera, rpr_float x, rpr_float y, rpr_float z, rpr_float w);
+
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Old API FR functions
