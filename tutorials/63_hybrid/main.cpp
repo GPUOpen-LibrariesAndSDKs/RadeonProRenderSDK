@@ -42,9 +42,9 @@ int main()
 	
 	std::string hybridPluginName = 
 	#if defined(WIN32)
-	"Hybrid.dll";
+	"HybridPro.dll";
 	#elif defined(__LINUX__)
-	"Hybrid.so";
+	"HybridPro.so";
 	#elif defined(__APPLE__)
 	""; // no Hybrid plugin released on MacOS
 	#endif
@@ -56,7 +56,12 @@ int main()
 	size_t pluginCount = sizeof(plugins) / sizeof(plugins[0]);
 
 	// Create context using a single GPU 
-	CHECK(rprCreateContext(RPR_API_VERSION, plugins, pluginCount, g_ContextCreationFlags, NULL, NULL, &context));
+	rpr_status ctxCreateStatus = rprCreateContext(RPR_API_VERSION, plugins, pluginCount, g_ContextCreationFlags, NULL, NULL, &context);
+	if ( ctxCreateStatus != RPR_SUCCESS )
+	{
+		std::cout << "Error creating context - maybe the GPU is not compatible with " << hybridPluginName << "\n" ;
+		return 0;
+	}
 
 	// Set active plugin.
 	CHECK(rprContextSetActivePlugin(context, plugins[0]));
@@ -108,8 +113,20 @@ int main()
 	// Apply this new Uber Material to the shapes
 	matBall0.SetMaterial(uberMat2);
 
+
+	int iterationCount = 100;
+
+
+	// if using Hybrid ( not HybridPro ) then disable iteration count
+	if ( hybridPluginName.find("Hybrid.") != std::string::npos )
+		iterationCount = -1;
+
+
 	// rendering.
-	matballScene.Render("63.png");
+	matballScene.Render("63.png",
+		iterationCount,
+		false // for Hybrid and HybridPro , no need of framebuffer resolve
+		);
 
 	// Clean
 	CHECK(rprObjectDelete(uberMat2_img1));uberMat2_img1=nullptr;

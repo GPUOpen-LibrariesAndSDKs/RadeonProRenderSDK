@@ -127,11 +127,11 @@ public:
 		}
 	};
 
-	MATBALL Init(rpr_context context, int shapeShiftX, int shapeShiftY, bool usingHybridContext=false);
+	MATBALL Init(rpr_context context, int shapeShiftX, int shapeShiftY, bool forceUberMaterialForFloor=false);
 
 	void Clean();
 
-	void Render(const std::string& outImgFileName, int iterationCount = 100);
+	void Render(const std::string& outImgFileName, int iterationCount = 100, bool useResolveFramebuffer=true);
 
 	MATBALL AddMatball(int shiftX, int shiftY, bool createAsInstance=true);
 
@@ -158,8 +158,6 @@ public:
 
 	const rpr_framebuffer_desc m_framebuffer_desc = { 640 , 480};
 	const rpr_framebuffer_format m_framebuffer_fmt = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
-
-	bool m_usingHybridContext;
 };
 
 

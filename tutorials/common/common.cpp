@@ -284,12 +284,12 @@ MatballScene::MatballScene()
 	return;
 }
 
-void MatballScene::Render(const std::string& outImgFileName, int iterationCount)
+void MatballScene::Render(const std::string& outImgFileName, int iterationCount, bool useResolveFramebuffer)
 {
 	// clear framebuffer before starting a new rendering.
 	CHECK( rprFrameBufferClear(m_frame_buffer) );
 
-	if ( !m_usingHybridContext ) // there is no iteration for Hyrbid
+	if ( iterationCount > 0 ) // if iterationCount=-1 , we ignore this parameter  ( may be needed if using Hybrid.DLL )
 	{
 		CHECK( rprContextSetParameterByKey1u(m_context, RPR_CONTEXT_ITERATIONS, iterationCount) );
 	}
@@ -297,7 +297,7 @@ void MatballScene::Render(const std::string& outImgFileName, int iterationCount)
 	std::cout<<"Rendering "<<outImgFileName<<" ..."<<std::endl;
 	CHECK( rprContextRender(m_context) );
 	
-	if ( !m_usingHybridContext ) // There is no framebuffer resolve for Hyrbid
+	if ( useResolveFramebuffer )
 	{
 		// last argument is FALSE because we want to apply the display gamma (changed with RPR_CONTEXT_DISPLAY_GAMMA) to this COLOR AOV.
 		CHECK( rprContextResolveFrameBuffer(m_context, m_frame_buffer, m_frame_buffer_res, false) );
@@ -339,10 +339,8 @@ void MatballScene::Clean()
 }
 
 
-MatballScene::MATBALL MatballScene::Init(rpr_context context, int shapeShiftX, int shapeShiftY, bool usingHybridContext)
+MatballScene::MATBALL MatballScene::Init(rpr_context context, int shapeShiftX, int shapeShiftY, bool forceUberMaterialForFloor)
 {
-
-	m_usingHybridContext = usingHybridContext;
 	m_context = context;
 
 	//create scene
@@ -387,12 +385,12 @@ MatballScene::MATBALL MatballScene::Init(rpr_context context, int shapeShiftX, i
 	CHECK( rprMaterialSystemCreateNode(m_matsys,RPR_MATERIAL_NODE_IMAGE_TEXTURE,&m_floorImageMaterial) );
 	CHECK( rprMaterialNodeSetInputImageDataByKey(m_floorImageMaterial,RPR_MATERIAL_INPUT_DATA,m_floorImage) );
 	
-	if ( !usingHybridContext )
+	if ( !forceUberMaterialForFloor )
 	{
 		CHECK( rprMaterialSystemCreateNode(m_matsys,RPR_MATERIAL_NODE_DIFFUSE,&m_floorMaterial) );
 		CHECK( rprMaterialNodeSetInputNByKey(m_floorMaterial, RPR_MATERIAL_INPUT_COLOR, m_floorImageMaterial) );
 	}
-	else // Hybrid only manages UBER material meaning we can't use the RPR_MATERIAL_NODE_DIFFUSE like with Northstar.
+	else // Hybrid/HybridPro only manages UBER material meaning we can't use the RPR_MATERIAL_NODE_DIFFUSE like with Northstar.
 	{
 		CHECK(rprMaterialSystemCreateNode(m_matsys,RPR_MATERIAL_NODE_UBERV2,&m_floorMaterial));
 		CHECK(rprMaterialNodeSetInputNByKey(m_floorMaterial, RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR, m_floorImageMaterial));
