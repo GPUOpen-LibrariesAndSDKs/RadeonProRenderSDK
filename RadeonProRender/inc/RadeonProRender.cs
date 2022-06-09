@@ -353,6 +353,7 @@ CRYPTOMATTE_EXTENDED = 0x191 ,
 CRYPTOMATTE_SPLIT_INDIRECT = 0x192 ,
 FOG_DIRECTION = 0x193 ,
 RANDOM_SEED = 0x1000 ,
+IBL_DISPLAY = 0x195 ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -464,6 +465,7 @@ RENDER_LAYER_LIST = 0x42E ,
 SHADOW_COLOR = 0x42F ,
 VISIBILITY_RECEIVE_SHADOW = 0x430 ,
 PRIMVARS = 0x431,
+ENVIRONMENT_LIGHT = 0x432,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -530,6 +532,7 @@ LIGHT_TYPE = 0x801 ,
 LIGHT_TRANSFORM = 0x803 ,
 LIGHT_GROUP_ID = 0x805 ,
 LIGHT_RENDER_LAYER_LIST = 0x806 ,
+LIGHT_VISIBILITY_LIGHT = 0x807 ,
 LIGHT_NAME = 0x777777 ,
 LIGHT_UNIQUE_ID = 0x777778 ,
 LIGHT_CUSTOM_PTR = 0x777779 ,
@@ -601,6 +604,7 @@ FLOAT16 = 0x2,
 FLOAT32 = 0x3,
 UNKNOWN = 0x4,
 DEEP = 0x5,
+UINT32 = 0x6,
 }
 /*rpr_buffer_element_type*/
 public enum BufferElementType : int
@@ -1154,6 +1158,7 @@ LPE_6 = 0x26 ,
 LPE_7 = 0x27 ,
 LPE_8 = 0x28 ,
 CAMERA_NORMAL = 0x29 ,
+MATTE_PASS = 0x2a ,
 CRYPTOMATTE_MAT0 = 0x30,
 CRYPTOMATTE_MAT1 = 0x31,
 CRYPTOMATTE_MAT2 = 0x32,
@@ -1352,9 +1357,9 @@ VISIBILITY_RECEIVE_SHADOW = 0x430 ,
 }
 public const uint RPR_VERSION_MAJOR = 2 ;
 public const uint RPR_VERSION_MINOR = 2 ;
-public const uint RPR_VERSION_REVISION = 13 ;
-public const uint RPR_VERSION_BUILD = 0xbe24f121 ;
-public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200213 ;
+public const uint RPR_VERSION_REVISION = 14 ;
+public const uint RPR_VERSION_BUILD = 0xdfde7ec8 ;
+public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200214 ;
 // Deprecated version naming - will be removed in the future :
 
 public const uint RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -2113,28 +2118,6 @@ public static Status CameraSetFocalLength(IntPtr camera, float flength)
 return rprCameraSetFocalLength(camera, flength);
 }
 
-    /* 
-    *  DEPRECATED in Northstar - will be removed in the future - please use rprCameraSetMotionTransform and rprCameraSetMotionTransformCount instead.
-    *  RPR_CAMERA_LINEAR_MOTION , RPR_CAMERA_ANGULAR_MOTION are also DEPRECATED
-    */
-  
-[DllImport(dllName)] static extern Status rprCameraSetLinearMotion(IntPtr camera, float x, float y, float z);
-public static Status CameraSetLinearMotion(IntPtr camera, float x, float y, float z)
-{
-return rprCameraSetLinearMotion(camera, x, y, z);
-}
-
-    /* 
-    *  DEPRECATED in Northstar - will be removed in the future - please use rprCameraSetMotionTransform and rprCameraSetMotionTransformCount instead.
-    *  RPR_CAMERA_LINEAR_MOTION , RPR_CAMERA_ANGULAR_MOTION are also DEPRECATED
-    */
-  
-[DllImport(dllName)] static extern Status rprCameraSetAngularMotion(IntPtr camera, float x, float y, float z, float w);
-public static Status CameraSetAngularMotion(IntPtr camera, float x, float y, float z, float w)
-{
-return rprCameraSetAngularMotion(camera, x, y, z, w);
-}
-
     /* Number of motion matrices (set with rprCameraSetMotionTransform) to use.
     *  Set  transformCount=0  if you don't use Motion.
     *  For the moment, if you use motion in Northstar, only transformCount=1 is supported.
@@ -2262,9 +2245,7 @@ return rprCameraSetApertureBlades(camera, num_blades);
     *      RPR_ERROR_INVALID_PARAMETER
     *
     *  @param  camera    The camera to set aperture blades for
-    *  @param  exposure  Represents a time length in the same time scale than rprShapeSetLinearMotion,rprCameraSetAngularMotion...
-    *                    example: rprShapeSetLinearMotion(shapeA,3,0,0) means in 1 time unit, shapeA translates of +3 spatial unit.
-    *                             rprCameraSetExposure(cam,2) means the rendering will represent shapeA moving along +6 spatial units.
+    *  @param  exposure  Represents a time length in the same time scale than rprShapeSetMotionTransform,rprCameraSetMotionTransform...
     *  @return           RPR_SUCCESS in case of success, error code otherwise
     */
   
@@ -2788,36 +2769,6 @@ public static Status ShapeSetVolumeMaterial(IntPtr shape, IntPtr node)
 return rprShapeSetVolumeMaterial(shape, node);
 }
 
-    /* DEPRECATED - will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
-    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
-    */
-  
-[DllImport(dllName)] static extern Status rprShapeSetLinearMotion(IntPtr shape, float x, float y, float z);
-public static Status ShapeSetLinearMotion(IntPtr shape, float x, float y, float z)
-{
-return rprShapeSetLinearMotion(shape, x, y, z);
-}
-
-    /* DEPRECATED, will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
-    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
-    */
-  
-[DllImport(dllName)] static extern Status rprShapeSetAngularMotion(IntPtr shape, float x, float y, float z, float w);
-public static Status ShapeSetAngularMotion(IntPtr shape, float x, float y, float z, float w)
-{
-return rprShapeSetAngularMotion(shape, x, y, z, w);
-}
-
-    /* DEPRECATED, will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
-    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
-    */
-  
-[DllImport(dllName)] static extern Status rprShapeSetScaleMotion(IntPtr shape, float x, float y, float z);
-public static Status ShapeSetScaleMotion(IntPtr shape, float x, float y, float z)
-{
-return rprShapeSetScaleMotion(shape, x, y, z);
-}
-
     /* Number of motion matrices (set with rprShapeSetMotionTransform) to use.
     *  Set  transformCount=0  if you don't use Motion.
     *  For the moment, if you use motion in Northstar, only transformCount=1 is supported.
@@ -2910,6 +2861,21 @@ public static Status ShapeSetVisibility(IntPtr shape, bool visible)
 return rprShapeSetVisibility(shape, visible);
 }
 
+    /** @brief Set visibility flag for Light
+    *
+    *  @param  light           The light to set visibility for
+    *  @param  visibilityFlag     one of the visibility flags :
+    *                            - RPR_LIGHT_VISIBILITY_LIGHT
+    *  @param  visible          set the flag to TRUE or FALSE
+    *  @return                  RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprLightSetVisibilityFlag(IntPtr light, Light visibilityFlag, bool visible);
+public static Status LightSetVisibilityFlag(IntPtr light, Light visibilityFlag, bool visible)
+{
+return rprLightSetVisibilityFlag(light, visibilityFlag, visible);
+}
+
     /** @brief Set visibility flag
     *
     * This function sets all RPR_CURVE_VISIBILITY_* flags to the 'visible' argument value
@@ -2995,6 +2961,19 @@ return rprShapeSetReflectionCatcher(shape, reflectionCatcher);
 public static Status ShapeSetContourIgnore(IntPtr shape, bool ignoreInContour)
 {
 return rprShapeSetContourIgnore(shape, ignoreInContour);
+}
+
+    /** @brief Set 1 if the shape should be treated as an environment light (finite sphere environment light).
+    *
+    *  @param  shape             The shape to set
+    *  @param  envLight   0 or 1.
+    *  @return                   RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprShapeSetEnvironmentLight(IntPtr shape, bool envLight);
+public static Status ShapeSetEnvironmentLight(IntPtr shape, bool envLight)
+{
+return rprShapeSetEnvironmentLight(shape, envLight);
 }
 
       /**
@@ -3279,14 +3258,14 @@ return rprSphereLightSetRadiantPower3f(light, r, g, b);
     /** @brief Set Radius for Sphere Light
     *
     *
-    *  @param angle  Outer angle in radians
+    *  @param radius  Radius to set
     *  @return status RPR_SUCCESS in case of success, error code otherwise
     */
   
-[DllImport(dllName)] static extern Status rprSphereLightSetRadius(IntPtr light, float angle);
-public static Status SphereLightSetRadius(IntPtr light, float angle)
+[DllImport(dllName)] static extern Status rprSphereLightSetRadius(IntPtr light, float radius);
+public static Status SphereLightSetRadius(IntPtr light, float radius)
 {
-return rprSphereLightSetRadius(light, angle);
+return rprSphereLightSetRadius(light, radius);
 }
 
     /** @brief Set Power for Disk Light

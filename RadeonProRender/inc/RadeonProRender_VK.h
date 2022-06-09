@@ -107,6 +107,12 @@ struct VkInteropInfo
     VkInstance *instances; ///< Can be freed right after return from rprCreateContext
 };
 
+struct BufferInfo
+{
+    void* buffer_handle;
+    size_t offset;
+};
+
 #ifdef __cplusplus
 }
 #endif

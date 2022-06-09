@@ -13,6 +13,7 @@
 #include "RadeonProRender_MaterialX.h"
 #include <cassert>
 #include <vector>
+#include "rprDeprecatedApi.h"
 
 #ifdef RPR_CPPWRAPER_DISABLE_MUTEXLOCK
 #define RPR_CPPWRAPER_MUTEXLOCK
@@ -1002,6 +1003,12 @@ Status Light::SetTransform(float const* transform, rpr_bool transpose) {
 Status Light::SetGroupId(rpr_uint groupId) {
     RPR_CPPWRAPER_CALL_PREFIX
     rprLightSetGroupId(GetRprObject(this), groupId)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
+Status Light::SetVisibilityFlag(LightInfo visibilityFlag, rpr_bool visible) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprLightSetVisibilityFlag(GetRprObject(this), visibilityFlag, visible)
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 

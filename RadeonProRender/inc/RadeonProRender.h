@@ -33,9 +33,9 @@ extern "C" {
 
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 2 
-#define RPR_VERSION_REVISION 13 
-#define RPR_VERSION_BUILD 0xbe24f121 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200213 
+#define RPR_VERSION_REVISION 14 
+#define RPR_VERSION_BUILD 0xdfde7ec8 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200214 
 
 // Deprecated version naming - will be removed in the future :
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
@@ -290,6 +290,7 @@ extern "C" {
 #define RPR_CONTEXT_CRYPTOMATTE_SPLIT_INDIRECT 0x192 
 #define RPR_CONTEXT_FOG_DIRECTION 0x193 
 #define RPR_CONTEXT_RANDOM_SEED 0x1000 
+#define RPR_CONTEXT_IBL_DISPLAY 0x195 
 #define RPR_CONTEXT_NAME RPR_OBJECT_NAME
 #define RPR_CONTEXT_UNIQUE_ID RPR_OBJECT_UNIQUE_ID
 #define RPR_CONTEXT_CUSTOM_PTR RPR_OBJECT_CUSTOM_PTR
@@ -391,6 +392,7 @@ extern "C" {
 #define RPR_SHAPE_SHADOW_COLOR 0x42F 
 #define RPR_SHAPE_VISIBILITY_RECEIVE_SHADOW 0x430 
 #define RPR_SHAPE_PRIMVARS 0x431
+#define RPR_SHAPE_ENVIRONMENT_LIGHT 0x432
 #define RPR_SHAPE_NAME RPR_OBJECT_NAME
 #define RPR_SHAPE_UNIQUE_ID RPR_OBJECT_UNIQUE_ID
 #define RPR_SHAPE_CUSTOM_PTR RPR_OBJECT_CUSTOM_PTR
@@ -445,6 +447,7 @@ extern "C" {
 #define RPR_LIGHT_TRANSFORM 0x803 
 #define RPR_LIGHT_GROUP_ID 0x805 
 #define RPR_LIGHT_RENDER_LAYER_LIST 0x806 
+#define RPR_LIGHT_VISIBILITY_LIGHT 0x807 
 #define RPR_LIGHT_NAME RPR_OBJECT_NAME
 #define RPR_LIGHT_UNIQUE_ID RPR_OBJECT_UNIQUE_ID
 #define RPR_LIGHT_CUSTOM_PTR RPR_OBJECT_CUSTOM_PTR
@@ -522,6 +525,7 @@ extern "C" {
 #define RPR_COMPONENT_TYPE_FLOAT32 0x3
 #define RPR_COMPONENT_TYPE_UNKNOWN 0x4
 #define RPR_COMPONENT_TYPE_DEEP 0x5
+#define RPR_COMPONENT_TYPE_UINT32 0x6
 /*rpr_buffer_element_type*/
 #define RPR_BUFFER_ELEMENT_TYPE_INT32 0x1 
 #define RPR_BUFFER_ELEMENT_TYPE_FLOAT32 0x2 
@@ -1015,6 +1019,7 @@ extern "C" {
 #define RPR_AOV_LPE_7 0x27 
 #define RPR_AOV_LPE_8 0x28 
 #define RPR_AOV_CAMERA_NORMAL 0x29 
+#define RPR_AOV_MATTE_PASS 0x2a 
 #define RPR_AOV_CRYPTOMATTE_MAT0 0x30
 #define RPR_AOV_CRYPTOMATTE_MAT1 0x31
 #define RPR_AOV_CRYPTOMATTE_MAT2 0x32
@@ -1870,20 +1875,6 @@ extern RPR_API_ENTRY rpr_status rprContextGetInternalParameterBuffer(rpr_context
   extern RPR_API_ENTRY rpr_status rprCameraSetFocalLength(rpr_camera camera, rpr_float flength);
 
 
-    /* 
-    *  DEPRECATED in Northstar - will be removed in the future - please use rprCameraSetMotionTransform and rprCameraSetMotionTransformCount instead.
-    *  RPR_CAMERA_LINEAR_MOTION , RPR_CAMERA_ANGULAR_MOTION are also DEPRECATED
-    */
-  extern RPR_API_ENTRY rpr_status rprCameraSetLinearMotion(rpr_camera camera, rpr_float x, rpr_float y, rpr_float z);
-
-
-    /* 
-    *  DEPRECATED in Northstar - will be removed in the future - please use rprCameraSetMotionTransform and rprCameraSetMotionTransformCount instead.
-    *  RPR_CAMERA_LINEAR_MOTION , RPR_CAMERA_ANGULAR_MOTION are also DEPRECATED
-    */
-  extern RPR_API_ENTRY rpr_status rprCameraSetAngularMotion(rpr_camera camera, rpr_float x, rpr_float y, rpr_float z, rpr_float w);
-
-
     /* Number of motion matrices (set with rprCameraSetMotionTransform) to use.
     *  Set  transformCount=0  if you don't use Motion.
     *  For the moment, if you use motion in Northstar, only transformCount=1 is supported.
@@ -1979,9 +1970,7 @@ extern RPR_API_ENTRY rpr_status rprContextGetInternalParameterBuffer(rpr_context
     *      RPR_ERROR_INVALID_PARAMETER
     *
     *  @param  camera    The camera to set aperture blades for
-    *  @param  exposure  Represents a time length in the same time scale than rprShapeSetLinearMotion,rprCameraSetAngularMotion...
-    *                    example: rprShapeSetLinearMotion(shapeA,3,0,0) means in 1 time unit, shapeA translates of +3 spatial unit.
-    *                             rprCameraSetExposure(cam,2) means the rendering will represent shapeA moving along +6 spatial units.
+    *  @param  exposure  Represents a time length in the same time scale than rprShapeSetMotionTransform,rprCameraSetMotionTransform...
     *  @return           RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprCameraSetExposure(rpr_camera camera, rpr_float exposure);
@@ -2347,24 +2336,6 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
   extern RPR_API_ENTRY rpr_status rprShapeSetVolumeMaterial(rpr_shape shape, rpr_material_node node);
 
 
-    /* DEPRECATED - will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
-    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
-    */
-  extern RPR_API_ENTRY rpr_status rprShapeSetLinearMotion(rpr_shape shape, rpr_float x, rpr_float y, rpr_float z);
-
-
-    /* DEPRECATED, will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
-    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
-    */
-  extern RPR_API_ENTRY rpr_status rprShapeSetAngularMotion(rpr_shape shape, rpr_float x, rpr_float y, rpr_float z, rpr_float w);
-
-
-    /* DEPRECATED, will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
-    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
-    */
-  extern RPR_API_ENTRY rpr_status rprShapeSetScaleMotion(rpr_shape shape, rpr_float x, rpr_float y, rpr_float z);
-
-
     /* Number of motion matrices (set with rprShapeSetMotionTransform) to use.
     *  Set  transformCount=0  if you don't use Motion.
     *  For the moment, if you use motion in Northstar, only transformCount=1 is supported.
@@ -2437,6 +2408,17 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
   extern RPR_API_ENTRY rpr_status rprShapeSetVisibility(rpr_shape shape, rpr_bool visible);
 
 
+    /** @brief Set visibility flag for Light
+    *
+    *  @param  light           The light to set visibility for
+    *  @param  visibilityFlag     one of the visibility flags :
+    *                            - RPR_LIGHT_VISIBILITY_LIGHT
+    *  @param  visible          set the flag to TRUE or FALSE
+    *  @return                  RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprLightSetVisibilityFlag(rpr_light light, rpr_light_info visibilityFlag, rpr_bool visible);
+
+
     /** @brief Set visibility flag
     *
     * This function sets all RPR_CURVE_VISIBILITY_* flags to the 'visible' argument value
@@ -2498,6 +2480,15 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
     *  @return                   RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprShapeSetContourIgnore(rpr_shape shape, rpr_bool ignoreInContour);
+
+
+    /** @brief Set 1 if the shape should be treated as an environment light (finite sphere environment light).
+    *
+    *  @param  shape             The shape to set
+    *  @param  envLight   0 or 1.
+    *  @return                   RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprShapeSetEnvironmentLight(rpr_shape shape, rpr_bool envLight);
 
 
       /**
@@ -2707,10 +2698,10 @@ extern RPR_API_ENTRY rpr_status rprContextCreateDiskLight(rpr_context context, r
     /** @brief Set Radius for Sphere Light
     *
     *
-    *  @param angle  Outer angle in radians
+    *  @param radius  Radius to set
     *  @return status RPR_SUCCESS in case of success, error code otherwise
     */
-  extern RPR_API_ENTRY rpr_status rprSphereLightSetRadius(rpr_light light, rpr_float angle);
+  extern RPR_API_ENTRY rpr_status rprSphereLightSetRadius(rpr_light light, rpr_float radius);
 
 
     /** @brief Set Power for Disk Light

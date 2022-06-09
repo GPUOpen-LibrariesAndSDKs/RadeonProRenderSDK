@@ -359,6 +359,7 @@ public:
 
     Status SetGroupId(rpr_uint groupId);
     Status GetInfo(LightInfo info, size_t size, void* data, size_t* size_ret);
+    Status SetVisibilityFlag(LightInfo visibilityFlag, rpr_bool visible);
 
     Status SetTransform(float const* transform, rpr_bool transpose) override;
 

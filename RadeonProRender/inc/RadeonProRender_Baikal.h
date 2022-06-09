@@ -23,13 +23,14 @@ extern "C" {
 #define RPR_MATERIAL_INPUT_CAST_SHADOW                  0x11001U
 
 /* rpr uber material layers */
-#define RPR_UBER_MATERIAL_LAYER_EMISSION        (1<<0)
-#define RPR_UBER_MATERIAL_LAYER_TRANSPARENCY    (1<<1)
-#define RPR_UBER_MATERIAL_LAYER_COATING         (1<<2)
-#define RPR_UBER_MATERIAL_LAYER_REFLECTION      (1<<3)
-#define RPR_UBER_MATERIAL_LAYER_DIFFUSE         (1<<4)
-#define RPR_UBER_MATERIAL_LAYER_REFRACTION      (1<<5)
-#define RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL  (1<<6)
+#define RPR_UBER_MATERIAL_LAYER_EMISSION             (1<<0)
+#define RPR_UBER_MATERIAL_LAYER_TRANSPARENCY         (1<<1)
+#define RPR_UBER_MATERIAL_LAYER_COATING              (1<<2)
+#define RPR_UBER_MATERIAL_LAYER_REFLECTION           (1<<3)
+#define RPR_UBER_MATERIAL_LAYER_DIFFUSE              (1<<4)
+#define RPR_UBER_MATERIAL_LAYER_REFRACTION           (1<<5)
+#define RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL       (1<<6)
+#define RPR_UBER_MATERIAL_LAYER_TRANSPARENCY_MASK    (1<<7)
 
 
 /*rpr_material_node_arithmetic_operation*/
@@ -114,6 +115,7 @@ extern "C" {
                                                                        // This functionality requires additional memory on both -
                                                                        // CPU and GPU even when no per-face materials set in scene.
 #define RPR_CONTEXT_CREATEPROP_HYBRID_ENABLE_RADEON_RAYS 0x1607 // Use RadeonRays instead of native Vulkan VK_KHR_ray_tracing extension for raytracing.
+#define RPR_CONTEXT_CREATEPROP_HYBRID_VIDEO_API 0x1608 // Use RadeonRays instead of native Vulkan VK_KHR_ray_tracing extension for raytracing.
 
 struct RPRHybridKernelsPathInfo
 {
@@ -178,7 +180,8 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_RESTIR_SPATIAL_RESAMPLE_ITERATIONS 0x1037 // World space ReSTIR spatial resample iteration count
 #define RPR_CONTEXT_RESTIR_MAX_RESERVOIRS_PER_CELL 0x1038 // Max reservoirs per world space hash grid cell
 #define RPR_CONTEXT_ENABLE_HALFRES_INDIRECT 0x1039 // Enable indirect downsample
-#define RPR_MAX_REGISTABLE_ID_COUNT 0x103A // Define maximum size of the table used to associate color with it by calling rprContextSetAOVindexLookup
+#define RPR_CONTEXT_ENABLE_RADIANCE_CACHE 0x1003B // Enable Radiance Cache.
+
 
 /* Traversal modes */
 #define RPR_HYBRID_TRAVERSAL_STATIC_TLAS_SEPARATE 0x1 ///< Use a separate acceleration structure for static objects
@@ -231,6 +234,10 @@ struct RPRHybridKernelsPathInfo
 #define RPR_TONE_MAPPING_FILMIC 1u
 #define RPR_TONE_MAPPING_ACES 2u
 #define RPR_TONE_MAPPING_REINHARD 3u
+
+/* RPR_CONTEXT_CREATEPROP_HYBRID_VIDEO_API acceptable values*/
+#define RPR_HYBRID_VIDEO_API_VULKAN 0u
+#define RPR_HYBRID_VIDEO_API_D3D12 1u
 
 /**
  * Sets directional light shadow splits count for for rasterization renderer.
@@ -378,21 +385,23 @@ typedef rpr_int (*rprShapeSetTransformBatch_func)(const ShapeTransform *transfor
 // Extends rpr_component_type
 typedef enum
 {
-    RPR_FORMAT_BC1_UNORM =      0x1000,
-    RPR_FORMAT_BC1_UNORM_SRGB = 0x1001,
-    RPR_FORMAT_BC2_UNORM  =     0x1002,
-    RPR_FORMAT_BC2_UNORM_SRGB = 0x1003,
-    RPR_FORMAT_BC3_UNORM =      0x1004,
-    RPR_FORMAT_BC3_UNORM_SRGB = 0x1005,
-    RPR_FORMAT_BC4_UNORM =      0x1006,
-    RPR_FORMAT_BC4_SNORM =      0x1007,
-    RPR_FORMAT_BC5_UNORM =      0x1008,
-    RPR_FORMAT_BC5_SNORM =      0x1009,
-    RPR_FORMAT_BC6H_SF16 =      0x1010,
-    RPR_FORMAT_BC6H_UF16 =      0x1011,
-    RPR_FORMAT_BC7_UNORM =      0x1012,
-    RPR_FORMAT_BC7_UNORM_SRGB = 0x1013,
-} rpr_compressed_format ;
+    RPR_FORMAT_BC1_UNORM =           0x1000,
+    RPR_FORMAT_BC1_UNORM_SRGB =      0x1001,
+    RPR_FORMAT_BC2_UNORM  =          0x1002,
+    RPR_FORMAT_BC2_UNORM_SRGB =      0x1003,
+    RPR_FORMAT_BC3_UNORM =           0x1004,
+    RPR_FORMAT_BC3_UNORM_SRGB =      0x1005,
+    RPR_FORMAT_BC4_UNORM =           0x1006,
+    RPR_FORMAT_BC4_SNORM =           0x1007,
+    RPR_FORMAT_BC5_UNORM =           0x1008,
+    RPR_FORMAT_BC5_SNORM =           0x1009,
+    RPR_FORMAT_BC6H_SF16 =           0x100A,
+    RPR_FORMAT_BC6H_UF16 =           0x100B,
+    RPR_FORMAT_BC7_UNORM =           0x100C,
+    RPR_FORMAT_BC7_UNORM_SRGB =      0x100D,
+    RPR_FORMAT_B8G8R8A8_UNORM =      0x100E,
+    RPR_FORMAT_B8G8R8A8_UNORM_SRGB = 0x100F,
+} rpr_format_ext ;
 
 typedef enum
 {
@@ -402,12 +411,12 @@ typedef enum
     RPR_VECTOR_COMPONENT_TYPE_INT32 =   0x3,
 } rpr_vector_component_type ;
 
-typedef struct //rpr_comressed_image_desc
+typedef struct //rpr_image_desc_ext
 {
     rpr_uint image_width;
     rpr_uint image_height;
     rpr_uint mip_count;
-} rpr_comressed_image_desc;
+} rpr_image_desc_ext;
 
 /**
  * Create compressed image from memory.
@@ -420,8 +429,22 @@ typedef struct //rpr_comressed_image_desc
  * @param  mip_data     Array of pointers to each mip data (length is image_desc->mip_count).
  * @param  data_size    Array of data size for each mip (length is image_desc->mip_count).
  */
-typedef rpr_int(*rprContextCreateCompressedImage_func)(rpr_context context, rpr_compressed_format format, const rpr_comressed_image_desc* image_desc, const void** mip_data, const size_t* data_size, rpr_image* out_image);
+typedef rpr_int(*rprContextCreateCompressedImage_func)(rpr_context context, rpr_format_ext format, const rpr_image_desc_ext* image_desc, const void** mip_data, const size_t* data_size, rpr_image* out_image);
 #define RPR_CONTEXT_CREATE_COMPRESSED_IMAGE "rprContextCreateCompressedImage"
+
+/**
+ * Create image from external image handle.
+ *
+ * @param  context        The context to create image
+ * @param  image_format   Format description.
+ * @param  format_ext     Extended format description if rpr_image_format could't describe actual format, in this case image_format.type should be RPR_COMPONENT_TYPE_UNKNOWN.
+ * @param  image_desc     Image description.
+ * @param  external_image External image handle. Supported handles: VkImage*, ID3D12Resource*.
+ * @param  out_image      Pointer to image object
+ */
+typedef rpr_int(*rprContextCreateImageFromExternalHandle_func)(rpr_context context, rpr_image_format image_format, rpr_format_ext format_ext,
+    const rpr_image_desc_ext* image_desc, const void* external_image, rpr_image* out_image);
+#define RPR_CONTEXT_CREATE_IMAGE_FROM_EXTERNAL_HANDLE "rprContextCreateImageFromExternalHandle"
 
 struct rpr_stats
 {

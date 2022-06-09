@@ -3,6 +3,22 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.02.14 - 09 June 2022
+
+## NORTHSTAR :
+RPR-1058 - (Bug)    - Fix render layer with light
+RPR-1048 - (Bug)    - Fix mesh subdivision crash on CPU
+RPR-1043 - (Bug)    - fix light IBL crash on Linux
+RPR-557  - (Bug)    - Fix unexpected halo around geometry when using shadowcatcher and reflectioncatcher
+RPR-822  - (Bug)    - Fix bumpmap that isn't working
+
+
+## RPR API :
+  * rprCameraSetLinearMotion, rprCameraSetAngularMotion, rprShapeSetLinearMotion, rprShapeSetAngularMotion, rprShapeSetScaleMotion has been moved to Deprecated API header.
+  * new function: rprLightSetVisibilityFlag / RPR_LIGHT_VISIBILITY_LIGHT. Expose a way to make the disk/sphere shape visible for disk/sphere lights. This flag should stay false for most of usages.
+  * new function: rprShapeSetEnvironmentLight / RPR_SHAPE_ENVIRONMENT_LIGHT. Used for compositing. With this flag TRUE, the shape is handled as IBL and is not shown on AOVs.
+
+################################################################################################################
 RPR SDK 2.02.13 - 27 April 2022
 
 ## NORTHSTAR :
