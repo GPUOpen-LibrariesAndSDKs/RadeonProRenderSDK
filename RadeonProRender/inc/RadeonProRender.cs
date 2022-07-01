@@ -354,6 +354,7 @@ CRYPTOMATTE_SPLIT_INDIRECT = 0x192 ,
 FOG_DIRECTION = 0x193 ,
 RANDOM_SEED = 0x1000 ,
 IBL_DISPLAY = 0x195 ,
+FRAMEBUFFER_SAVE_FLOAT32 = 0x196 ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -1358,7 +1359,7 @@ VISIBILITY_RECEIVE_SHADOW = 0x430 ,
 public const uint RPR_VERSION_MAJOR = 2 ;
 public const uint RPR_VERSION_MINOR = 2 ;
 public const uint RPR_VERSION_REVISION = 14 ;
-public const uint RPR_VERSION_BUILD = 0xdfde7ec8 ;
+public const uint RPR_VERSION_BUILD = 0x5594559b ;
 public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200214 ;
 // Deprecated version naming - will be removed in the future :
 

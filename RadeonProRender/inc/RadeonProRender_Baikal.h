@@ -32,7 +32,6 @@ extern "C" {
 #define RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL       (1<<6)
 #define RPR_UBER_MATERIAL_LAYER_TRANSPARENCY_MASK    (1<<7)
 
-
 /*rpr_material_node_arithmetic_operation*/
 #define RPR_MATERIAL_NODE_OP_CEIL 0x102a
 #define RPR_MATERIAL_NODE_OP_ROUND 0x102b
@@ -173,7 +172,7 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_EXPOSURE 0x1030
 #define RPR_CONTEXT_TONE_MAPPING 0x1031
 #define RPR_CONTEXT_ENABLE_VOLUMES 0x1032 // Enable volume rendering. It is recommended to turn off this feature  (if scene hasn't volumes) because it creates a small overhead
-#define RPR_CONTEXT_RESTIR_GI 0x1033
+#define RPR_CONTEXT_RESTIR_GI 0x1033 // Enable ReSTIR GI
 #define RPR_CONTEXT_PSR_ATTENUATION 0x1034 // Path Space Regularization: Attenuation factor for roughness. [0.0, 1.0], 0.0 - Unbiased, high variance, 1.0 - Biased, low variance
 #define RPR_CONTEXT_MATERIAL_CACHE 0x1035 // Reduce shaders compilation time, in some cases can increase performance
 #define RPR_CONTEXT_ENABLE_RASTERIZATION 0x1036 // Enable first hit rasterization
@@ -181,6 +180,13 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_RESTIR_MAX_RESERVOIRS_PER_CELL 0x1038 // Max reservoirs per world space hash grid cell
 #define RPR_CONTEXT_ENABLE_HALFRES_INDIRECT 0x1039 // Enable indirect downsample
 #define RPR_CONTEXT_ENABLE_RADIANCE_CACHE 0x1003B // Enable Radiance Cache.
+// Set ReSTIR GI bias correction method
+// 0 - No bias correction (biased)
+// 1 - Uniform weights    (unbiased, variance can be very high)
+// 2 - Stochastic MIS     (unbiased, variance is very low)      [  optimal  ]
+// 3 - Deterministic MIS  (unbiased, variance is even lower)    [ expensive ]
+#define RPR_CONTEXT_RESTIR_GI_BIAS_CORRECTION 0x1003C
+#define RPR_CONTEXT_RESTIR_GI_ENABLE_SAMPLE_VALIDATION 0x1003D // Enable sample validation which helps to remove temporal lag of indirect lighting at the cost of decreased performance
 
 
 /* Traversal modes */
@@ -215,6 +221,7 @@ struct RPRHybridKernelsPathInfo
 // rprShapeGetInfo extension
 /* rpr_shape_info */
 #define RPR_SHAPE_LIGHTMAP_CHART_INDEX 0x1440
+#define RPR_INSTANCE_USE_UNIQUE_ATTRIBUTES 0x1602
 
 #define RPR_CAMERA_UV_LIGHTMAP_CHART_INDEX 0x1441
 #define RPR_FRAMEBUFFER_TYPE 0x1442
@@ -234,10 +241,26 @@ struct RPRHybridKernelsPathInfo
 #define RPR_TONE_MAPPING_FILMIC 1u
 #define RPR_TONE_MAPPING_ACES 2u
 #define RPR_TONE_MAPPING_REINHARD 3u
+#define RPR_TONE_MAPPING_PHOTO_LINEAR 4u
 
 /* RPR_CONTEXT_CREATEPROP_HYBRID_VIDEO_API acceptable values*/
 #define RPR_HYBRID_VIDEO_API_VULKAN 0u
 #define RPR_HYBRID_VIDEO_API_D3D12 1u
+
+/** @brief Create an instance of an object with separate buffer for vertex attributes
+*
+*  Possible error codes are:
+*
+*      RPR_ERROR_OUT_OF_SYSTEM_MEMORY
+*      RPR_ERROR_OUT_OF_VIDEO_MEMORY
+*      RPR_ERROR_INVALID_PARAMETER
+*
+*  @param  context  The context to create an instance for
+*  @param  shape    Parent shape for an instance
+*  @param  out_instance   Pointer to instance object
+*  @return RPR_SUCCESS in case of success, error code otherwise
+*/
+extern RPR_API_ENTRY rpr_status rprContextCreateMeshInstanceWithUniqueAttributes(rpr_context in_context, rpr_shape in_shape, rpr_shape* shape_out);
 
 /**
  * Sets directional light shadow splits count for for rasterization renderer.
