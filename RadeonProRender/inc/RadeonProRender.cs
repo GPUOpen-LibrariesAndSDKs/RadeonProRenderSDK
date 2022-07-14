@@ -214,12 +214,6 @@ ACTIVE_PLUGIN = 0x108 ,
 SCENE = 0x109 ,
 ITERATIONS = 0x10B ,
 IMAGE_FILTER_TYPE = 0x10C ,
-IMAGE_FILTER_BOX_RADIUS = 0x10D ,
-IMAGE_FILTER_GAUSSIAN_RADIUS = 0x10E ,
-IMAGE_FILTER_TRIANGLE_RADIUS = 0x10F ,
-IMAGE_FILTER_MITCHELL_RADIUS = 0x110 ,
-IMAGE_FILTER_LANCZOS_RADIUS = 0x111 ,
-IMAGE_FILTER_BLACKMANHARRIS_RADIUS = 0x112 ,
 TONE_MAPPING_TYPE = 0x113 ,
 TONE_MAPPING_LINEAR_SCALE = 0x114 ,
 TONE_MAPPING_PHOTO_LINEAR_SENSITIVITY = 0x115 ,
@@ -229,7 +223,7 @@ TONE_MAPPING_REINHARD02_PRE_SCALE = 0x118 ,
 TONE_MAPPING_REINHARD02_POST_SCALE = 0x119 ,
 TONE_MAPPING_REINHARD02_BURN = 0x11A ,
 MAX_RECURSION = 0x11B ,
-RAY_CAST_EPISLON = 0x11C ,
+RAY_CAST_EPSILON = 0x11C ,
 RADIANCE_CLAMP = 0x11D ,
 X_FLIP = 0x11E ,
 Y_FLIP = 0x11F ,
@@ -354,6 +348,14 @@ CRYPTOMATTE_SPLIT_INDIRECT = 0x192 ,
 FOG_DIRECTION = 0x193 ,
 RANDOM_SEED = 0x1000 ,
 IBL_DISPLAY = 0x195 ,
+FRAMEBUFFER_SAVE_FLOAT32 = 0x196 ,
+UPDATE_TIME_CALLBACK_FUNC = 0x197 ,
+UPDATE_TIME_CALLBACK_DATA = 0x198 ,
+RENDER_TIME_CALLBACK_FUNC = 0x199 ,
+RENDER_TIME_CALLBACK_DATA = 0x19A ,
+FIRST_ITERATION_TIME_CALLBACK_FUNC = 0x19B ,
+FIRST_ITERATION_TIME_CALLBACK_DATA = 0x19C ,
+IMAGE_FILTER_RADIUS = 0x19D ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -1357,9 +1359,9 @@ VISIBILITY_RECEIVE_SHADOW = 0x430 ,
 }
 public const uint RPR_VERSION_MAJOR = 2 ;
 public const uint RPR_VERSION_MINOR = 2 ;
-public const uint RPR_VERSION_REVISION = 14 ;
-public const uint RPR_VERSION_BUILD = 0xdfde7ec8 ;
-public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200214 ;
+public const uint RPR_VERSION_REVISION = 15 ;
+public const uint RPR_VERSION_BUILD = 0xacf53370 ;
+public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200215 ;
 // Deprecated version naming - will be removed in the future :
 
 public const uint RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -4033,7 +4035,8 @@ public static Status FrameBufferFillWithColor(IntPtr frame_buffer, float r, floa
 return rprFrameBufferFillWithColor(frame_buffer, r, g, b, a);
 }
 
-    /** @brief Save frame buffer to file
+    /** @brief Save frame buffer to file. In case the file format is .bin, the header of the saved file contains
+    * rpr_framebuffer_desc and rpr_framebuffer_format at very begining. The remaining data is raw data of saved framebuffer.
     *
     *   Possible error codes:
     *      RPR_ERROR_OUT_OF_SYSTEM_MEMORY
