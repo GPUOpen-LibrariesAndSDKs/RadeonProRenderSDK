@@ -2,6 +2,48 @@
 - Release Notes of Radeon Pro Render SDK
 -------------------------------------------
 
+
+################################################################################################################
+RPR SDK 2.02.15 - 15 July 2022
+
+## NORTHSTAR :
+RPR-1073  - (Bug)    - Fix darkening issue of toon shader with transparency
+RPR-1072  - (Bug)    - Fix emission with transparency casts incorrect shadow
+RPR-1068  - (Bug)    - Fix reflection catcher doesn't catch emission
+RPR-1062  - (Task)   - Expose ObjectID aov in RPR API as integer type
+RPR-1042  - (Task)   - Absortion support for thin surfaces
+RPR-1008  - (Task)   - Extend cryptomatte for reflection
+RPR-1005  - (Task)   - Add progress callback for better logging with scene update, cache creation and render time
+RPR-275   - (Task)   - Add pixel filter support ( Anti-aliasing )
+
+## RPR API :
+  * Those context parameter have been removed :
+      RPR_CONTEXT_IMAGE_FILTER_BOX_RADIUS 
+      RPR_CONTEXT_IMAGE_FILTER_GAUSSIAN_RADIUS 
+      RPR_CONTEXT_IMAGE_FILTER_TRIANGLE_RADIUS 
+      RPR_CONTEXT_IMAGE_FILTER_MITCHELL_RADIUS 
+      RPR_CONTEXT_IMAGE_FILTER_LANCZOS_RADIUS 
+      RPR_CONTEXT_IMAGE_FILTER_BLACKMANHARRIS_RADIUS 
+    and replaced by a single parameter : RPR_CONTEXT_IMAGE_FILTER_RADIUS.
+
+  * typo fixed:  RPR_CONTEXT_RAY_CAST_EPISLON  -->  RPR_CONTEXT_RAY_CAST_EPSILON
+
+  * 3 new callbacks has been added to improve the measure of performance :
+     RPR_CONTEXT_UPDATE_TIME_CALLBACK_*            -->  get the time it took to update/compile the scene inside the core rendering engine.
+     RPR_CONTEXT_RENDER_TIME_CALLBACK_*            -->  get the time it took to run the actual rendering operation.
+     RPR_CONTEXT_FIRST_ITERATION_TIME_CALLBACK_*   -->  get the time it took to run the first rendering iteration. This time could he higher than next iteration as first iteration is creating some cache.
+                                                        First iteration time callback is only called when a rendering is done from a cleared framebuffer.
+     Those callbacks are triggered during the rprContextRender / rprContextRenderTile calls.
+     They have the same structure than the already existing RPR_CONTEXT_RENDER_UPDATE_CALLBACK_* meaning :   void callback( float , void*  )
+     First argument is time in milliseconds, second argument is  RPR_CONTEXT_***_CALLBACK_DATA.
+     example:
+     void updateTimeCallback( float timems, void* userData ) {  *((float*)userData) = timems;  }
+     float updateTimeFromCallback = 0.0f;
+     rprContextSetParameterByKeyPtr(ctxt, RPR_CONTEXT_UPDATE_TIME_CALLBACK_FUNC, (void*)updateTimeCallback);
+     rprContextSetParameterByKeyPtr(ctxt, RPR_CONTEXT_UPDATE_TIME_CALLBACK_DATA, &updateTimeFromCallback);
+
+
+
 ################################################################################################################
 RPR SDK 2.02.14 - 09 June 2022
 
