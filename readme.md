@@ -8,8 +8,10 @@ AMD Radeon:tm: ProRender is a powerful physically-based rendering engine that en
 https://www.amd.com/en/technologies/radeon-prorender
 
 This repo contains :
-- the AMD Radeon:tm: ProRender library: includes and built binaries.
-- some tutorials demo samples.
+- The AMD Radeon:tm: ProRender library: includes and built binaries.  
+  
+- [Some tutorials demo samples:](https://github.com/GPUOpen-LibrariesAndSDKs/RadeonProRenderSDK/tree/master/tutorials#readme)  
+![](Resources/doc/doc2.png)
 
 ## Building and running the Tutorials
 
