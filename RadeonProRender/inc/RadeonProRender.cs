@@ -736,6 +736,7 @@ GRID_SAMPLER = 0x33 ,
 BLACKBODY = 0x34 ,
 RAMP = 0x35 ,
 PRIMVAR_LOOKUP = 0x36 ,
+ROUNDED_CORNER = 0x37 ,
 
 	// MaterialX materials
 MATX_DIFFUSE_BRDF = 0x1000,
@@ -812,6 +813,7 @@ MATX_COMBINE2 = 0x1046,
 MATX_COMBINE3 = 0x1047,
 MATX_COMBINE4 = 0x1048,
 MATX_TRIPLANARPROJECTION = 0x1049,
+MATX_MULTIPLY = 0x104A,
 }
 /*rpr_material_node_input*/
 public enum MaterialInput : int
@@ -927,6 +929,7 @@ Z = 0x6b ,
 W = 0x6c ,
 LIGHT = 0x6d ,
 MID_IS_ALBEDO = 0x6e ,
+SAMPLES = 0x6f ,
 UBER_DIFFUSE_COLOR = 0x910,
 UBER_DIFFUSE_WEIGHT = 0x927,
 UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -1161,6 +1164,7 @@ LPE_7 = 0x27 ,
 LPE_8 = 0x28 ,
 CAMERA_NORMAL = 0x29 ,
 MATTE_PASS = 0x2a ,
+SSS = 0x2b ,
 CRYPTOMATTE_MAT0 = 0x30,
 CRYPTOMATTE_MAT1 = 0x31,
 CRYPTOMATTE_MAT2 = 0x32,
@@ -1359,9 +1363,9 @@ VISIBILITY_RECEIVE_SHADOW = 0x430 ,
 }
 public const uint RPR_VERSION_MAJOR = 2 ;
 public const uint RPR_VERSION_MINOR = 2 ;
-public const uint RPR_VERSION_REVISION = 15 ;
-public const uint RPR_VERSION_BUILD = 0x69c3e5fd ;
-public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200215 ;
+public const uint RPR_VERSION_REVISION = 16 ;
+public const uint RPR_VERSION_BUILD = 0x21580c05 ;
+public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200216 ;
 // Deprecated version naming - will be removed in the future :
 
 public const uint RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
