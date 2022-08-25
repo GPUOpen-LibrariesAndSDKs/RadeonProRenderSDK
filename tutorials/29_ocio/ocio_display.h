@@ -1,7 +1,7 @@
 #pragma once
 
 // set it to 1 if OpenColorIO library is linked to this project.
-#define USE_OCIO 1
+#define USE_OCIO 0
 
 #include "ocio_display.h"
 
