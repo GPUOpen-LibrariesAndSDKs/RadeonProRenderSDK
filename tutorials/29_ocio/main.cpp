@@ -212,6 +212,19 @@ int main()
 
 	std::cout << "RPR Context creation succeeded." << std::endl;
 
+
+	const char ocio_config[] = "../../Resources/aces_1.0.3/config.ocio";
+
+	if ( useOCIO )
+	{
+		// define the OCIO config file path
+		CHECK( rprContextSetParameterByKeyString(context, RPR_CONTEXT_OCIO_CONFIG_PATH, ocio_config)  );
+
+		// we are going to use the ACEScg for the Render Color Space.
+		CHECK( rprContextSetParameterByKeyString(context, RPR_CONTEXT_OCIO_RENDERING_COLOR_SPACE, "ACES - ACEScg")  );
+	}
+
+
 	// Create the scene. 
 	rpr_scene scene = nullptr;
 	CHECK( rprContextCreateScene(context, &scene) ); // create the scene
@@ -278,7 +291,6 @@ int main()
 	CHECK( rprShapeSetTransform(matball0, true, &mB.m00));
 	CHECK( rprShapeSetTransform(matball1, true, &mB.m00));
 	CHECK( rprShapeSetTransform(matball2, true, &mB.m00));
-
 
 
 	// create the material system
@@ -448,17 +460,6 @@ int main()
 	// When using OCIO, it's important to keep gamma to 1.0. This is because the output of the Render Color Space is supposed to be linear.
 	// As OcioDisplay::Display is going to do the RRT+ODT, we need to give to this function a linear frame_buffer_resolved.
 	CHECK( rprContextSetParameterByKey1f(context, RPR_CONTEXT_DISPLAY_GAMMA , 1.0f ) );
-
-	const char ocio_config[] = "../../Resources/aces_1.0.3/config.ocio";
-
-	if ( useOCIO )
-	{
-		// define the OCIO config file path
-		CHECK( rprContextSetParameterByKeyString(context, RPR_CONTEXT_OCIO_CONFIG_PATH, ocio_config)  );
-
-		// we are going to use the ACEScg for the Render Color Space.
-		CHECK( rprContextSetParameterByKeyString(context, RPR_CONTEXT_OCIO_RENDERING_COLOR_SPACE, "ACES - ACEScg")  );
-	}
 
 	// Render the scene
 	CHECK( rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS, 200));
