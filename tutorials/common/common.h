@@ -162,7 +162,8 @@ public:
 
 
 //
-// Garbage Collector functions :
+// Simple Garbage Collector for Radeon ProRender objects.
+// Add RPR objects with GCAdd. Then call GCClean to clear each object
 //
 class RPRGarbageCollector
 {

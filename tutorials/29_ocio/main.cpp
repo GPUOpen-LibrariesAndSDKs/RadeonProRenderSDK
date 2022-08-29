@@ -42,14 +42,6 @@
 // simple garbage collector for RPR objects.
 RPRGarbageCollector g_gc;
 
-// vertices data
-struct vertexP3N3T2
-{
-    rpr_float pos[3];
-    rpr_float norm[3];
-    rpr_float tex[2];
-};
-
 
 // Convert Color Space :
 // From Linear sRGB to ACEScg
@@ -80,7 +72,7 @@ RadeonProRender::float4 sRGB_to_ACEScg(const RadeonProRender::float4& srgb)
 
 
 // create a simple quad shape
-rpr_shape CreateQuad(rpr_context context, rpr_scene scene, vertexP3N3T2* meshVertices, unsigned int meshVertices_nbOfElement )
+rpr_shape CreateQuad(rpr_context context, rpr_scene scene, vertex* meshVertices, unsigned int meshVertices_nbOfElement )
 {
 	rpr_int indices[] = { 3,2,1,0, };
 	rpr_int num_face_vertices[] = { 4, };
@@ -90,9 +82,9 @@ rpr_shape CreateQuad(rpr_context context, rpr_scene scene, vertexP3N3T2* meshVer
 	rpr_shape mesh = nullptr;
 
     CHECK(  rprContextCreateMesh(context,
-        (rpr_float const*)&meshVertices[0], meshVertices_nbOfElement , sizeof(vertexP3N3T2),
-        (rpr_float const*)((char*)&meshVertices[0] + sizeof(rpr_float)*3), meshVertices_nbOfElement, sizeof(vertexP3N3T2),
-        (rpr_float const*)((char*)&meshVertices[0] + sizeof(rpr_float)*6), meshVertices_nbOfElement, sizeof(vertexP3N3T2),
+        (rpr_float const*)&meshVertices[0], meshVertices_nbOfElement , sizeof(vertex),
+        (rpr_float const*)((char*)&meshVertices[0] + sizeof(rpr_float)*3), meshVertices_nbOfElement, sizeof(vertex),
+        (rpr_float const*)((char*)&meshVertices[0] + sizeof(rpr_float)*6), meshVertices_nbOfElement, sizeof(vertex),
         (rpr_int const*)indices, sizeof(rpr_int),
         (rpr_int const*)indices, sizeof(rpr_int),
         (rpr_int const*)indices, sizeof(rpr_int),
@@ -106,7 +98,7 @@ rpr_shape CreateQuad(rpr_context context, rpr_scene scene, vertexP3N3T2* meshVer
 // Create a Quad shape on the YZ plane
 rpr_shape CreateQuad_YZ(rpr_context context, rpr_scene scene, float ax, float ay, float bx, float by, float X)
 {
-	vertexP3N3T2 meshVertices[] = 
+	vertex meshVertices[] = 
 	{
 		{  X, ax, by,  1.0f, 0.0f, 0.0f,    0.0f, 0.0f  },
 		{  X, bx, by,  1.0f, 0.0f, 0.0f,    1.0f, 0.0f  },
@@ -123,7 +115,7 @@ rpr_shape CreateQuad_YZ(rpr_context context, rpr_scene scene, float ax, float ay
 // Create a Quad shape on the XZ plane
 rpr_shape CreateQuad_XZ(rpr_context context, rpr_scene scene, float ax, float ay, float bx, float by, float Y, float normal)
 {
-	vertexP3N3T2 meshVertices[] = 
+	vertex meshVertices[] = 
 	{
 		{  ax, Y, by,  0.0f, normal, 0.0f,    0.0f, 0.0f  },
 		{  bx, Y, by,  0.0f, normal, 0.0f,    1.0f, 0.0f  },
@@ -140,7 +132,7 @@ rpr_shape CreateQuad_XZ(rpr_context context, rpr_scene scene, float ax, float ay
 // Create a Quad shape on the XY plane
 rpr_shape CreateQuad_XY(rpr_context context, rpr_scene scene, float ax, float ay, float bx, float by, float Z)
 {
-	vertexP3N3T2 meshVertices[] = 
+	vertex meshVertices[] = 
 	{
 		{  ax, by, Z,  0.0f, 0.0f, 1.0f,    0.0f, 0.0f  },
 		{  bx, by, Z,  0.0f, 0.0f, 1.0f,    1.0f, 0.0f  },
@@ -414,6 +406,14 @@ int main()
 			// then in most of the cases, "Utility - sRGB - Texture" should be set as Color Space.
 			// This means the texture is using the sRGB color space with a gamma correction.
 			CHECK( rprImageSetOcioColorspace(img , "Utility - sRGB - Texture") );
+		}
+		else
+		{
+			// art.jpg image is stored in the non-linear sRGB space.
+			// if we are not using the OCIO workflow, then we need to set the gamma for non-linear images ( like most of .png, .jpg... representing color )
+			// This gamma value is used to do a basic IDT operation, transforming the image from non-linear "Texture Colorspace" to a linear "Render Colorspace".
+			// In our case: from "non-linear sRGB" to "linear sRGB"
+			CHECK( rprImageSetGamma(img, 2.2) );
 		}
 
 		CHECK( rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_IMAGE_TEXTURE, &imgSampler));

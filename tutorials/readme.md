@@ -24,11 +24,12 @@ List of tutorials in this SDK
 | [Framebuffer access](31_framebuffer_access)                | ![](31_framebuffer_access/screenshot.png)           | Here we demonstrate usage of rprFrameBufferGetInfo: We can access the image data of a frame buffer. In this demo, we use the data of a first rendering and use it as an input texture for a second rendering. It also contains an example of DeepEXR framebuffer export. |
 | [OpenGL interop](32_gl_interop)                            | ![](32_gl_interop/screenshot.png)                   | Demo covering an RPR rendering inside an OpenGL app. |
 | [AOVs](33_aov)                                             | ![](33_aov/screenshot.png)                          | This demo covers AOV (Arbitrary Output Variables), providing way to render different material component - mostly used for scene debugging. |
+| [Material Per Face](34_material_per_face)                  | ![](34_material_per_face/screenshot.png)            | Demo of the rprShapeSetMaterialFaces API. This allows to set materials for specific faces of the shape. |
 | [Curves](50_curve)                                         | ![](50_curve/screenshot.png)                        | Demo covering Curves rendering. Curves are often used for hair rendering. |
 | [Volume](51_volume)                                        | ![](51_volume/screenshot.png)                       | This demo demonstrates Volumes with RPR |
 | [RPR Scene Export](60_mesh_export)                         | ![](60_mesh_export/screenshot.png)                  | Shows how to export an RPR scene as RPRS files ( native RPR file format ) or GLTF ( Khronos Group ). |
 | [RPR Scene Import](61_mesh_import)                         | ![](61_mesh_import/screenshot.png)                  | Shows how to import an RPR scene as RPRS files ( native RPR file format ) or GLTF ( Khronos Group ). It's advised to execute the demo "60_mesh_export" first in order to create the files used in this "61_mesh_import" Demo. |
 | [Hybrid](63_hybrid)                                        | ![](63_hybrid/screenshot.png)                       | This is a demo for the Hybrid.DLL plugin. |
-| [Mesh OBJ Demo](64_mesh_obj_demo)                          | ![](64_mesh_obj_demo/screenshot.png)                | Project that import and rendering any OBJ file with Radeon ProRender. |
+| [Mesh OBJ Demo](64_mesh_obj_demo)                          | ![](64_mesh_obj_demo/screenshot.png)                | Project that imports and renders any OBJ file with Radeon ProRender. |
 
 
