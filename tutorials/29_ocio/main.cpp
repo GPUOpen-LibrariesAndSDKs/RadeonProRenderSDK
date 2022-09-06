@@ -71,83 +71,6 @@ RadeonProRender::float4 sRGB_to_ACEScg(const RadeonProRender::float4& srgb)
 }
 
 
-// create a simple quad shape
-rpr_shape CreateQuad(rpr_context context, rpr_scene scene, vertex* meshVertices, unsigned int meshVertices_nbOfElement )
-{
-	rpr_int indices[] = { 3,2,1,0, };
-	rpr_int num_face_vertices[] = { 4, };
-
-	const unsigned int num_face_vertices_nbOfElement = sizeof(num_face_vertices)/sizeof(num_face_vertices[0]);
-
-	rpr_shape mesh = nullptr;
-
-    CHECK(  rprContextCreateMesh(context,
-        (rpr_float const*)&meshVertices[0], meshVertices_nbOfElement , sizeof(vertex),
-        (rpr_float const*)((char*)&meshVertices[0] + sizeof(rpr_float)*3), meshVertices_nbOfElement, sizeof(vertex),
-        (rpr_float const*)((char*)&meshVertices[0] + sizeof(rpr_float)*6), meshVertices_nbOfElement, sizeof(vertex),
-        (rpr_int const*)indices, sizeof(rpr_int),
-        (rpr_int const*)indices, sizeof(rpr_int),
-        (rpr_int const*)indices, sizeof(rpr_int),
-        num_face_vertices, num_face_vertices_nbOfElement, &mesh) );
-    
-	if ( scene ) {  CHECK( rprSceneAttachShape(scene, mesh) ); }
-
-	return mesh;
-}
-
-// Create a Quad shape on the YZ plane
-rpr_shape CreateQuad_YZ(rpr_context context, rpr_scene scene, float ax, float ay, float bx, float by, float X)
-{
-	vertex meshVertices[] = 
-	{
-		{  X, ax, by,  1.0f, 0.0f, 0.0f,    0.0f, 0.0f  },
-		{  X, bx, by,  1.0f, 0.0f, 0.0f,    1.0f, 0.0f  },
-		{  X, bx, ay,  1.0f, 0.0f, 0.0f,    1.0f, 1.0f  },
-		{  X, ax, ay,  1.0f, 0.0f, 0.0f,    0.0f, 1.0f },
-	};
-
-	const unsigned int meshVertices_nbOfElement = sizeof(meshVertices)/sizeof(meshVertices[0]);
-	
-	rpr_shape mesh = CreateQuad(context, scene, meshVertices, meshVertices_nbOfElement);
-	return mesh;
-}
-
-// Create a Quad shape on the XZ plane
-rpr_shape CreateQuad_XZ(rpr_context context, rpr_scene scene, float ax, float ay, float bx, float by, float Y, float normal)
-{
-	vertex meshVertices[] = 
-	{
-		{  ax, Y, by,  0.0f, normal, 0.0f,    0.0f, 0.0f  },
-		{  bx, Y, by,  0.0f, normal, 0.0f,    1.0f, 0.0f  },
-		{  bx, Y, ay,  0.0f, normal, 0.0f,    1.0f, 1.0f  },
-		{  ax, Y, ay,  0.0f, normal, 0.0f,    0.0f, 1.0f },
-	};
-
-	const unsigned int meshVertices_nbOfElement = sizeof(meshVertices)/sizeof(meshVertices[0]);
-
-	rpr_shape mesh = CreateQuad(context, scene, meshVertices, meshVertices_nbOfElement);
-	return mesh;
-}
-
-// Create a Quad shape on the XY plane
-rpr_shape CreateQuad_XY(rpr_context context, rpr_scene scene, float ax, float ay, float bx, float by, float Z)
-{
-	vertex meshVertices[] = 
-	{
-		{  ax, by, Z,  0.0f, 0.0f, 1.0f,    0.0f, 0.0f  },
-		{  bx, by, Z,  0.0f, 0.0f, 1.0f,    1.0f, 0.0f  },
-		{  bx, ay, Z,  0.0f, 0.0f, 1.0f,    1.0f, 1.0f  },
-		{  ax, ay, Z,  0.0f, 0.0f, 1.0f,    0.0f, 1.0f },
-	};
-
-	const unsigned int meshVertices_nbOfElement = sizeof(meshVertices)/sizeof(meshVertices[0]);
-
-	rpr_shape mesh = CreateQuad(context, scene, meshVertices, meshVertices_nbOfElement);
-	return mesh;
-}
-
-
-
 
 int main()
 {
@@ -342,35 +265,21 @@ int main()
 	const float lightX1 = lightX0 + 0.8f;
 	const float lightX2 = 4.0f - 0.4f - 0.8f;
 	const float lightX3 = lightX2 + 0.8f;
-	rpr_shape roof0 = CreateQuad_XZ(context, scene,   -4.0f, -2.0f             ,    lightX0, +2.0f                    ,  roofY, -1.0f);
-	rpr_shape roof1 = CreateQuad_XZ(context, scene,   lightX0, -2.0f             ,  lightX1  , -2.0f+0.8*2.0f          ,  roofY, -1.0f);
-	rpr_shape roof2 = CreateQuad_XZ(context, scene,   lightX0, -2.0f+0.8*3.0f    ,  lightX1  , +2.0f                   ,  roofY, -1.0f);
-	rpr_shape roofLightLeft = CreateQuad_XZ(context, scene,   lightX0, -2.0f+0.8*2.0f    ,  lightX1  , -2.0f+0.8*3.0f                   ,  roofY, -1.0f);
-	rpr_shape roof3 = CreateQuad_XZ(context, scene,   lightX1, -2.0f             ,    lightX2, +2.0f                    ,  roofY, -1.0f);
-	rpr_shape roof4 = CreateQuad_XZ(context, scene,   lightX2, -2.0f             ,  lightX3  , -2.0f+0.8*2.0f          ,  roofY, -1.0f);
-	rpr_shape roof5 = CreateQuad_XZ(context, scene,   lightX2, -2.0f+0.8*3.0f    ,  lightX3  , +2.0f                   ,  roofY, -1.0f);
-	rpr_shape roofLightRight = CreateQuad_XZ(context, scene,   lightX2, -2.0f+0.8*2.0f    ,  lightX3  , -2.0f+0.8*3.0f                   ,  roofY, -1.0f);
-	rpr_shape roof6 = CreateQuad_XZ(context, scene,   lightX3, -2.0f             ,    4.0f, +2.0f                    ,  roofY, -1.0f);
-	rpr_shape floor = CreateQuad_XZ(context, scene,   -4.0f, -2.0f             ,    +4.0f, +2.0f                    ,  0.0f, +1.0f);
-	rpr_shape shapeWallLeft = CreateQuad_YZ(context, scene,   0.0, -2.0f             ,    roofY, +2.0f                    ,  -4.0f);
-	rpr_shape shapeWallRight = CreateQuad_YZ(context, scene,   0.0, -2.0f             ,    roofY, +2.0f                    ,  +4.0f);
-	rpr_shape shapeWallBack = CreateQuad_XY(context, scene,  -4.0, 0.0,     +4.0f, roofY        , -2.0f);
-	rpr_shape pictureShape = CreateQuad_XY(context, scene,   0.0, 0.3,     +3.5f, roofY-0.3f        , -1.9f);
-	g_gc.GCAdd(roof0);
-	g_gc.GCAdd(roof1);
-	g_gc.GCAdd(roof2);
-	g_gc.GCAdd(roofLightLeft);
-	g_gc.GCAdd(roof3);
-	g_gc.GCAdd(roof4);
-	g_gc.GCAdd(roof5);
-	g_gc.GCAdd(roofLightRight);
-	g_gc.GCAdd(roof6);
-	g_gc.GCAdd(floor);
-	g_gc.GCAdd(shapeWallLeft);
-	g_gc.GCAdd(shapeWallRight);
-	g_gc.GCAdd(shapeWallBack);
-	g_gc.GCAdd(pictureShape);
-	
+	rpr_shape roof0 = CreateQuad_XZ(g_gc, context, scene,   -4.0f, -2.0f             ,    lightX0, +2.0f                    ,  roofY, -1.0f);
+	rpr_shape roof1 = CreateQuad_XZ(g_gc, context, scene,   lightX0, -2.0f             ,  lightX1  , -2.0f+0.8*2.0f          ,  roofY, -1.0f);
+	rpr_shape roof2 = CreateQuad_XZ(g_gc, context, scene,   lightX0, -2.0f+0.8*3.0f    ,  lightX1  , +2.0f                   ,  roofY, -1.0f);
+	rpr_shape roofLightLeft = CreateQuad_XZ(g_gc, context, scene,   lightX0, -2.0f+0.8*2.0f    ,  lightX1  , -2.0f+0.8*3.0f                   ,  roofY, -1.0f);
+	rpr_shape roof3 = CreateQuad_XZ(g_gc, context, scene,   lightX1, -2.0f             ,    lightX2, +2.0f                    ,  roofY, -1.0f);
+	rpr_shape roof4 = CreateQuad_XZ(g_gc, context, scene,   lightX2, -2.0f             ,  lightX3  , -2.0f+0.8*2.0f          ,  roofY, -1.0f);
+	rpr_shape roof5 = CreateQuad_XZ(g_gc, context, scene,   lightX2, -2.0f+0.8*3.0f    ,  lightX3  , +2.0f                   ,  roofY, -1.0f);
+	rpr_shape roofLightRight = CreateQuad_XZ(g_gc, context, scene,   lightX2, -2.0f+0.8*2.0f    ,  lightX3  , -2.0f+0.8*3.0f                   ,  roofY, -1.0f);
+	rpr_shape roof6 = CreateQuad_XZ(g_gc, context, scene,   lightX3, -2.0f             ,    4.0f, +2.0f                    ,  roofY, -1.0f);
+	rpr_shape floor = CreateQuad_XZ(g_gc, context, scene,   -4.0f, -2.0f             ,    +4.0f, +2.0f                    ,  0.0f, +1.0f);
+	rpr_shape shapeWallLeft = CreateQuad_YZ(g_gc, context, scene,   0.0, -2.0f             ,    roofY, +2.0f                    ,  -4.0f, 1.0f);
+	rpr_shape shapeWallRight = CreateQuad_YZ(g_gc, context, scene,   0.0, -2.0f             ,    roofY, +2.0f                    ,  +4.0f, 1.0f);
+	rpr_shape shapeWallBack = CreateQuad_XY(g_gc, context, scene,  -4.0, 0.0,     +4.0f, roofY        , -2.0f, 1.0f);
+	rpr_shape pictureShape = CreateQuad_XY(g_gc, context, scene,   0.0, 0.3,     +3.5f, roofY-0.3f        , -1.9f, 1.0f);
+
 
 	// create material for the left wall
 	{
