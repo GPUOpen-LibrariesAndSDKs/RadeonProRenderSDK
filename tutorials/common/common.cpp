@@ -561,5 +561,83 @@ rpr_status CreateNatureEnvLight(rpr_context context, rpr_scene scene, RPRGarbage
 
 
 
+// create a simple quad shape
+rpr_shape CreateQuad(RPRGarbageCollector& gc, rpr_context context, rpr_scene scene, vertex* meshVertices, unsigned int meshVertices_nbOfElement )
+{
+	rpr_int indices[] = { 3,2,1,0, };
+	rpr_int num_face_vertices[] = { 4, };
+
+	const unsigned int num_face_vertices_nbOfElement = sizeof(num_face_vertices)/sizeof(num_face_vertices[0]);
+
+	rpr_shape mesh = nullptr;
+
+    CHECK(  rprContextCreateMesh(context,
+        (rpr_float const*)&meshVertices[0], meshVertices_nbOfElement , sizeof(vertex),
+        (rpr_float const*)((char*)&meshVertices[0] + sizeof(rpr_float)*3), meshVertices_nbOfElement, sizeof(vertex),
+        (rpr_float const*)((char*)&meshVertices[0] + sizeof(rpr_float)*6), meshVertices_nbOfElement, sizeof(vertex),
+        (rpr_int const*)indices, sizeof(rpr_int),
+        (rpr_int const*)indices, sizeof(rpr_int),
+        (rpr_int const*)indices, sizeof(rpr_int),
+        num_face_vertices, num_face_vertices_nbOfElement, &mesh) );
+	gc.GCAdd(mesh);
+    
+	if ( scene ) {  CHECK( rprSceneAttachShape(scene, mesh) ); }
+
+	return mesh;
+}
+
+// Create a Quad shape on the YZ plane
+rpr_shape CreateQuad_YZ(RPRGarbageCollector& gc, rpr_context context, rpr_scene scene, float ax, float ay, float bx, float by, float X, float normal)
+{
+	vertex meshVertices[] = 
+	{
+		{  X, ax, by,  normal, 0.0f, 0.0f,    0.0f, 0.0f  },
+		{  X, bx, by,  normal, 0.0f, 0.0f,    1.0f, 0.0f  },
+		{  X, bx, ay,  normal, 0.0f, 0.0f,    1.0f, 1.0f  },
+		{  X, ax, ay,  normal, 0.0f, 0.0f,    0.0f, 1.0f },
+	};
+
+	const unsigned int meshVertices_nbOfElement = sizeof(meshVertices)/sizeof(meshVertices[0]);
+	
+	rpr_shape mesh = CreateQuad(gc, context, scene, meshVertices, meshVertices_nbOfElement);
+	return mesh;
+}
+
+// Create a Quad shape on the XZ plane
+rpr_shape CreateQuad_XZ(RPRGarbageCollector& gc, rpr_context context, rpr_scene scene, float ax, float ay, float bx, float by, float Y, float normal)
+{
+	vertex meshVertices[] = 
+	{
+		{  ax, Y, by,  0.0f, normal, 0.0f,    0.0f, 0.0f  },
+		{  bx, Y, by,  0.0f, normal, 0.0f,    1.0f, 0.0f  },
+		{  bx, Y, ay,  0.0f, normal, 0.0f,    1.0f, 1.0f  },
+		{  ax, Y, ay,  0.0f, normal, 0.0f,    0.0f, 1.0f },
+	};
+
+	const unsigned int meshVertices_nbOfElement = sizeof(meshVertices)/sizeof(meshVertices[0]);
+
+	rpr_shape mesh = CreateQuad(gc, context, scene, meshVertices, meshVertices_nbOfElement);
+	return mesh;
+}
+
+// Create a Quad shape on the XY plane
+rpr_shape CreateQuad_XY(RPRGarbageCollector& gc, rpr_context context, rpr_scene scene, float ax, float ay, float bx, float by, float Z, float normal)
+{
+	vertex meshVertices[] = 
+	{
+		{  ax, by, Z,  0.0f, 0.0f, normal,    0.0f, 0.0f  },
+		{  bx, by, Z,  0.0f, 0.0f, normal,    1.0f, 0.0f  },
+		{  bx, ay, Z,  0.0f, 0.0f, normal,    1.0f, 1.0f  },
+		{  ax, ay, Z,  0.0f, 0.0f, normal,    0.0f, 1.0f },
+	};
+
+	const unsigned int meshVertices_nbOfElement = sizeof(meshVertices)/sizeof(meshVertices[0]);
+
+	rpr_shape mesh = CreateQuad(gc, context, scene, meshVertices, meshVertices_nbOfElement);
+	return mesh;
+}
+
+
+
 
 
