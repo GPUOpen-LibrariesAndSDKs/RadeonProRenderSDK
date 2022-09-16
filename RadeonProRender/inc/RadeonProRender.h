@@ -34,7 +34,7 @@ extern "C" {
 #define RPR_VERSION_MAJOR 2 
 #define RPR_VERSION_MINOR 2 
 #define RPR_VERSION_REVISION 16 
-#define RPR_VERSION_BUILD 0x21580c05 
+#define RPR_VERSION_BUILD 0xd5dda48c 
 #define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200216 
 
 // Deprecated version naming - will be removed in the future :
@@ -323,6 +323,7 @@ extern "C" {
 #define RPR_CAMERA_ANGULAR_MOTION 0x216 
 #define RPR_CAMERA_MOTION_TRANSFORMS_COUNT 0x217 
 #define RPR_CAMERA_MOTION_TRANSFORMS 0x218 
+#define RPR_CAMERA_POST_SCALE 0x219 
 #define RPR_CAMERA_NAME RPR_OBJECT_NAME
 #define RPR_CAMERA_UNIQUE_ID RPR_OBJECT_UNIQUE_ID
 #define RPR_CAMERA_CUSTOM_PTR RPR_OBJECT_CUSTOM_PTR
@@ -824,6 +825,7 @@ extern "C" {
 #define RPR_MATERIAL_INPUT_LIGHT 0x6d 
 #define RPR_MATERIAL_INPUT_MID_IS_ALBEDO 0x6e 
 #define RPR_MATERIAL_INPUT_SAMPLES 0x6f 
+#define RPR_MATERIAL_INPUT_BASE_NORMAL 0x70 
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR 0x910
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT 0x927
 #define RPR_MATERIAL_INPUT_UBER_DIFFUSE_ROUGHNESS 0x911
@@ -1051,6 +1053,7 @@ extern "C" {
 #define RPR_AOV_LIGHT_GROUP13 0x59 
 #define RPR_AOV_LIGHT_GROUP14 0x5a 
 #define RPR_AOV_LIGHT_GROUP15 0x5b 
+#define RPR_AOV_MESH_ID 0x60 
 /*rpr_post_effect_type*/
 #define RPR_POST_EFFECT_TONE_MAP 0x0 
 #define RPR_POST_EFFECT_WHITE_BALANCE 0x1 
@@ -2029,6 +2032,15 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
     *  @return         RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprCameraSetNearPlane(rpr_camera camera, rpr_float near);
+
+
+    /** @brief Set the post scale of camera ( 2D camera zoom )
+    *
+    *  @param  camera  The camera to set
+    *  @param  scale   post scale value.
+    *  @return         RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprCameraSetPostScale(rpr_camera camera, rpr_float scale);
 
 
     /** @brief Set far plane of a camear

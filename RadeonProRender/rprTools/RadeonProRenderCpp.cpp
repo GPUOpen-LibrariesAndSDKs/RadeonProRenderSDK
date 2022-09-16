@@ -820,6 +820,12 @@ Status Camera::SetNearPlane(rpr_float near) {
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
+Status Camera::SetPostScale(rpr_float scale) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprCameraSetPostScale(GetRprObject(this), scale)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
 Status Camera::SetFarPlane(rpr_float far) {
     RPR_CPPWRAPER_CALL_PREFIX
     rprCameraSetFarPlane(GetRprObject(this), far)

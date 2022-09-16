@@ -31,6 +31,7 @@ extern "C" {
 #define RPR_UBER_MATERIAL_LAYER_REFRACTION           (1<<5)
 #define RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL       (1<<6)
 #define RPR_UBER_MATERIAL_LAYER_TRANSPARENCY_MASK    (1<<7)
+#define RPR_UBER_MATERIAL_LAYER_BACKSCATTER          (1<<8)
 
 /*rpr_material_node_arithmetic_operation*/
 #define RPR_MATERIAL_NODE_OP_CEIL 0x102a
