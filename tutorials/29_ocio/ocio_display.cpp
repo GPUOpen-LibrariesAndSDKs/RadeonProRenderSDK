@@ -1,6 +1,8 @@
 
 #include "ocio_display.h"
 
+#include <memory>
+
 #if ( USE_OCIO == 1 )
 #include <OpenColorIO/OpenColorIO.h>
 #include <OpenColorIO/OpenColorTypes.h>
