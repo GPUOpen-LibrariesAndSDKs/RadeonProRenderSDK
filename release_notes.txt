@@ -20,6 +20,66 @@ RPR-1040  - (Bug)    - Fix RPR_MATERIAL_NODE_UV_TRIPLANAR stretched texture issu
 RPR-283   - (Task)   - Add voluma and sss aovs
 RPR-408   - (Task)   - Add bevel shader support
 
+## HybridPro :
+
+-- Features:
+* [RPRHYB-458] D3D12 (#950)
+* [RPRHYB-632] IES light (#1036)
+* [RPRHYB-613] Motion Blur ( transform ) (#1037)
+* [RPRHYB-648] OpenColorIO texture color spaces (#1048)
+* [RPRHYB-642] Matx refraction (#1042)
+* [RPRHYB-617] Add support of RPR_MATERIAL_NODE_UV_TRIPLANAR (#1024)
+* [RPRHYB-568] Hybrid mode (#1032)
+* [RPRHYB-615] Support new Int ObjectID in ProRender api with Hybrid (#1034)
+* [RPRHYB-604] RPR_AOV_DIRECT_REFLECT (#1020)
+* [RPRHYB-605] RPR_AOV_INDIRECT_REFLECT (#1020)
+* [RPRHYB-594] RPR_AOV_VOLUME (#1013)
+* [RPRHYB-601] RPR_AOV_INDIRECT_DIFFUSE (#1016)
+* [RPRHYB-595] RPR_AOV_DIRECT_DIFFUSE (#1014)
+* [RPRHYB-607] RPR_AOV_VARIANCE (#1019)
+* [RPRHYB-602] RPR_AOV_DIRECT_ILLUMINATION (#1017)
+* [RPRHYB-603] RPR_AOV_INDIRECT_ILLUMINATION (#1017)
+* [RPRHYB-589] RPR_AOV_REFRACT (#1010)
+* [RPRHYB-591] RPR_AOV_GEOMETRIC_NORMAL (#1007)
+* [RPRHYB-588] RPR_AOV_CAMERA_NORMAL (#1006)
+* [RPRHYB-587] RPR_AOV_OBJECT_GROUP_ID (#1002)
+* [RPRHYB-547] Improve support of materials with alpha test (#983)
+* [RPRHYB-532] Backscattering (#1038)
+* [RPRHYB-634] Procedural curves tracing support (#1051)
+* RPR_MATERIAL_NODE_OP_SHUFFLE_YZWX (#1021)
+* RPR_MATERIAL_NODE_OP_SHUFFLE_ZWXY (#1021)
+* RPR_MATERIAL_NODE_OP_SHUFFLE_WXYZ (#1021)
+* RPR_MATERIAL_NODE_OP_MAT_MUL (#1025)
+* RPR_MESH_IS_DYNAMIC_MESH handling (#1008)
+* Add Photo Linear tonemap (#1029)
+
+-- Fixes:
+* [RPRHYB-641] Matx emission fix (#1041)
+* [RPRHYB-614] Matx compile errors (#1031)
+* [RPRHYB-584] Embedded shaders reload (#997)
+* [RPRHYB-504] Hang on AMD GPU (Toyshop scene) (#1003)
+* [RPRHYB-659] Black areas/artifacts issue with MaterialX and HybridPro in Web USD Viewer (#1052)
+* [RPRHYB-713] Broken MatX materials should only render the specific object black (#1056)
+* Per-face materials fixed for the instanced objects (#910)
+* Direct light sampling of uber emissives (#1026)
+* Material source index calculation fix (#1009)
+* Fix MaterialX normal mapping (#1057)
+* Fixed inversed Triplanar V-coord (#1055)
+
+-- Other:
+* [RPRHYB-490] TA Improvements (#1022)
+* [RPRHYB-578] ReSTIR GI Improvements (#1015)
+* [RPRHYB-654] Prevent exporting MaterialX symbols in Linux (#1045)
+* [RPRHYB-573] ASVGF gradient improvement (#985)
+* [RPRHYB-520] Material sorting (#1001)
+* [RPRHYB-583] Glslang submodule (#998)
+* [RPRHYB-579] Solve reports from Legal (#1004)
+* Specular demodulation (#1030)
+* Curve node optimization (#901)
+* Removed duplicate MAT_MUL operation (#1028)
+* Atrous weights (#1027)
+
+
 ## RPR API :
   * add rprCameraSetPostScale feature: scale the final rendering.
   * add RPR_AOV_MESH_ID AOV: AOV that renders the ID of mesh (it's not the same than RPR_AOV_OBJECT_ID, because for instances, RPR_AOV_MESH_ID renders color from the parents).
