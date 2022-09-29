@@ -305,6 +305,7 @@ public:
     Status SetOrthoHeight(float height);
     Status SetNearPlane(float near);
     Status SetFarPlane(float far);
+    Status SetPostScale(float scale);
 
     Status SetTransform(float const* transform, rpr_bool transpose) override;
 private:

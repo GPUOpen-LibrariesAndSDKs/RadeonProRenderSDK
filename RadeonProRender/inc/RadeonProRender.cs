@@ -387,6 +387,7 @@ LINEAR_MOTION = 0x215 ,
 ANGULAR_MOTION = 0x216 ,
 MOTION_TRANSFORMS_COUNT = 0x217 ,
 MOTION_TRANSFORMS = 0x218 ,
+POST_SCALE = 0x219 ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -736,6 +737,7 @@ GRID_SAMPLER = 0x33 ,
 BLACKBODY = 0x34 ,
 RAMP = 0x35 ,
 PRIMVAR_LOOKUP = 0x36 ,
+ROUNDED_CORNER = 0x37 ,
 
 	// MaterialX materials
 MATX_DIFFUSE_BRDF = 0x1000,
@@ -812,6 +814,7 @@ MATX_COMBINE2 = 0x1046,
 MATX_COMBINE3 = 0x1047,
 MATX_COMBINE4 = 0x1048,
 MATX_TRIPLANARPROJECTION = 0x1049,
+MATX_MULTIPLY = 0x104A,
 }
 /*rpr_material_node_input*/
 public enum MaterialInput : int
@@ -927,6 +930,8 @@ Z = 0x6b ,
 W = 0x6c ,
 LIGHT = 0x6d ,
 MID_IS_ALBEDO = 0x6e ,
+SAMPLES = 0x6f ,
+BASE_NORMAL = 0x70 ,
 UBER_DIFFUSE_COLOR = 0x910,
 UBER_DIFFUSE_WEIGHT = 0x927,
 UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -1161,6 +1166,7 @@ LPE_7 = 0x27 ,
 LPE_8 = 0x28 ,
 CAMERA_NORMAL = 0x29 ,
 MATTE_PASS = 0x2a ,
+SSS = 0x2b ,
 CRYPTOMATTE_MAT0 = 0x30,
 CRYPTOMATTE_MAT1 = 0x31,
 CRYPTOMATTE_MAT2 = 0x32,
@@ -1186,6 +1192,7 @@ LIGHT_GROUP12 = 0x58 ,
 LIGHT_GROUP13 = 0x59 ,
 LIGHT_GROUP14 = 0x5a ,
 LIGHT_GROUP15 = 0x5b ,
+MESH_ID = 0x60 ,
 }
 /*rpr_post_effect_type*/
 public enum PostEffectType : int
@@ -1359,9 +1366,9 @@ VISIBILITY_RECEIVE_SHADOW = 0x430 ,
 }
 public const uint RPR_VERSION_MAJOR = 2 ;
 public const uint RPR_VERSION_MINOR = 2 ;
-public const uint RPR_VERSION_REVISION = 15 ;
-public const uint RPR_VERSION_BUILD = 0x69c3e5fd ;
-public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200215 ;
+public const uint RPR_VERSION_REVISION = 16 ;
+public const uint RPR_VERSION_BUILD = 0xb050a508 ;
+public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200216 ;
 // Deprecated version naming - will be removed in the future :
 
 public const uint RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -2336,6 +2343,19 @@ return rprCameraSetOrthoHeight(camera, height);
 public static Status CameraSetNearPlane(IntPtr camera, float near)
 {
 return rprCameraSetNearPlane(camera, near);
+}
+
+    /** @brief Set the post scale of camera ( 2D camera zoom )
+    *
+    *  @param  camera  The camera to set
+    *  @param  scale   post scale value.
+    *  @return         RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprCameraSetPostScale(IntPtr camera, float scale);
+public static Status CameraSetPostScale(IntPtr camera, float scale)
+{
+return rprCameraSetPostScale(camera, scale);
 }
 
     /** @brief Set far plane of a camear

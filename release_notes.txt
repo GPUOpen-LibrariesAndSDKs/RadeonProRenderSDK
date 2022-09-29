@@ -2,6 +2,29 @@
 - Release Notes of Radeon Pro Render SDK
 -------------------------------------------
 
+################################################################################################################
+RPR SDK 2.02.16 - 29 September 2022
+
+## NORTHSTAR :
+RPR-1119  - (Bug)    - Fix RprsRender to process parameters correctly
+RPR-1118  - (Task)   - Expose image filter settings to RprsRender
+RPR-1115  - (Task)   - Support a combination Rounded corner and normal/bump mapping
+RPR-1107  - (Bug)    - Fix RprsRender to export image as exr format when tiled rendering
+RPR-1104  - (Bug)    - Fix camera view on RprsRender when tiled rendering
+RPR-1102  - (Task)   - Add mesh ID aov
+RPR-1101  - (Bug)    - Fix UDIM texture with exr format
+RPR-1100  - (Task)   - Add post scale support
+RPR-1091  - (Bug)    - Fix MaterialX coat material
+RPR-1088  - (Task)   - Fix behavior of RPR_SHAPE_VISIBILITY_REFLECTION for reflection catchers
+RPR-1040  - (Bug)    - Fix RPR_MATERIAL_NODE_UV_TRIPLANAR stretched texture issue
+RPR-283   - (Task)   - Add voluma and sss aovs
+RPR-408   - (Task)   - Add bevel shader support
+
+## RPR API :
+  * add rprCameraSetPostScale feature: scale the final rendering.
+  * add RPR_AOV_MESH_ID AOV: AOV that renders the ID of mesh (it's not the same than RPR_AOV_OBJECT_ID, because for instances, RPR_AOV_MESH_ID renders color from the parents).
+  * RPR_AOV_SSS: AOV rendering SSS volumes.
+  * RPR_MATERIAL_NODE_ROUNDED_CORNER: new material to have a "Rounded Corned" ( Bevel ) on objects.
 
 ################################################################################################################
 RPR SDK 2.02.15 - 15 July 2022
