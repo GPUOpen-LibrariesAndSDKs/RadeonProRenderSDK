@@ -372,7 +372,8 @@ RPRStringIDMapper::RPRStringIDMapper()
 	MACRO_LINK_STR_ID("fog.direction",RPR_CONTEXT_FOG_DIRECTION);
 	MACRO_LINK_STR_ID("randseed",RPR_CONTEXT_RANDOM_SEED);
 	MACRO_LINK_STR_ID("displayibl",RPR_CONTEXT_IBL_DISPLAY);
-
+	MACRO_LINK_STR_ID("precompiled.binary.path",RPR_CONTEXT_PRECOMPILED_BINARY_PATH);
+	
 
 	#undef MACRO_LINK_STR_ID
 	#define MACRO_LINK_STR_ID(s,i)  m_RPRMaterialType_string_to_id[s]=i;  m_RPRMaterialType_id_to_string[i]=s  ;

@@ -190,6 +190,10 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_RESTIR_GI_ENABLE_SAMPLE_VALIDATION 0x1003D // Enable sample validation which helps to remove temporal lag of indirect lighting at the cost of decreased performance
 #define RPR_CONTEXT_ENABLE_MOTION_BLUR 0x1003E // Enable motion blur
 #define RPR_CONTEXT_MOTION_BLUR_SAMPLE_COUNT 0x1003F // Set sample count for motion blur
+#define RPR_CONTEXT_USE_GMON 0x10040 // Use Median Of meaNs in accumulate and copy to remove fireflies
+#define RPR_CONTEXT_GINI_COEFFICIENT_FOR_GMON 0x10041
+#define RPR_CONTEXT_UPSCALER 0x10042
+#define RPR_CONTEXT_FSR2_QUALITY 0x10043
 
 
 /* Traversal modes */
@@ -246,9 +250,29 @@ struct RPRHybridKernelsPathInfo
 #define RPR_TONE_MAPPING_REINHARD 3u
 #define RPR_TONE_MAPPING_PHOTO_LINEAR 4u
 
+/* Upscalers */
+#define RPR_UPSCALER_NONE 0u
+#define RPR_UPSCALER_CAS 1u // AMD FidelityFX Contrast Adaptive Sharpening
+#define RPR_UPSCALER_FSR2 2u // AMD FidelityFX Super Resolution 2
+
+/* FSR2 specific settings */
+#define RPR_FSR2_QUALITY_NONE 0u
+#define RPR_FSR2_QUALITY_ULTRA_QUALITY 1u
+#define RPR_FSR2_QUALITY_MODE_QUALITY 2u
+#define RPR_FSR2_QUALITY_MODE_BALANCE 3u
+#define RPR_FSR2_QUALITY_MODE_PERFORMANCE 4u
+#define RPR_FSR2_QUALITY_MODE_ULTRA_PERFORMANCE 5u
+
 /* RPR_CONTEXT_CREATEPROP_HYBRID_VIDEO_API acceptable values*/
 #define RPR_HYBRID_VIDEO_API_VULKAN 0u
 #define RPR_HYBRID_VIDEO_API_D3D12 1u
+
+/* Additional AOVs */
+#define RPR_HYBRID_AOV_DIFFUSE_RADIANCE      0x10000
+#define RPR_HYBRID_AOV_SPECULAR_RADIANCE     0x10001
+#define RPR_HYBRID_AOV_TRANSMISSIVE_RADIANCE 0x10002
+#define RPR_HYBRID_AOV_SPECULAR_REFLECT      0x10003
+#define RPR_HYBRID_AOV_DIFFUSE_REFLECT       0x10004
 
 /** @brief Create an instance of an object with separate buffer for vertex attributes
 *
@@ -279,6 +303,17 @@ extern RPR_API_ENTRY rpr_status rprContextCreateMeshInstanceWithUniqueAttributes
  * @param splits Number of shadow splits
  */
 extern RPR_API_ENTRY rpr_int rprDirectionalLightSetRasterShadowSplits(rpr_light light, rpr_int splits);
+
+/**
+ * Returns hardware devices that support required Vulkan extensions.
+ * 
+ * Checks required extensions on each available device, stores its number if supported.
+ *
+ * @param supported_devices array to store supported device numbers
+ * @param[in,out] device_count size of array, updated with actual count of supported devices
+ * @return RPR_SUCCESS in case of success, error code otherwise
+ */
+extern RPR_API_ENTRY rpr_status rprGetSupportedDevices(int* supported_devices, size_t* device_count);
 
 /**
  * Copies render data to all framebuffers connected as AOVs in interop mode.

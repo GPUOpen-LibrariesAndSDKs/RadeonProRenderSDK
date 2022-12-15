@@ -3,6 +3,20 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 2.02.17 - 15 December 2022
+
+## NORTHSTAR :
+RPR-1161  - (Bug)    - Fix blackish color when blending two toon materials with weight of texture map
+RPR-1158  - (Bug)    - Fix memory crash when start rendering on linux
+RPR-1157  - (Bug)    - Fix artifact of mix of MaterialX standard surfaces
+RPR-1156  - (Bug)    - Improve convergence rate of toon light linking
+RPR-1148  - (Bug)    - Fix crash with nested bumpmap
+RPR-1141  - (Bug)    - Fix incorrect handling of blend closure
+RPR-1131  - (Bug)    - Fix black artifact of curve rendering
+RPR-1122  - (Bug)    - Fix darker artifact of refraction material
+RPR-1075  - (Bug)    - Fix artifact of AOV_SHADOW_CATCHER
+
+################################################################################################################
 RPR SDK 2.02.16 - 29 September 2022
 
 ## NORTHSTAR :

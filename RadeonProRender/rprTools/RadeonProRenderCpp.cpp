@@ -464,6 +464,12 @@ Status Context::SetAOVindexLookup(rpr_int key, float colorR, float colorG, float
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
+Status Context::SetAOVindicesLookup(rpr_int keyOffset, rpr_int keyCount, rpr_float const * colorRGBA) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprContextSetAOVindicesLookup(m_context, keyOffset, keyCount, colorRGBA)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
 
 Status Context::SetCuttingPlane(rpr_int index, float x, float y, float z, float w) {
     RPR_CPPWRAPER_CALL_PREFIX

@@ -166,6 +166,17 @@ extern "C" {
   extern RPR_API_ENTRY rpr_status rprMaterialXGetLoaderMessages(rpr_context in_context, size_t size, void * data, size_t * size_ret);
 
 
+  /** 
+  * In MaterialX, Geompropvalue are referenced as strings, example: 
+  * input name="geomprop" type="string" value="UVset01"
+  * We can map this MaterialX Geompropvalue to a RadeonProRender Primvar, example:
+  * rprMaterialXBindGeomPropToPrimvar(context, "UVset01", 100 );
+  * In this example, the materialX "UVset01" will be used as the RadeonProRender Primvar key=100 ( created with rprShapeSetPrimvar )
+  * Internally this is a map from geompropvalue to key, meaning a geompropvalue only has 1 unique key, but 1 key can have several geompropvalue.
+  */
+  extern RPR_API_ENTRY rpr_status rprMaterialXBindGeomPropToPrimvar(rpr_context in_context, rpr_char const * geompropvalue, rpr_uint key);
+
+
 
 
   #ifdef __cplusplus
