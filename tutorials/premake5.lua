@@ -62,7 +62,8 @@ solution "Tutorials"
     
     configuration {} -- back to all configurations
 	if os.istarget("windows") then
-                libdirs {"../RadeonProRender/libWin64" }
+        libdirs {"../RadeonProRender/libWin64" }
+		debugdir "$(ProjectDir)/../Bin/"
 	end
 	if os.istarget("linux") then
 		defines{ "__LINUX__" }

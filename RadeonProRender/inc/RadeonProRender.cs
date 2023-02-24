@@ -90,6 +90,7 @@ SUCCESS = 0 ,
 ERROR_COMPUTE_API_NOT_SUPPORTED = -1 ,
 ERROR_OUT_OF_SYSTEM_MEMORY = -2 ,
 ERROR_OUT_OF_VIDEO_MEMORY = -3 ,
+ERROR_SHADER_COMPILATION = -4 ,
 ERROR_INVALID_LIGHTPATH_EXPR = -5 ,
 ERROR_INVALID_IMAGE = -6 ,
 ERROR_INVALID_AA_METHOD = -7 ,
@@ -154,6 +155,7 @@ ENABLE_GPU13 = (1 << 16) ,
 ENABLE_GPU14 = (1 << 17) ,
 ENABLE_GPU15 = (1 << 18) ,
 ENABLE_HIP = (1 << 19) ,
+ENABLE_OPENCL = (1 << 20) ,
 ENABLE_DEBUG = (1 << 31) ,
 }
 /*rpr_aa_filter*/
@@ -389,6 +391,7 @@ ANGULAR_MOTION = 0x216 ,
 MOTION_TRANSFORMS_COUNT = 0x217 ,
 MOTION_TRANSFORMS = 0x218 ,
 POST_SCALE = 0x219 ,
+UV_DISTORTION = 0x21A ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -1062,6 +1065,15 @@ NOT_EQUAL = 0x26 ,
 AND = 0x27 ,
 OR = 0x28 ,
 TERNARY = 0x29 ,
+EXP = 0x2a ,
+ROTATE2D = 0x2b ,
+ROTATE3D = 0x2c ,
+NOP = 0x2d ,
+CEIL = 0x102a ,
+ROUND = 0x102b ,
+SIGN = 0x102c ,
+SQRT = 0x102f ,
+CLAMP = 0x1035 ,
 }
 /*rpr_material_node_lookup_value*/
 public enum MaterialNodeLookup : int
@@ -1365,11 +1377,11 @@ VISIBILITY_GLOSSY_REFRACTION = 0x420 ,
 VISIBILITY_LIGHT = 0x421 ,
 VISIBILITY_RECEIVE_SHADOW = 0x430 ,
 }
-public const uint RPR_VERSION_MAJOR = 2 ;
-public const uint RPR_VERSION_MINOR = 2 ;
-public const uint RPR_VERSION_REVISION = 17 ;
-public const uint RPR_VERSION_BUILD = 0xc1dd1d1b ;
-public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200217 ;
+public const uint RPR_VERSION_MAJOR = 3 ;
+public const uint RPR_VERSION_MINOR = 1 ;
+public const uint RPR_VERSION_REVISION = 00 ;
+public const uint RPR_VERSION_BUILD = 0x0a9c8434 ;
+public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00300100 ;
 // Deprecated version naming - will be removed in the future :
 
 public const uint RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -2333,7 +2345,7 @@ public static Status CameraSetOrthoHeight(IntPtr camera, float height)
 return rprCameraSetOrthoHeight(camera, height);
 }
 
-    /** @brief Set near plane of a camear
+    /** @brief Set near plane of a camera
     *
     *  @param  camera  The camera to set near plane for
     *  @param  near   Near plane distance in meters, default is 0.01f
@@ -2359,7 +2371,7 @@ public static Status CameraSetPostScale(IntPtr camera, float scale)
 return rprCameraSetPostScale(camera, scale);
 }
 
-    /** @brief Set far plane of a camear
+    /** @brief Set far plane of a camera
     *
     *  @param  camera  The camera to set far plane for
     *  @param  far   Far plane distance in meters, default is 100000000.f
@@ -2370,6 +2382,19 @@ return rprCameraSetPostScale(camera, scale);
 public static Status CameraSetFarPlane(IntPtr camera, float far)
 {
 return rprCameraSetFarPlane(camera, far);
+}
+
+    /** @brief Set distorion image for camera
+    *
+    *  @param  camera          The camera to set UV Distortion for
+    *  @param  distortionMap   distorion image
+    *  @return                 RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprCameraSetUVDistortion(IntPtr camera, IntPtr distortionMap);
+public static Status CameraSetUVDistortion(IntPtr camera, IntPtr distortionMap)
+{
+return rprCameraSetUVDistortion(camera, distortionMap);
 }
 /* rpr_image*/
 

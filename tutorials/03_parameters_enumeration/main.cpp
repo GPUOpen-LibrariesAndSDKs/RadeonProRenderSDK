@@ -32,7 +32,7 @@ int main()
 	CHECK_NE(tahoePluginID , -1);
 	rpr_int plugins[] = { tahoePluginID };
 	size_t pluginCount = sizeof(plugins) / sizeof(plugins[0]);
-	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, RPR_CREATION_FLAGS_ENABLE_GPU0, NULL, NULL, &context) );
+	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, RPR_CREATION_FLAGS_ENABLE_GPU0, g_contextProperties, NULL, &context) );
 	CHECK(  rprContextSetActivePlugin(context, plugins[0]) );
 	std::cout << "Context successfully created.\n";
 

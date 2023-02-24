@@ -34,16 +34,11 @@ extern "C" {
 #define RPR_UBER_MATERIAL_LAYER_BACKSCATTER          (1<<8)
 
 /*rpr_material_node_arithmetic_operation*/
-#define RPR_MATERIAL_NODE_OP_CEIL 0x102a
-#define RPR_MATERIAL_NODE_OP_ROUND 0x102b
-#define RPR_MATERIAL_NODE_OP_SIGN 0x102c
-#define RPR_MATERIAL_NODE_OP_SQRT 0x102f
 #define RPR_MATERIAL_NODE_OP_LOG2 0x1030
 #define RPR_MATERIAL_NODE_OP_LOG10 0x1031
 #define RPR_MATERIAL_NODE_OP_TRUNCATE 0x1032
 #define RPR_MATERIAL_NODE_OP_SHUFFLE 0x1033
 #define RPR_MATERIAL_NODE_OP_SHUFFLE2 0x1034
-#define RPR_MATERIAL_NODE_OP_CLAMP 0x1035
 #define RPR_MATERIAL_NODE_OP_SATURATE 0x1036
 #define RPR_MATERIAL_NODE_OP_IF 0x1037
 
@@ -243,6 +238,7 @@ struct RPRHybridKernelsPathInfo
 #define RPR_DENOISER_NONE 0u
 #define RPR_DENOISER_SVGF 1u
 #define RPR_DENOISER_ASVGF 2u
+#define RPR_DENOISER_ML    3u
 
 #define RPR_TONE_MAPPING_NONE 0u
 #define RPR_TONE_MAPPING_FILMIC 1u
@@ -273,6 +269,25 @@ struct RPRHybridKernelsPathInfo
 #define RPR_HYBRID_AOV_TRANSMISSIVE_RADIANCE 0x10002
 #define RPR_HYBRID_AOV_SPECULAR_REFLECT      0x10003
 #define RPR_HYBRID_AOV_DIFFUSE_REFLECT       0x10004
+
+/* Logging*/
+/** !This should be the same as the one defined in vid_log.h
+* It'll help to map our internal log levels to external one's 
+*/
+#define LOG_LEVEL_CRT 0
+#define LOG_LEVEL_ERR 1
+#define LOG_LEVEL_WRN 2
+#define LOG_LEVEL_INF 3
+#define LOG_LEVEL_DBG 4
+/** !This should be the same as the one defined in the vid_log.h
+* I decided to not include this file in log.h, cause log.h itself will be included in many places in Hybrid, an this will add some dependencies between Hybrid and RPR
+*/
+typedef void (*log_handler)(int, const char*);    // Log function prototype
+
+/*
+* Set a log function that can be used to log something
+*/
+extern RPR_API_ENTRY rpr_status rprSetLogFunction(log_handler log_function_ptr);
 
 /** @brief Create an instance of an object with separate buffer for vertex attributes
 *
@@ -313,7 +328,8 @@ extern RPR_API_ENTRY rpr_int rprDirectionalLightSetRasterShadowSplits(rpr_light 
  * @param[in,out] device_count size of array, updated with actual count of supported devices
  * @return RPR_SUCCESS in case of success, error code otherwise
  */
-extern RPR_API_ENTRY rpr_status rprGetSupportedDevices(int* supported_devices, size_t* device_count);
+typedef rpr_status (*rprGetSupportedDevices_func)(int* supported_devices, size_t* device_count);
+#define RPR_GET_SUPPORTED_DEVICES_FUNC_NAME "rprGetSupportedDevices"
 
 /**
  * Copies render data to all framebuffers connected as AOVs in interop mode.

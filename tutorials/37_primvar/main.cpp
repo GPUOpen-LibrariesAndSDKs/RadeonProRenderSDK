@@ -40,7 +40,7 @@ int main()
 	size_t pluginCount = sizeof(plugins) / sizeof(plugins[0]);
 
 	// Create context
-	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, g_ContextCreationFlags, NULL, NULL, &context) );
+	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, g_ContextCreationFlags, g_contextProperties, NULL, &context) );
 
 	// Set the active plugin.
 	CHECK(  rprContextSetActivePlugin(context, plugins[0]) );

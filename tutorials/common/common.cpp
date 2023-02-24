@@ -93,6 +93,15 @@ void ErrorManager(int errorCode, const char* fileName, int line, rpr_context ctx
 	std::cout<<"file = "<< fileName << std::endl;
 	std::cout<<"line = "<< line << std::endl;
 	std::cout<<"error code = "<< errorCode << std::endl;
+
+	if ( errorCode == RPR_ERROR_SHADER_COMPILATION )
+	{
+		std::cout<< std::endl<< std::endl <<"==== KERNEL ERROR ===="<< std::endl;
+		std::cout<<"It's possible that some precompiled kernel files are missing."<< std::endl;
+		std::cout<<"Since Northstar 3.01.00, precompiled kernels must be downloaded from a separate link and inluded in projects."<< std::endl;
+		std::cout<<"Check the readme of this SDK for more information."<< std::endl<< std::endl<< std::endl;
+	}
+
 	assert(0);
 }
 

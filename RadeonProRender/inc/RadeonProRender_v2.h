@@ -69,11 +69,11 @@ typedef rpr_uint rpr_material_system_type;
 typedef rpr_uint rpr_environment_override;
 
 
-#define RPR_VERSION_MAJOR 2 
-#define RPR_VERSION_MINOR 2 
-#define RPR_VERSION_REVISION 17 
-#define RPR_VERSION_BUILD 0xc1dd1d1b 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200217 
+#define RPR_VERSION_MAJOR 3 
+#define RPR_VERSION_MINOR 1 
+#define RPR_VERSION_REVISION 00 
+#define RPR_VERSION_BUILD 0x0a9c8434 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00300100 
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
 #define RPR_API_VERSION_MINOR RPR_VERSION_BUILD 
 #define RPR_OBJECT_NAME 0x777777 
@@ -88,6 +88,7 @@ typedef enum // rpr_status
 	RPR_ERROR_COMPUTE_API_NOT_SUPPORTED = -1 ,
 	RPR_ERROR_OUT_OF_SYSTEM_MEMORY = -2 ,
 	RPR_ERROR_OUT_OF_VIDEO_MEMORY = -3 ,
+	RPR_ERROR_SHADER_COMPILATION = -4 ,
 	RPR_ERROR_INVALID_LIGHTPATH_EXPR = -5 ,
 	RPR_ERROR_INVALID_IMAGE = -6 ,
 	RPR_ERROR_INVALID_AA_METHOD = -7 ,
@@ -152,6 +153,7 @@ enum rpr_creation_flags_t // rpr_creation_flags
 	RPR_CREATION_FLAGS_ENABLE_GPU14 = (1 << 17) ,
 	RPR_CREATION_FLAGS_ENABLE_GPU15 = (1 << 18) ,
 	RPR_CREATION_FLAGS_ENABLE_HIP = (1 << 19) ,
+	RPR_CREATION_FLAGS_ENABLE_OPENCL = (1 << 20) ,
 	RPR_CREATION_FLAGS_ENABLE_DEBUG = (1 << 31) ,
 };
 
@@ -387,6 +389,7 @@ typedef enum // rpr_camera_info
 	RPR_CAMERA_MOTION_TRANSFORMS_COUNT = 0x217 ,
 	RPR_CAMERA_MOTION_TRANSFORMS = 0x218 ,
 	RPR_CAMERA_POST_SCALE = 0x219 ,
+	RPR_CAMERA_UV_DISTORTION = 0x21A ,
 	RPR_CAMERA_NAME = RPR_OBJECT_NAME,
 	RPR_CAMERA_UNIQUE_ID = RPR_OBJECT_UNIQUE_ID,
 	RPR_CAMERA_CUSTOM_PTR = RPR_OBJECT_CUSTOM_PTR,
@@ -1060,6 +1063,15 @@ typedef enum // rpr_material_node_arithmetic_operation
 	RPR_MATERIAL_NODE_OP_AND = 0x27 ,
 	RPR_MATERIAL_NODE_OP_OR = 0x28 ,
 	RPR_MATERIAL_NODE_OP_TERNARY = 0x29 ,
+	RPR_MATERIAL_NODE_OP_EXP = 0x2a ,
+	RPR_MATERIAL_NODE_OP_ROTATE2D = 0x2b ,
+	RPR_MATERIAL_NODE_OP_ROTATE3D = 0x2c ,
+	RPR_MATERIAL_NODE_OP_NOP = 0x2d ,
+	RPR_MATERIAL_NODE_OP_CEIL = 0x102a ,
+	RPR_MATERIAL_NODE_OP_ROUND = 0x102b ,
+	RPR_MATERIAL_NODE_OP_SIGN = 0x102c ,
+	RPR_MATERIAL_NODE_OP_SQRT = 0x102f ,
+	RPR_MATERIAL_NODE_OP_CLAMP = 0x1035 ,
 } rpr_material_node_arithmetic_operation ;
 
 typedef enum // rpr_material_node_lookup_value
@@ -2100,7 +2112,7 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
   extern RPR_API_ENTRY rpr_status rprCameraSetOrthoHeight(rpr_camera camera, rpr_float height);
 
 
-    /** @brief Set near plane of a camear
+    /** @brief Set near plane of a camera
     *
     *  @param  camera  The camera to set near plane for
     *  @param  near   Near plane distance in meters, default is 0.01f
@@ -2118,13 +2130,22 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
   extern RPR_API_ENTRY rpr_status rprCameraSetPostScale(rpr_camera camera, rpr_float scale);
 
 
-    /** @brief Set far plane of a camear
+    /** @brief Set far plane of a camera
     *
     *  @param  camera  The camera to set far plane for
     *  @param  far   Far plane distance in meters, default is 100000000.f
     *  @return         RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprCameraSetFarPlane(rpr_camera camera, rpr_float far);
+
+
+    /** @brief Set distorion image for camera
+    *
+    *  @param  camera          The camera to set UV Distortion for
+    *  @param  distortionMap   distorion image
+    *  @return                 RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprCameraSetUVDistortion(rpr_camera camera, rpr_image distortionMap);
 
 /* rpr_image*/
     /** @brief Query information about an image

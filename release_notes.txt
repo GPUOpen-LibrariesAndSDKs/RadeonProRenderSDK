@@ -3,6 +3,23 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 3.01.00 - 24 February 2023
+
+## NORTHSTAR :
+RPR-1170  - (Bug)      - Fix out of memory crash when large scene rendering	
+RPR-1135  - (Feature)  - Camera offset supports texture map	( rprCameraSetUVDistortion )
+RPR-1122  - (Bug)      - Improve refraction quality
+
+ * Support of new RPR_MATERIAL_NODE_OP_**** arthmetics: EXP, ROTATE2D, ROTATE3D, NOP, CEIL, ROUND, SIGN, SQRT, CLAMP.
+
+ * For Northstar, the default render backend is now HIP ( instead of OpenCL ). 
+   The main difference is that compute kernels are now precompiled by us. They must be downloaded from a separate link.
+   Check the readme for more information.
+   For now you can still use the OpenCL backend ( with RPR_CREATION_FLAGS_ENABLE_OPENCL in rprCreateContext ). 
+   However we don't recommend it as in the future we may put less resource to support this backend.
+
+
+################################################################################################################
 RPR SDK 2.02.17 - 15 December 2022
 
 ## NORTHSTAR :

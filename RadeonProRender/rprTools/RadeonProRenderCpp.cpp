@@ -838,6 +838,12 @@ Status Camera::SetFarPlane(rpr_float far) {
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
+Status Camera::SetUVDistortion(Image* image) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprCameraSetUVDistortion(GetRprObject(this), GetRprObject(image))
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
 Status Shape::SetMaterial(MaterialNode* material) {
     RPR_CPPWRAPER_CALL_PREFIX
     rprShapeSetMaterial(GetRprObject(this), GetRprObject(material))

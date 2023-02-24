@@ -472,7 +472,7 @@ Context createContext(const ContextSettings settings)
 	size_t pluginCount = sizeof(plugins) / sizeof(plugins[0]);
 
 	// Create context using single GPU 
-	CHECK(rprCreateContext(RPR_API_VERSION, plugins, pluginCount, settings.creationFlags, NULL, NULL, &outContext.context));
+	CHECK(rprCreateContext(RPR_API_VERSION, plugins, pluginCount, settings.creationFlags, g_contextProperties, NULL, &outContext.context));
 
 	CHECK(rprContextSetActivePlugin(outContext.context, plugins[0]));
 

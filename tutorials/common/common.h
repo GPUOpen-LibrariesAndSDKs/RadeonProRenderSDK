@@ -56,6 +56,24 @@ const rpr_creation_flags g_ContextCreationFlags = RPR_CREATION_FLAGS_ENABLE_GPU0
 	;
 
 
+
+// rpr_context_properties is a list of <property name>, <value>
+// this list must be terminated by <property name> = NULL.
+const rpr_context_properties g_contextProperties[] =
+{
+
+	// define the precompiled kernels folder.
+	// for most of the tutorials, the path will be <working directory>/hipbin/*****.hipbin
+	// ( check the readme for more information about precompiled kernels )
+	(rpr_context_properties)RPR_CONTEXT_PRECOMPILED_BINARY_PATH,
+	(rpr_context_properties)"hipbin",
+
+	// terminate the list of properties with a NULL <property name>
+	(rpr_context_properties)0,
+};
+
+
+
 // Structure to describe vertex layout
 struct vertex
 {
