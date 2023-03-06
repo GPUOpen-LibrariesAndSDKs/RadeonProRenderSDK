@@ -19,6 +19,34 @@ RPR-1122  - (Bug)      - Improve refraction quality
    However we don't recommend it as in the future we may put less resource to support this backend.
 
 
+## HYBRID - Features :
+* [RPRHYB-684] Add support rprCameraSetLensShift (Tile rendering) (#1133)
+* [RPRHYB-755] MaterialX refactoring (#1097)
+* [RPRHYB-756] Scale support in Normal map (#1127)
+* [RPRHYB-613] Make denoiser work with MaterialX (#1035)
+* [RPRHYB-768] Displacement (#1113)
+* [RPRHYB-824] Light BVH: improved sampling of IBL and directional light (#1120)
+* [RPRHYB-791] Uber Refraction Thin Surfaces support (#1112)
+* [RPRHYB-821] NSight profiler markers (#1119)
+
+## HYBRID - Fixes:
+* [RPRHYB-753] Uber Reflection Anisotropy is incorrect (#1140)
+* [RPRHYB-873] Fix RprTest: BasicCurve, Aov_ShadowCatcher & Basic_Two_Sided_Materials (#1138)
+* [RPRHYB-827] Crash when calling rprContextCreateImage (#1136)
+* [RPRHYB-798] Fix normals processing (#1126)
+* [RPRHYB-835] Noise problem caused by increasing render iterations (#1129)
+* [RPRHYB-832] AOV depth renders incorrect (#1135)
+* [RPRHYB-790] Error: Can't allocate memory for buffer, VkResult=-2 (#1115)
+* [RPRHYB-833] EnvironmentLightSetImage with a value of 0.0 affects the intensity of PointLight and SpotLight (#1130)
+* [RPRHYB-789] Uber Emissive color doesn't work correct (#1105)
+* [RPRHYB-812] Uber Refraction is incorrect (#1117)
+* [RPRHYB-813] VRAM memory leak while animation playback (#1122)
+  Fix crash on removed acceleration structures (#1141)
+
+## HYBRID - Other:
+* Convert rprGetSupportedDevices to dynamic linkage (#1125)
+
+
 ################################################################################################################
 RPR SDK 2.02.17 - 15 December 2022
 
