@@ -16,14 +16,11 @@ This repo contains :
 ## Install Precompiled Kernels
 
 Since 3.01.00, for Northstar the default render backend is HIP ( instead of OpenCL ). \
-The main difference is that compute kernels are now precompiled by us. They must be downloaded from a separate link.\
+The main difference is that compute kernels are now precompiled by us. They must be downloaded from a submodule.\
 Note that for now you can still use the OpenCL backend ( with `RPR_CREATION_FLAGS_ENABLE_OPENCL` in `rprCreateContext` ). However we don't recommend it as in the future we may put less resource to support this backend.\
-Download the precompiled kernels here: https://www.dropbox.com/s/uojh957rxcvrc6b/hipbin_3.01.00.zip?dl=0    \
-In order to run tutorials, it's recommended to put the package inside tutorials/Bin/ so that it looks like that:
+Download the precompiled kernels with the command: \
 ```
-tutorials/Bin/hipbin/AllPreCompilations.json
-tutorials/Bin/hipbin/****.hipbin
-tutorials/Bin/hipbin/****.cudabin
+git submodule update --init --recursive
 ```
 
 The precompiled kernels folder can be modified with `RPR_CONTEXT_PRECOMPILED_BINARY_PATH`. ( for its usage, check the tutorials ).
