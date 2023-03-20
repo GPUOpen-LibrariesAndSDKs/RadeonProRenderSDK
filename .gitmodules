@@ -1,0 +1,3 @@
+[submodule "hipbin"]
+	path = hipbin
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/RadeonProRenderSDKKernels

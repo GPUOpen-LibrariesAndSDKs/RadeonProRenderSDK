@@ -63,10 +63,10 @@ const rpr_context_properties g_contextProperties[] =
 {
 
 	// define the precompiled kernels folder.
-	// for most of the tutorials, the path will be <working directory>/hipbin/*****.hipbin
+	// for most of the tutorials, the path will be <working directory>../../hipbin/*****.hipbin
 	// ( check the readme for more information about precompiled kernels )
 	(rpr_context_properties)RPR_CONTEXT_PRECOMPILED_BINARY_PATH,
-	(rpr_context_properties)"hipbin",
+	(rpr_context_properties)"../../hipbin",
 
 	// terminate the list of properties with a NULL <property name>
 	(rpr_context_properties)0,
