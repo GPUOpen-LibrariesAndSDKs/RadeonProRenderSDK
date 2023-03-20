@@ -18,7 +18,7 @@ This repo contains :
 Since 3.01.00, for Northstar the default render backend is HIP ( instead of OpenCL ). \
 The main difference is that compute kernels are now precompiled by us. They must be downloaded from a submodule.\
 Note that for now you can still use the OpenCL backend ( with `RPR_CREATION_FLAGS_ENABLE_OPENCL` in `rprCreateContext` ). However we don't recommend it as in the future we may put less resource to support this backend.\
-Download the precompiled kernels with the command: \
+Download the precompiled kernels with the command: 
 ```
 git submodule update --init --recursive
 ```
