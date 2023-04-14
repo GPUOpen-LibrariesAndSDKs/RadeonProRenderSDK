@@ -103,7 +103,23 @@ extern "C" {
   extern RPR_API_ENTRY rpr_status rprMaterialXAddDependencyMtlx(rpr_context in_context, rpr_char const * resourcePath);
 
 
-  /** @brief  Clean the list created by rprMaterialXAddDependencyMtlx calls
+  /** @brief  Add a dependency Mtlx file. Same than rprMaterialXAddDependencyMtlx, but input a file buffer instead of the file.
+  *
+  * -----> Note: This function is part of the 'Version 2' MaterialX API that replaces 'Version 1'
+  *
+  * 'buffer' represents the content of a XML string defining the MaterialX material.
+  *          The size of the buffer is defined by 'bufferSize', not by a null-terminated character.
+  *
+  * example:
+  * rprMaterialXAddDependencyMtlxAsBuffer(context, inbuffer, size);
+  * rprMaterialXSetFile(material, "materialx.mtlx");
+  *  During the parsing of "materialx.mtlx" inside the rprMaterialXSetFile call, 'inbuffer' is also parsed and used as a dependancy file.
+  *
+  */
+  extern RPR_API_ENTRY rpr_status rprMaterialXAddDependencyMtlxAsBuffer(rpr_context in_context, rpr_char const * buffer, size_t bufferSize);
+
+
+  /** @brief  Clean the list created by rprMaterialXAddDependencyMtlx / rprMaterialXAddDependencyMtlxAsBuffer calls
   *
   * -----> Note: This function is part of the 'Version 2' MaterialX API that replaces 'Version 1'
   *

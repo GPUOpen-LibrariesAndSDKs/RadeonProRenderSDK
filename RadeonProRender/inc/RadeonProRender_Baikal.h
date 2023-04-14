@@ -18,21 +18,6 @@
 extern "C" {
 #endif
 
-/* rpr_material_node_input */
-#define RPR_UBER_MATERIAL_LAYERS                        0x11000U
-#define RPR_MATERIAL_INPUT_CAST_SHADOW                  0x11001U
-
-/* rpr uber material layers */
-#define RPR_UBER_MATERIAL_LAYER_EMISSION             (1<<0)
-#define RPR_UBER_MATERIAL_LAYER_TRANSPARENCY         (1<<1)
-#define RPR_UBER_MATERIAL_LAYER_COATING              (1<<2)
-#define RPR_UBER_MATERIAL_LAYER_REFLECTION           (1<<3)
-#define RPR_UBER_MATERIAL_LAYER_DIFFUSE              (1<<4)
-#define RPR_UBER_MATERIAL_LAYER_REFRACTION           (1<<5)
-#define RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL       (1<<6)
-#define RPR_UBER_MATERIAL_LAYER_TRANSPARENCY_MASK    (1<<7)
-#define RPR_UBER_MATERIAL_LAYER_BACKSCATTER          (1<<8)
-
 /*rpr_material_node_arithmetic_operation*/
 #define RPR_MATERIAL_NODE_OP_LOG2 0x1030
 #define RPR_MATERIAL_NODE_OP_LOG10 0x1031
@@ -82,6 +67,7 @@ extern "C" {
 #define RPR_MATERIAL_NODE_OP_ATAN2 0x105b
 
 #define RPR_MATERIAL_INPUT_UBER_TRANSPARENCY_MASK 0x1500
+#define RPR_MATERIAL_INPUT_CAST_SHADOW            0x11001U
 
 /*rpr_material_node_arithmetic_operation*/
 #define RPR_MATERIAL_NODE_OP_SAMPLER 0x1000
@@ -189,7 +175,7 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_GINI_COEFFICIENT_FOR_GMON 0x10041
 #define RPR_CONTEXT_UPSCALER 0x10042
 #define RPR_CONTEXT_FSR2_QUALITY 0x10043
-
+#define RPR_CONTEXT_CONSERVATIVE_GPU_MEM_ALLOCATION 0x10044
 
 /* Traversal modes */
 #define RPR_HYBRID_TRAVERSAL_STATIC_TLAS_SEPARATE 0x1 ///< Use a separate acceleration structure for static objects
