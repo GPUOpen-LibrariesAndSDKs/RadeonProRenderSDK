@@ -70,7 +70,7 @@ solution "Tutorials"
 		if _OPTIONS["centos"] ~= nil then
 			libdirs {"../RadeonProRender/binCentOS7" }
 		else
-			libdirs {"../RadeonProRender/binUbuntu18" }
+			libdirs {"../RadeonProRender/binUbuntu20" }
 		end
 	end
 	if os.istarget("macosx") then
