@@ -3,6 +3,21 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 3.01.02 - 09 June 2023
+
+## NORTHSTAR :
+RPR-1226  - (Feature)  - Support new ramp interpolation mode for Northstar	
+RPR-1225  - (Bug)      - Improve the quality of contour rendering	
+RPR-1218  - (Bug)      - Support the 'scale' parameter for UV procedural nodes	
+RPR-1217  - (Bug)      - Improve the performance of rendering	
+RPR-1212  - (Bug)      - Fix a bug of double-sided emission	
+RPR-1208  - (Bug)      - Fix an artifact of transparency object in fog rendering	
+RPR-1203  - (Bug)      - Northstar: render on WX5100 gives error hipErrorNoBinaryForGpu	
+RPR-1010  - (Bug)      - Fix the thickness of contour rendering
+
+Northstar Ubuntu build is switching from 18 to Ubuntu 20.
+
+################################################################################################################
 RPR SDK 3.01.01 - 14 April 2023
 
 ## NORTHSTAR :

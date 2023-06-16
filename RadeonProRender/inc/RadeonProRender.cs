@@ -1007,6 +1007,11 @@ public enum InterpolationMode : int
 {
 NONE = 0x0,
 LINEAR = 0x1,
+EXPONENTIAL_UP = 0x2,
+EXPONENTIAL_DOWN = 0x3,
+SMOOTH = 0x4,
+BUMP = 0x5,
+SPIKE = 0x6,
 }
 /*rpr_ubermaterial_ior_mode*/
 public enum UberMaterialMode : int
@@ -1379,9 +1384,9 @@ VISIBILITY_RECEIVE_SHADOW = 0x430 ,
 }
 public const uint RPR_VERSION_MAJOR = 3 ;
 public const uint RPR_VERSION_MINOR = 1 ;
-public const uint RPR_VERSION_REVISION = 1 ;
-public const uint RPR_VERSION_BUILD = 0x5c28d0d6 ;
-public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00300101 ;
+public const uint RPR_VERSION_REVISION = 2 ;
+public const uint RPR_VERSION_BUILD = 0xd1cb11d8 ;
+public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00300102 ;
 // Deprecated version naming - will be removed in the future :
 
 public const uint RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
