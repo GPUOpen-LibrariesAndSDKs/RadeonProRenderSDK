@@ -9,7 +9,10 @@
 import sys
 import os
 
+# add the RPR Python library folder in order to import the rpr,rprs,rprgltf modules.
 sys.path.insert(1, '../../python/build/Release')
+
+# we need to add the RPR DLLs
 os.add_dll_directory(  os.path.abspath(os.path.dirname(__file__) + '../../../RadeonProRender/binWin64')    )
 
 import rpr
