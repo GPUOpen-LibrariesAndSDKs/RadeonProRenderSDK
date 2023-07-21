@@ -19,16 +19,42 @@ include_directories(
   ../RadeonProRender/inc
 )
 
+
+
+if (WIN32)
+message("link_directories for WIN32")
 link_directories(
   ../RadeonProRender/libWin64
 )
+endif (WIN32)
+
+if (LINUX)
+message("link_directories for LINUX")
+link_directories(
+  ../RadeonProRender/binUbuntu20
+)
+endif (LINUX)
+
 
 
 nanobind_add_module(rpr bind_rpr.cpp bind_common.cpp bind_common.h)
 nanobind_add_module(rprs bind_rprs.cpp bind_common.cpp bind_common.h)
 nanobind_add_module(rprgltf bind_rprgltf.cpp bind_common.cpp bind_common.h)
 
+
+if (WIN32)
 target_link_libraries(rpr PUBLIC RadeonProRender64.lib)
 target_link_libraries(rprs PUBLIC RprLoadStore64.lib)
 target_link_libraries(rprgltf PUBLIC ProRenderGLTF.lib)
+endif (WIN32)
+
+
+if (LINUX)
+target_link_libraries(rpr PUBLIC RadeonProRender64)
+target_link_libraries(rprs PUBLIC RprLoadStore64)
+target_link_libraries(rprgltf PUBLIC ProRenderGLTF)
+endif (LINUX)
+
+
+
 

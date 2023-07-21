@@ -75,7 +75,7 @@ enum class CreationFlags : rpr_creation_flags {
 	ENABLE_GPU15 = (1 << 18) ,
 	ENABLE_HIP = (1 << 19) ,
 	ENABLE_OPENCL = (1 << 20) ,
-	ENABLE_DEBUG = (1 << 31) ,
+	ENABLE_DEBUG = (uint32_t)(1 << 31) ,
 };
 enum class FilterType : rpr_aa_filter {
 	NONE = 0x0 ,

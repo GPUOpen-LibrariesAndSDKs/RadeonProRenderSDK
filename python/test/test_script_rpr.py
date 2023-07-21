@@ -9,12 +9,25 @@
 import sys
 import os
 
+binFolder = ""
+if sys.platform == "linux":
+    binFolder = "binUbuntu20"
+elif sys.platform == "win32":
+    binFolder = "binWin64"
+else:
+    binFolder = "binMacOS"
+
+
 # add the RPR Python library folder in order to import the rpr,rprs,rprgltf modules.
-sys.path.insert(1, '../../python/build/Release')
+if sys.platform == "win32":
+    sys.path.insert(1, '../../python/build/Release')
+
 
 # we need to add the RPR DLLs
-os.add_dll_directory(  os.path.abspath(os.path.dirname(__file__) + '../../../RadeonProRender/binWin64')    )
+if sys.platform == "win32":
+    os.add_dll_directory(  os.path.abspath(os.path.dirname(__file__) + '../../../RadeonProRender/' + binFolder )    )
 
+	
 import rpr
 import rprs
 import ctypes
@@ -34,7 +47,7 @@ imageOutFile = [ "OUT_PYTHON_1.png" ,  "OUT_PYTHON_2.png"  ,  "OUT_PYTHON_3.png"
 
 
 
-plugin_id = rpr.RegisterPlugin((str("../../RadeonProRender/binWin64/Northstar64.dll")))
+plugin_id = rpr.RegisterPlugin((str("../../RadeonProRender/"+binFolder+"/Northstar64.dll")))
 if ( plugin_id == -1 ):
     print(f"RPR ERROR: plugin not found.")
     exit()
