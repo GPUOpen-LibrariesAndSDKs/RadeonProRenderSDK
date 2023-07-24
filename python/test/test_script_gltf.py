@@ -10,18 +10,23 @@ import sys
 import os
 
 binFolder = ""
+pluginFile = ""
 if sys.platform == "linux":
     binFolder = "binUbuntu20"
+    pluginFile = "libNorthstar64.so"
 elif sys.platform == "win32":
     binFolder = "binWin64"
+    pluginFile = "Northstar64.dll"
 else:
     binFolder = "binMacOS"
+    pluginFile = "libNorthstar64.dylib"
 
 
 # add the RPR Python library folder in order to import the rpr,rprs,rprgltf modules.
 if sys.platform == "win32":
     sys.path.insert(1, '../../python/build/Release')
-
+else:
+	sys.path.insert(1, '../../python/build')
 
 # we need to add the RPR DLLs
 if sys.platform == "win32":
@@ -48,7 +53,7 @@ imageOutFile = [ "OUT_PYTHON_GLTF_1.png"  ]
 
 
 
-plugin_id = rpr.RegisterPlugin((str("../../RadeonProRender/" + binFolder + "/Northstar64.dll")))
+plugin_id = rpr.RegisterPlugin((str("../../RadeonProRender/" + binFolder+"/"+pluginFile)))
 if ( plugin_id == -1 ):
     print(f"RPR ERROR: plugin not found.")
     exit()
@@ -64,6 +69,10 @@ for i in imageOutFile:
 print("RPR context creating...");
 flagsCtx = 0
 flagsCtx |= int(rpr.CreationFlags.ENABLE_GPU0)
+
+# with Northstar, add this flag to render with OpenCL instead of HIP :
+#flagsCtx |= int(rpr.CreationFlags.ENABLE_OPENCL)
+
 newCtx = rpr.Context()
 ctxInfo1 = rpr.PyMalloc("../../hipbin")
 pluginLists__myarray =    np.array([plugin_id], dtype=np.int32)  
