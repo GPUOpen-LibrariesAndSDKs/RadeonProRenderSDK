@@ -75,6 +75,39 @@ this demo generates the rendering output images: 05_00.png, 05_01.png, 05_02.png
 See detailed documentation at 
 https://radeon-pro.github.io/RadeonProRenderDocs/sdk/tutorials.html
 
+## Python Binding
+
+You can create a RPR Python binding extension.
+
+Build the RPR binding libraries:
+```
+> cd python/
+> mkdir build
+> cd build
+> cmake -Dnanobind_DIR=nanobind/cmake ..
+> cmake --build . --config Release
+```
+Those builds will be generated inside python/build/ they are needed by the python script running RPR in order to execute the:
+```
+import rpr
+import rprs
+import rprgltf
+```
+Note that if you have several pythons installed on your system, you may need to define `Python_EXECUTABLE` in the first cmake instruction. Example:
+```
+cmake -Dnanobind_DIR=nanobind/cmake -DPython_EXECUTABLE=/usr/bin/python3 ..
+```
+The name of the compatible python version can be found in the name of the generated file. for example `rpr.cpython-38-x86_64-linux-gnu.so` means it's for python 3.8.
+
+
+Run some test scripts:
+```
+> cd python/test
+> python test_script_rpr.py
+> python test_script_gltf.py
+```
+If tests run correctly, you should find the generated rendering images inside the python/test folder.
+
 ## Additional Info
 
 - Radeon:tm: ProRender GPUOpen web site
