@@ -3,6 +3,17 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 3.01.03 - 03 Aout 2023
+
+## NORTHSTAR :
+RPR-1209  - (Bug)   - Fix Uber transparency + thin surface material
+RPR-1191  - (Bug)   - Fix Uber diffuse, reflection and refraction blended with emission
+RPR-1224  - (Bug)   - Add energy compensation for Uber reflection
+
+Python binding implemented :
+check:   https://github.com/GPUOpen-LibrariesAndSDKs/RadeonProRenderSDK#python-binding
+
+################################################################################################################
 RPR SDK 3.01.02 - 09 June 2023
 
 ## NORTHSTAR :

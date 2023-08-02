@@ -176,6 +176,8 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_UPSCALER 0x10042
 #define RPR_CONTEXT_FSR2_QUALITY 0x10043
 #define RPR_CONTEXT_CONSERVATIVE_GPU_MEM_ALLOCATION 0x10044
+#define RPR_CONTEXT_PSR 0x10045 // Primary surface replacement
+#define RPR_CONTEXT_CSFR 0x10046 // Checkerboarded split-frame rendering
 
 /* Traversal modes */
 #define RPR_HYBRID_TRAVERSAL_STATIC_TLAS_SEPARATE 0x1 ///< Use a separate acceleration structure for static objects

@@ -53,6 +53,11 @@ typedef void * RPRS_context;
 *                                                               The selected Render Layers list is defined by rprContextAttachRenderLayer / rprContextDetachRenderLayer
 *                                                               Attach/Detach Render Layers to shapes/lights with  rprShapeAttachRenderLayer, rprLightAttachRenderLayer, rprShapeDetachRenderLayer, rprLightDetachRenderLayer.
 *
+*  RPRLOADSTORE_EXPORTFLAG_FORCERENDER : for Northstar, it's advised to call rprsExport after a rprContextRender call. This ensures that the RPR is full compiled and ready to be exported to a file.
+*                                        Adding this flag will force a quick render step internally, before doing the export to file.
+*
+*
+*
 */
 #define RPRLOADSTORE_EXPORTFLAG_EXTERNALFILES (1 << 0) 
 #define RPRLOADSTORE_EXPORTFLAG_COMPRESS_IMAGE_LEVEL_1 (1 << 1) 
@@ -62,6 +67,7 @@ typedef void * RPRS_context;
 #define RPRLOADSTORE_EXPORTFLAG_EMBED_FILE_IMAGES_USING_OBJECTNAME (1 << 5) 
 #define RPRLOADSTORE_EXPORTFLAG_USE_IMAGE_CACHE (1 << 6) 
 #define RPRLOADSTORE_EXPORTFLAG_ONLY_EXPORT_ATTACHED_RENDER_LAYERS (1 << 7) 
+#define RPRLOADSTORE_EXPORTFLAG_FORCERENDER (1 << 8) 
 
 
 /** 
@@ -79,8 +85,8 @@ typedef void * RPRS_context;
 *           It can be used to store additional data for the Export
 *
 */
-extern RPR_API_ENTRY rpr_status rprsExport(char const * rprsFileName, rpr_context context, rpr_scene scene, int extraCustomParam_int_number, char const * * extraCustomParam_int_names, int const * extraCustomParam_int_values, int extraCustomParam_float_number, char const * * extraCustomParam_float_names, float const * extraCustomParam_float_values, unsigned int exportFlags, RPRS_context rprsCtx);
-extern RPR_API_ENTRY rpr_status rprsxExport(char const * rprsFileName, rpr_context context, void * contextX__NOT_USED_ANYMORE, rpr_scene scene, int extraCustomParam_int_number, char const * * extraCustomParam_int_names, int const * extraCustomParam_int_values, int extraCustomParam_float_number, char const * * extraCustomParam_float_names, float const * extraCustomParam_float_values, unsigned int exportFlags, RPRS_context rprsCtx);
+extern RPR_API_ENTRY rpr_status rprsExport(char const * rprsFileName, rpr_context context, rpr_scene scene, int extraCustomParam_int_number, char const * * extraCustomParam_int_names, int const * extraCustomParam_int_values, int extraCustomParam_float_number, char const * * extraCustomParam_float_names, float const * extraCustomParam_float_values, rpr_uint exportFlags, RPRS_context rprsCtx);
+extern RPR_API_ENTRY rpr_status rprsxExport(char const * rprsFileName, rpr_context context, void * contextX__NOT_USED_ANYMORE, rpr_scene scene, int extraCustomParam_int_number, char const * * extraCustomParam_int_names, int const * extraCustomParam_int_values, int extraCustomParam_float_number, char const * * extraCustomParam_float_names, float const * extraCustomParam_float_values, rpr_uint exportFlags, RPRS_context rprsCtx);
 
 
 /** 

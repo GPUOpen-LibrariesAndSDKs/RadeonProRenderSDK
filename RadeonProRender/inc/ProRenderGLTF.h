@@ -121,8 +121,8 @@ extern int rprGLTF_ListImported_Buffer(rpr_buffer * Buffers, int sizeShapeBytes,
 
 // Getters for Extra-Attribute. Call them just AFTER the rprImportFromGLTF call.
 // rprGLTF_AddExtra*** is used for setting thoses attributes.
-extern int rprGLTF_GetImportedExtraShapeAttribute(rpr_shape shape, char* name, int& outParam);
-extern int rprGLTF_GetImportedExtraLightAttribute(rpr_light light, char* name, int& outParam);
+extern int rprGLTF_GetImportedExtraShapeAttribute(rpr_shape shape, const char* name, int& outParam);
+extern int rprGLTF_GetImportedExtraLightAttribute(rpr_light light, const char* name, int& outParam);
 
 
 /*

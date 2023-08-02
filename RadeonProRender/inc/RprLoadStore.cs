@@ -74,6 +74,11 @@ public const uint RPRLOADSTORE_PARAMETER_TYPE_FLOAT = 0x2 ;
 *                                                               The selected Render Layers list is defined by rprContextAttachRenderLayer / rprContextDetachRenderLayer
 *                                                               Attach/Detach Render Layers to shapes/lights with  rprShapeAttachRenderLayer, rprLightAttachRenderLayer, rprShapeDetachRenderLayer, rprLightDetachRenderLayer.
 *
+*  RPRLOADSTORE_EXPORTFLAG_FORCERENDER : for Northstar, it's advised to call rprsExport after a rprContextRender call. This ensures that the RPR is full compiled and ready to be exported to a file.
+*                                        Adding this flag will force a quick render step internally, before doing the export to file.
+*
+*
+*
 */
 
 public const uint RPRLOADSTORE_EXPORTFLAG_EXTERNALFILES = (1 << 0) ;
@@ -84,6 +89,7 @@ public const uint RPRLOADSTORE_EXPORTFLAG_COMPRESS_FLOAT_TO_HALF_UV = (1 << 4) ;
 public const uint RPRLOADSTORE_EXPORTFLAG_EMBED_FILE_IMAGES_USING_OBJECTNAME = (1 << 5) ;
 public const uint RPRLOADSTORE_EXPORTFLAG_USE_IMAGE_CACHE = (1 << 6) ;
 public const uint RPRLOADSTORE_EXPORTFLAG_ONLY_EXPORT_ATTACHED_RENDER_LAYERS = (1 << 7) ;
+public const uint RPRLOADSTORE_EXPORTFLAG_FORCERENDER = (1 << 8) ;
 
 /** 
 * export an RPR scene to an RPRS file
