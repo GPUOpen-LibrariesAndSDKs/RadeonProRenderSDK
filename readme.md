@@ -79,6 +79,11 @@ https://radeon-pro.github.io/RadeonProRenderDocs/sdk/tutorials.html
 
 You can create a RPR Python binding extension.
 
+First, make sure to have all the submodules recursively ( [Nanobind](https://github.com/wjakob/nanobind) is used to create the binding ):
+```
+git submodule update --init --recursive
+```
+
 Build the RPR binding libraries:
 ```
 > cd python/
