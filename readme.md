@@ -37,7 +37,7 @@ On Visual Studio:
 then open tutorials/Tutorials.sln
 ```
 
-On Ubuntu 18:  
+On Ubuntu 20:  
 Dependencies on Linux for the tutorials: GLEW, GLUT, Pthread.
 ```
 > cd tutorials
