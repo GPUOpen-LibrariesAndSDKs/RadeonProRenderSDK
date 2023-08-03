@@ -75,7 +75,7 @@ flagsCtx |= int(rpr.CreationFlags.ENABLE_GPU0)
 newCtx = rpr.Context()
 ctxInfo1 = rpr.PyMalloc("../../hipbin")
 pluginLists__myarray =    np.array([plugin_id], dtype=np.int32)  
-RPRCHECK( rpr.CreateContext(0x00300102  ,  pluginLists__myarray   , 1  , flagsCtx ,   [   rpr.Int64ToPvoid(rpr.ContextInfo.PRECOMPILED_BINARY_PATH) ,   ctxInfo1.GetMem(0)  ,  rpr.Int64ToPvoid(0)   ] , "" ,  newCtx ) )
+RPRCHECK( rpr.CreateContext(rpr.VERSION_MAJOR_MINOR_REVISION  ,  pluginLists__myarray   , 1  , flagsCtx ,   [   rpr.Int64ToPvoid(rpr.ContextInfo.PRECOMPILED_BINARY_PATH) ,   ctxInfo1.GetMem(0)  ,  rpr.Int64ToPvoid(0)   ] , "" ,  newCtx ) )
 ctxInfo1.Free(); ctxInfo1=0;
 RPRCHECK( rpr.ContextSetActivePlugin(newCtx, plugin_id) )
 print("RPR context created.");
