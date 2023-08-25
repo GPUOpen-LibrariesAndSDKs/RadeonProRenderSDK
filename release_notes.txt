@@ -13,6 +13,37 @@ RPR-1224  - (Bug)   - Add energy compensation for Uber reflection
 Python binding implemented :
 check:   https://github.com/GPUOpen-LibrariesAndSDKs/RadeonProRenderSDK#python-binding
 
+
+## HYBRID 3.1.3 RC5-25/Aug/2023 - Features :
+* [RPRHYB-964] Tessellation-Free Displacement Mapping for Ray Tracing (#1214)
+* [RPRHYB-962] Adds support for INPUT_UBER_EMISSION_MODE (#1211)
+* [RPRHYB-750] BUMP_MAP_node_support (#1191)
+* [RPRHYB-712] Update Material X to 1.38.7 (#1190)
+* [RPRHYB-895] Conservative memory allocation for textures (#1168)
+* [RPRHYB-778] RPR Ramp node support (#1186)
+* [RPRHYB-765] RPR_MATERIAL_NODE_LOOKUP_INVEC support (#1179)
+* [RPRHYB-810] AOV Mesh ID support (#1176)
+* [RPRHYB-904] Add support for RPR_MATERIAL_NODE_UV_PROCEDURAL (#1181)
+* [RPRHYB-839] Support for GRID_INDICES_TOPOLOGY_I_U64, Blender uses it for internal volumes (#1165)
+* [RPRHYB-914] Add displacement support for software raytracing mode (#1178)
+
+## HYBRID 3.1.3 RC5-25/Aug/2023 - Fixes:
+* [RPRHYB-953] Composite of shadow_catcher + reflection_catcher + matte_pass has wrong reflection (#1244)
+* [RPRHYB-931] Reflection catcher stoped working (#1197)
+* [RPRHYB-937] Denoisers are not working (#1210)
+* [RPRHYB-897] Hairs not working correctly on Ubuntu (#1209)
+* [RPRHYB-923] Energy loss in uber metallic reflection (#1199)
+* [RPRHYB-942] Uber Emission component overrides diffuse and non metalic reflection component (#1208)
+* [RPRHYB-946] Can't render duplicated material (#1205)
+* [RPRHYB-948] Enabling mipmap generation causes a crash (#1206)
+* [RPRHYB-935] SolidWorks: Glitch at top of rendered sphere on GPU's without hardware RayTracing (#1204)
+* [RPRHYB-907] Hybrid pro Displacement gives really bad results on objects other than a plane (#1194)
+* [RPRHYB-930] RPR Nodes core scene Crashes when rendering with SDK render tool (#1193)
+* [RPRHYB-902] Previous material become pink after adding new mesh (#1182)
+* [RPRHYB-828] Scene with VDB does not render (#1165)
+* [RPRHYB-911] Uber Transparency works wrong (#1183)
+
+
 ################################################################################################################
 RPR SDK 3.01.02 - 09 June 2023
 
