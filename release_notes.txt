@@ -3,6 +3,13 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 3.01.04 - BETA 1 - 04 September 2023
+
+RPR-1238  - (Bug)       - Fix toon shading bug with alpha texture 
+RPR-1151  - (Feature)   - Add the control of shadow & highlight areas on toon shader regardless of the light intensity
+
+
+################################################################################################################
 RPR SDK 3.01.03 - 03 August 2023
 
 ## NORTHSTAR :
