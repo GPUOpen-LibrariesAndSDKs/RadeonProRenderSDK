@@ -3,6 +3,50 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 3.01.04 - BETA 2 - 23 October 2023
+
+Only HybridPro (RC5) is updated, with those fixes :
+
+## Features:
+* [RPRHYB-966] MaterialX Displacement Support (#1217)
+* [RPRHYB-313] SSS implementation (#1198)
+* [RPRHYB-792] Uber Refraction Absorption support (#1259)
+* [RPRHYB-985] Support rpr api context callbacks (#1261)
+
+## Fixes:
+* [RPRHYB-982] Opacity artifacts (#1262)
+* [RPRHYB-987] Background image artifacts with gradient (#1264)
+* [RPRHYB-991] MaterialX material renders black upon assignment on new release 3.1.3 RC5 (#1265)
+* [RPRHYB-949] Fix UV tiling support. Fix displacement normals. Improve local intersections robustness. (#1260)
+* [RPRHYB-990] RPR_ERROR_INTERNAL_ERROR on a scene with U-ramp (#1263)
+* [RPRHYB-992] Ramp as Emissive not working in 3.1.3 (#1263)
+* [RPRHYB-979] Mesh ID AOV consistent with NorthStar (#1254)
+* [RPRHYB-980] Motion Blur fixes (#1256)
+* [RPRHYB-838] Fog effect with viewport denoiser (#1250)
+* [RPRHYB-981] Fix a missing material update causing device lost (#1249)
+* [RPRHYB-981] Fix Background AOV Texture Index (#1251)
+* [RPRHYB-978] Volumetric code unification (#1245)
+* [RPRHYB-953] Composite of shadow_catcher + reflection_catcher + matte_pass has wrong reflection (#1244)
+* [RPRHYB-973] ASVGF produces a brighter image than SVGF (#1231)
+* [RPRHYB-970] Fixes for Shader Compilation on D3D12 (#1239)
+* [RPRHYB-970] Fix a few resource transitions (#1221)
+* [RPRHYB-910] Fix tests on low-end gpus (#1226)
+* [RPRHYB-970] Fix Crash on Material System CodeGen (#1223)
+* [RPRHYB-989] Matte Pass AOV not working for Shadow Catcher in 3.1.3 (#1272)
+* [RPRHYB-1009] HybridPro crashes during MateriaX displacement rendering (#1277)
+* [RPRHYB-986] Artifacts on edges of shadow catcher plane (#1275)
+* [RPRHYB-999] RPR_ERROR_INTERNAL_ERROR and crash on a scene with Nvidia cards (#1273)
+* [RPRHYB-701] Clip distance fix (#1266)
+* [RPRHYB-974] Metal transparency fix (#1241)
+* [RPRHYB-990] RPR_ERROR_INTERNAL_ERROR on a scene with U-ramp (#1270)
+* [RPRHYB-995] Material artifacts (#1267)
+* [RPRHYB-1000] Halo effect around displacement objects 3.1.4 RC1 (#1269)
+* [RPRHYB-1012] RC2 HybridPro: MaterialX reassignment fails (#1285)
+* [RPRHYB-1013] Fix Crash When Using Color3 as Input for MaterialX Displacement (#1284)
+* [RPRHYB-1028] Spot light softness issue on 7900 GPUS (#1296)
+
+
+################################################################################################################
 RPR SDK 3.01.04 - BETA 1 - 04 September 2023
 
 RPR-1238  - (Bug)       - Fix toon shading bug with alpha texture 
