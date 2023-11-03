@@ -3,6 +3,13 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 3.01.04 - 03 November 2023
+
+RPR-1245  - (Feature)    - Add the option to switch to the toon control with unnormalized light intensity
+RPR-981   - (Feature)    - Add AO AOV support
+
+
+################################################################################################################
 RPR SDK 3.01.04 - BETA 2 - 23 October 2023
 
 Only HybridPro (RC5) is updated, with those fixes :

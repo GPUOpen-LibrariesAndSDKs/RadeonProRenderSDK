@@ -511,6 +511,59 @@ typedef rpr_int(*rprContextCreateImageFromExternalHandle_func)(rpr_context conte
     const rpr_image_desc_ext* image_desc, const void* external_image, rpr_image* out_image);
 #define RPR_CONTEXT_CREATE_IMAGE_FROM_EXTERNAL_HANDLE "rprContextCreateImageFromExternalHandle"
 
+
+typedef enum
+{
+    /*
+     * @brief All registered timings without any filtering.
+     */ 
+    ALL_TIMINGS = 0x0,
+
+    /*
+     * @brief Timings with no overlaping.
+     * Smarter mode than ALL_TIMINGS, useful for displaying timings as column diagram.
+     * The problem with ALL_TIMINGS is that some of the timings are nested to each other.
+     * This mode has the useful property: the sum of the returned timings is ~ frame time.
+     * You can set appropriate level of detalization through the functions.
+     */
+    NO_OVERLAPPING_TIMINGS = 0x1,
+} rpr_debug_timings_mode;
+
+/**
+ * @brief Get GPU timings.
+ * Rerturns names and its times (start/end) relative begining of the frame.
+ * Just substract out_t1[i] - out_t0[i] to calculate delta time.
+ * 
+ * @param  context        The context.
+ * @param  mode           Set of timings.
+ * @param  gpu_index      Device index.
+ * @param  detalization   Detalization level for the NO_OVERLAPPING_TIMINGS mode. 0 means full GPU frame time, >0 more detalized timings.
+ * @param  out_names      Name of the timings.
+ * @param  out_t0         Timings's start point in milliseconds relative to frame start.
+ * @param  out_t1         Timings's end point in milliseconds relative to frame start.
+ * @param  out_count      The number of timings.
+ */
+typedef rpr_int(*rprDebugGetGPUTimings_func)(rpr_context context, rpr_debug_timings_mode mode, rpr_uint gpu_index, rpr_uint detalization,
+    const char** out_names, float* out_t0, float* out_t1, rpr_uint* out_count);
+#define RPR_CONTEXT_DEBUG_GET_GPU_TIMINGS "rprDebugGetGPUTimings"
+
+/**
+ * @brief Get CPU timings.
+ * Rerturns names and its times (start/end) relative begining of the frame.
+ * Just substract out_t1[i] - out_t0[i] to calculate delta time.
+ * 
+ * @param  context        The context.
+ * @param  mode           Set of timings.
+ * @param  detalization   Detalization level for the NO_OVERLAPPING_TIMINGS mode. 0 means full CPU frame time, >0 more detalized timings.
+ * @param  out_names      Name of the timings.
+ * @param  out_t0         Timings's start point in milliseconds relative to frame start.
+ * @param  out_t1         Timings's end point in milliseconds relative to frame start.
+ * @param  out_count      The number of timings.
+ */
+typedef rpr_int(*rprDebugGetCPUTimings_func)(rpr_context context, rpr_debug_timings_mode mode, rpr_uint detalization,
+    const char** out_names, float* out_t0, float* out_t1, rpr_uint* out_count);
+#define RPR_CONTEXT_DEBUG_GET_CPU_TIMINGS "rprDebugGetCPUTimings"
+
 struct rpr_stats
 {
     struct rpr_stat

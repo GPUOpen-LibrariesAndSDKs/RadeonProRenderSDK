@@ -374,6 +374,7 @@ RPRStringIDMapper::RPRStringIDMapper()
 	MACRO_LINK_STR_ID("displayibl",RPR_CONTEXT_IBL_DISPLAY);
 	MACRO_LINK_STR_ID("precompiled.binary.path",RPR_CONTEXT_PRECOMPILED_BINARY_PATH);
 	MACRO_LINK_STR_ID("reflectionenergycompensationenabled",RPR_CONTEXT_REFLECTION_ENERGY_COMPENSATION_ENABLED);
+	MACRO_LINK_STR_ID("normalizelightintensityenabled",RPR_CONTEXT_NORMALIZE_LIGHT_INTENSITY_ENABLED);
 
 	#undef MACRO_LINK_STR_ID
 	#define MACRO_LINK_STR_ID(s,i)  m_RPRMaterialType_string_to_id[s]=i;  m_RPRMaterialType_id_to_string[i]=s  ;
