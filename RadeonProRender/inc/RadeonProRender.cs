@@ -1386,9 +1386,9 @@ VISIBILITY_RECEIVE_SHADOW = 0x430 ,
 }
 public const uint RPR_VERSION_MAJOR = 3 ;
 public const uint RPR_VERSION_MINOR = 1 ;
-public const uint RPR_VERSION_REVISION = 4 ;
-public const uint RPR_VERSION_BUILD = 0x2cb14e23 ;
-public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00300104 ;
+public const uint RPR_VERSION_REVISION = 5 ;
+public const uint RPR_VERSION_BUILD = 0x92dd2edd ;
+public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00300105 ;
 // Deprecated version naming - will be removed in the future :
 
 public const uint RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;

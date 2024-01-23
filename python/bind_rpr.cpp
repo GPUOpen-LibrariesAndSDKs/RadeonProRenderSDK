@@ -1178,9 +1178,9 @@ enum class Curve : rpr_curve_parameter {
 NB_MODULE(rpr, m) {
 	m.attr("VERSION_MAJOR") = 3 ;
 	m.attr("VERSION_MINOR") = 1 ;
-	m.attr("VERSION_REVISION") = 4 ;
-	m.attr("VERSION_BUILD") = 0x2cb14e23 ;
-	m.attr("VERSION_MAJOR_MINOR_REVISION") = 0x00300104 ;
+	m.attr("VERSION_REVISION") = 5 ;
+	m.attr("VERSION_BUILD") = 0x92dd2edd ;
+	m.attr("VERSION_MAJOR_MINOR_REVISION") = 0x00300105 ;
 	m.attr("API_VERSION") = RPR_VERSION_MAJOR_MINOR_REVISION ;
 	m.attr("API_VERSION_MINOR") = RPR_VERSION_BUILD ;
 	nb::enum_<Status>(m, "Status")

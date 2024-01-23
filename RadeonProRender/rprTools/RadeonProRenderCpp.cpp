@@ -1435,17 +1435,7 @@ MaterialXNode::MaterialXNode(
 }
 
 MaterialXNode::~MaterialXNode() {
-    for (rpr_uint i = 0; i < m_numAuxiliaryNodes; ++i) {
-        if (m_auxiliaryNodes[i]) {
-            rprObjectDelete(m_auxiliaryNodes[i]);
-        }
-    }
-    for (rpr_uint i = 0; i < m_numAuxiliaryImages; ++i) {
-        if (m_auxiliaryImages[i]) {
-            rprObjectDelete(m_auxiliaryImages[i]);
-        }
-    }
-    rprLoadMaterialX_free(m_auxiliaryNodes, m_auxiliaryImages);
+
 }
 
 Status PostEffect::SetParameter(rpr_char const* name, rpr_uint x) {

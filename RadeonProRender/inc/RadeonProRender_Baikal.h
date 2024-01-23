@@ -161,6 +161,13 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_RESTIR_SPATIAL_RESAMPLE_ITERATIONS 0x1037 // World space ReSTIR spatial resample iteration count
 #define RPR_CONTEXT_RESTIR_MAX_RESERVOIRS_PER_CELL 0x1038 // Max reservoirs per world space hash grid cell
 #define RPR_CONTEXT_ENABLE_HALFRES_INDIRECT 0x1039 // Enable indirect downsample
+#define RPR_CONTEXT_ENABLE_DISPLACEMENT_LODS 0x103A // Global switch for enabling level of detail for displaced meshes
+// Global parameters for displacement LOD [lod_min_distance, lod_max_distance, lod_distance_scale, bounce_scale]
+// -lod_min_distance: default=0. The distance from the camera where LODs start to decrease.
+// -lod_max_distance: default=FLT_MAX. The distance from the camera where LODs stop decreasing.
+// -lod_distance_scale: default=0.5. How fast the LOD transitions given the [lod_min_distance, lod_max_distance] range.
+// -bounce_scale: default=0. Bias for the LOD on consecutive ray bounces. This LOD decrease may cause visual artifacts. Does not affect primary rays.
+#define RPR_CONTEXT_DISPLACEMENT_LOD_GLOBAL_PARAMS 0x103B
 #define RPR_CONTEXT_ENABLE_RADIANCE_CACHE 0x1003B // Enable Radiance Cache.
 // Set ReSTIR GI bias correction method
 // 0 - No bias correction (biased)
@@ -252,11 +259,21 @@ struct RPRHybridKernelsPathInfo
 #define RPR_HYBRID_VIDEO_API_D3D12 1u
 
 /* Additional AOVs */
-#define RPR_HYBRID_AOV_DIFFUSE_RADIANCE      0x10000
-#define RPR_HYBRID_AOV_SPECULAR_RADIANCE     0x10001
-#define RPR_HYBRID_AOV_TRANSMISSIVE_RADIANCE 0x10002
-#define RPR_HYBRID_AOV_SPECULAR_REFLECT      0x10003
-#define RPR_HYBRID_AOV_DIFFUSE_REFLECT       0x10004
+#define RPR_HYBRID_AOV_DIFFUSE_RADIANCE                  0x10000
+#define RPR_HYBRID_AOV_SPECULAR_RADIANCE                 0x10001
+#define RPR_HYBRID_AOV_TRANSMISSIVE_RADIANCE             0x10002
+#define RPR_HYBRID_AOV_SPECULAR_REFLECT                  0x10003
+#define RPR_HYBRID_AOV_DIFFUSE_REFLECT                   0x10004
+#define RPR_HYBRID_AOV_DELTA_REFLECTIVE_ALBEDO           0x10005
+#define RPR_HYBRID_AOV_DELTA_REFLECTIVE_NORMAL           0x10006
+#define RPR_HYBRID_AOV_REFLECTION_ROUGHNESS              0x10007
+#define RPR_HYBRID_AOV_TRANSMISSIVE_MASK                 0x10008
+#define RPR_HYBRID_AOV_DIFFUSE_NORMAL_INCOMING_ANGLE     0x10009
+#define RPR_HYBRID_AOV_REFLECTION_NORMAL_INCOMING_ANGLE  0x1000A
+#define RPR_HYBRID_AOV_SPECULAR_ALBEDO                   0x1000B
+#define RPR_HYBRID_AOV_ROUGHNESS                         0x10013
+#define RPR_HYBRID_AOV_REPROJECTION_VELOCITY             0x10014
+#define RPR_HYBRID_AOV_DEPTH_NDC                         0x10015 /// Depth in NDC appropriate for UE5. "Near" is 1 and "far" is 0
 
 /* Logging*/
 /** !This should be the same as the one defined in vid_log.h

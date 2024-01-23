@@ -3,6 +3,14 @@
 -------------------------------------------
 
 ################################################################################################################
+RPR SDK 3.01.05 - 23 January 2024
+
+## Bug fixes in Northstar:
+Fix contours disappearing with some shapes
+Fix wrong texture access
+
+
+################################################################################################################
 RPR SDK 3.01.04 - 03 November 2023
 
 RPR-1245  - (Feature)    - Add the option to switch to the toon control with unnormalized light intensity

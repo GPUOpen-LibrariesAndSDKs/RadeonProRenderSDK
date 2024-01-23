@@ -22,52 +22,6 @@ extern "C" {
 
 
 
-  /** @brief Parse a MaterialX XML data, and create the Material graph composed of rpr_material_nodes, and rpr_images
-  *
-  *  -----> This function is part of the 'Version 1' API - deprecated and replaced by the 'Version 2' API
-  *
-  * @param xmlData                       null-terminated string of the MaterialX XML data
-  * @param resourcePaths and  resourcePathsCount   list of paths used for image loading
-  *
-  * @param imageAlreadyCreated_count
-  * @param imageAlreadyCreated_paths
-  * @param imageAlreadyCreated_list
-  * We can specify a list of rpr_image that are already loaded. 
-  * If rprLoadMaterialX finds any images in the XML belonging to this list it will use it directly instead of creating it with rprContextCreateImageFromFile
-  * Those images will not be added in the listImagesOut list.
-  * example to add an image in the imageAlreadyCreated list:
-  * imageAlreadyCreated_count = 1
-  * imageAlreadyCreated_paths[0] = "../../Textures/UVCheckerMap13-1024.png"    // same path specified in the 'value' of the image in the XML
-  * imageAlreadyCreated_list[0] = (rpr_image) existing_rpr_image
-  * imageAlreadyCreated_paths and imageAlreadyCreated_list must have the same size.
-  *
-  * @param listNodesOut 
-  * @param listImagesOut
-  * Thoses 2 buffers are allocated by rprLoadMaterialX, then you should use rprLoadMaterialX_free to free them.
-  * they contain the list of rpr_material and rpr_image created by rprLoadMaterialX.
-  *
-  * @param rootNodeOut         Closure node in the material graph. Index inside listNodesOut. Could be -1 if an error occured.
-  *                            This is the material that should be assigned to shape: rprShapeSetMaterial(shape,listNodesOut[rootNodeOut]);
-  *
-  * This function is NOT traced. However internally it's calling some RPR API to build the graph, those calls are traced.
-  */
-  extern RPR_API_ENTRY rpr_status rprLoadMaterialX(rpr_context in_context, rpr_material_system in_matsys, char const * xmlData, char const ** incudeData, int includeCount, char const ** resourcePaths, int resourcePathsCount, int imageAlreadyCreated_count, char const ** imageAlreadyCreated_paths, rpr_image * imageAlreadyCreated_list, rpr_material_node ** listNodesOut, rpr_uint * listNodesOut_count, rpr_image ** listImagesOut, rpr_uint * listImagesOut_count, rpr_uint * rootNodeOut, rpr_uint * rootDisplacementNodeOut);
-
-
-  /** @brief Free the buffers allocated by rprLoadMaterialX
-  *
-  *  -----> This function is part of the 'Version 1' API - deprecated and replaced by the 'Version 2' API
-  *
-  * It does NOT call any rprObjectDelete
-  * Internally it's doing a simple:
-  * delete[] listNodes;
-  * delete[] listImages;
-  * 
-  * This function is NOT traced.
-  */
-  extern RPR_API_ENTRY rpr_status rprLoadMaterialX_free(rpr_material_node * listNodes, rpr_image * listImages);
-
-
   /** @brief  Add resource search path.
   *
   * -----> Note: This function is part of the 'Version 2' MaterialX API that replaces 'Version 1'
@@ -191,6 +145,20 @@ extern "C" {
   * Internally this is a map from geompropvalue to key, meaning a geompropvalue only has 1 unique key, but 1 key can have several geompropvalue.
   */
   extern RPR_API_ENTRY rpr_status rprMaterialXBindGeomPropToPrimvar(rpr_context in_context, rpr_char const * geompropvalue, rpr_uint key);
+
+
+  /** 
+  * 
+  * function to transform the final UV applied on the shape,
+  * call it before rprMaterialXSetFile.
+  *
+  * example:
+  * // the UV set 0 (Base UV) of matx is first translated by (0.7,0.6,0.0) and then scaled by (2,1.5,1)
+  * rprMaterialXTexcoord( matx,   0.7f, 0.6f, 0.0f,    2.0f, 1.5f, 1.0f,    0 );
+  * rprMaterialXSetFile( matx, "materialx.mtlx");
+  * 
+  */
+  extern RPR_API_ENTRY rpr_status rprMaterialXTexcoord(rpr_material_node material, rpr_float offsetx, rpr_float offsety, rpr_float offsetz, rpr_float scalex, rpr_float scaley, rpr_float scalez, rpr_int uvSet);
 
 
 
