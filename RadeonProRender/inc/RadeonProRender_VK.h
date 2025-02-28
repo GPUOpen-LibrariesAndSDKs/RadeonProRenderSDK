@@ -57,6 +57,7 @@ extern "C" {
                                                         // signal to semaphore, then call rprVkDynamicMeshModified()
 #define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_INDEX_TO_MODIFY 0x5503 // Index of dynamic vertex buffer that we can modify
 #define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_SIGNAL_SEMAPHORES 0x5504 // Index of semaphore to be signaled when the dynamic buffer modification is complete
+#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_WAIT_SEMAPHORES 0x55012 // Index of semaphore to be waited before starting to modify the dynamic buffer
 #define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_POSITION_OFFSET 0x5505 // Offset of position's float3 relative to the beginning of the buffer (in bytes)
 #define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_POSITION_STRIDE 0x5506 // Stride of the position (in bytes)
 #define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_NORMAL_OFFSET 0x5507 // Offset of normal's float3 relative to the beginning of the buffer (in bytes)
@@ -110,7 +111,9 @@ struct VkInteropInfo
 struct BufferInfo
 {
     void* buffer_handle;
-    size_t offset;
+    size_t region_offset;
+    size_t region_size;
+    size_t size; // the full size of the underlying buffer.
 };
 
 #ifdef __cplusplus

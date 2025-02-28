@@ -2,6 +2,12 @@
 - Release Notes of Radeon Pro Render SDK
 -------------------------------------------
 
+
+################################################################################################################
+RPR SDK 3.01.06 - 28 February 2025
+
+Add support of AMD Ryzen AI for Windows and Ubuntu.
+
 ################################################################################################################
 RPR SDK 3.01.05 - 23 January 2024
 
@@ -409,7 +415,7 @@ RPR-57   - (Task)     - Add light linking support for toon shader
  * MaterialX loader improvements for Northstar renderer: more materials are now supported.
 
 ################################################################################################################
-RPR SDK 2.02.11 - 07 Febrary 2022
+RPR SDK 2.02.11 - 07 February 2022
 
 ## NORTHSTAR :
 RPR-502 - (Bug)      - Fix darkening artifact at override_reflecttransparent
@@ -1039,7 +1045,7 @@ FIR-1610 - Unbalance variance at multiple GPUs
 FIR-1629 - Crash while trying to subdivide mesh
 
 ################################################################################################################
-RPR SDK 1.34.7 - 03 Febrary 2020
+RPR SDK 1.34.7 - 03 February 2020
 
 FIR-1607 - RPRS - lossless geometry compression
 FIR-1595 - visibility flags not working on Curves
@@ -1591,7 +1597,7 @@ FIR-1076 - OpenImageIO dependency has been removed.
 FIR-1069 - BSOD on WX-7100 video card with high resolution
 
 ################################################################################################################
-RPR SDK 1.292 - 15 febrary 2018
+RPR SDK 1.292 - 15 February 2018
 
 FIR-1064 - GITHUB-902 Object Rotation yields wrong normals when angular motion is set
 FIR-1034 - Material Tree Optimization

@@ -66,6 +66,9 @@ extern "C" {
 #define RPR_MATERIAL_NODE_OP_SMOOTH_STEP 0x105a
 #define RPR_MATERIAL_NODE_OP_ATAN2 0x105b
 
+#define RPR_MATERIAL_NODE_OP_TANGENT_TO_WORLD 0x105c
+#define RPR_MATERIAL_NODE_OP_WORLD_TO_TANGENT 0x105d
+
 #define RPR_MATERIAL_INPUT_UBER_TRANSPARENCY_MASK 0x1500
 #define RPR_MATERIAL_INPUT_CAST_SHADOW            0x11001U
 
@@ -185,6 +188,8 @@ struct RPRHybridKernelsPathInfo
 #define RPR_CONTEXT_CONSERVATIVE_GPU_MEM_ALLOCATION 0x10044
 #define RPR_CONTEXT_PSR 0x10045 // Primary surface replacement
 #define RPR_CONTEXT_CSFR 0x10046 // Checkerboarded split-frame rendering
+#define RPR_CONTEXT_ENABLE_PORTALS 0x10047 // Enable support of portal materials
+#define RPR_CONTEXT_MAX_PORTAL_RECURSION 0x10048
 
 /* Traversal modes */
 #define RPR_HYBRID_TRAVERSAL_STATIC_TLAS_SEPARATE 0x1 ///< Use a separate acceleration structure for static objects
@@ -218,6 +223,7 @@ struct RPRHybridKernelsPathInfo
 // rprShapeGetInfo extension
 /* rpr_shape_info */
 #define RPR_SHAPE_LIGHTMAP_CHART_INDEX 0x1440
+#define RPR_SHAPE_PORTAL_MATERIAL 0x1441
 #define RPR_INSTANCE_USE_UNIQUE_ATTRIBUTES 0x1602
 
 #define RPR_CAMERA_UV_LIGHTMAP_CHART_INDEX 0x1441
@@ -274,6 +280,7 @@ struct RPRHybridKernelsPathInfo
 #define RPR_HYBRID_AOV_ROUGHNESS                         0x10013
 #define RPR_HYBRID_AOV_REPROJECTION_VELOCITY             0x10014
 #define RPR_HYBRID_AOV_DEPTH_NDC                         0x10015 /// Depth in NDC appropriate for UE5. "Near" is 1 and "far" is 0
+#define RPR_HYBRID_AOV_HIT_DISTANCE                      0x10016
 
 /* Logging*/
 /** !This should be the same as the one defined in vid_log.h
@@ -365,6 +372,17 @@ typedef rpr_int (*rprContextFlushFrameBuffers_func)(rpr_context in_context);
  */
 typedef rpr_int(*rprShapeSetLightmapChartIndex_func)(rpr_shape shape, rpr_int chart_index);
 #define RPR_SHAPE_SET_LIGHTMAP_CHART_INDEX_FUNC_NAME "rprShapeSetLightmapChartIndex"
+
+/**
+ * Set a portal material for the shape.
+ *
+ * @note Portal material can be any rpr_material_node. Currently, it's only used as a flag.
+ * 
+ * @param shape Shape to set material on.
+ * @param material Portal material.
+ */
+typedef rpr_int(*rprShapeSetPortalMaterial_func)(rpr_shape shape, rpr_material_node material);
+#define RPR_SHAPE_SET_PORTAL_MATERIAL_FUNC_NAME "rprShapeSetPortalMaterial"
 
 /**
  */
