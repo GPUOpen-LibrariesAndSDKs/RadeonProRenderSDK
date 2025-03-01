@@ -404,6 +404,11 @@ rpr_int rprtools_MaterialXMLImport(
 						status = rprMaterialNodeSetInputImageDataByKey(matNodeList[iNode_].matNode,  strIdMapper.RPRMaterialInput_string_to_id(paramName), matNodeList[nodeToConnect].image );  
 						MACRO_CHECK_RPR_STATUS;
 					}
+					else if ( matNodeList[nodeToConnect].light )
+					{
+						status = rprMaterialNodeSetInputLightDataByKey(matNodeList[iNode_].matNode,  strIdMapper.RPRMaterialInput_string_to_id(paramName), matNodeList[nodeToConnect].light );  
+						MACRO_CHECK_RPR_STATUS;
+					}
 					else 
 					{
 						throw (rpr_int)RPR_ERROR_INTERNAL_ERROR;
@@ -714,6 +719,22 @@ void XMLExporter_fillMaterialList(
 				MACRO_CHECK_RPR_STATUS;
 			}
 		}
+		else if (nodeInputType == RPR_MATERIAL_NODE_INPUT_TYPE_LIGHT)
+		{
+			if (shaderParameterValue_lenght != sizeof(rpr_light))
+			{
+				throw (rpr_int)RPR_ERROR_INTERNAL_ERROR;
+			}
+			else
+			{
+				rpr_light* light = (rpr_light*)shaderParameterValue;
+				if (*light != NULL)
+				{
+					// TODO
+				}
+				MACRO_CHECK_RPR_STATUS;
+			}
+		}
 		else if ( nodeInputType == RPR_MATERIAL_NODE_INPUT_TYPE_FLOAT4 )
 		{
 			const float* f4 = (const float*)shaderParameterValue;
@@ -734,6 +755,14 @@ void XMLExporter_fillMaterialList(
 			newParam.value = std::to_string(ui1[0]);
 			newNode.paramList.push_back(newParam);
 
+		}
+		else if ( nodeInputType == RPR_MATERIAL_NODE_INPUT_TYPE_DATA )
+		{
+			RPRTOOLS_NODE_EXPORT_DEFINE::RPRTOOLS_MATERIAL_PARAM_EXPORT_DEFINE newParam;
+			newParam.name = paramName_;
+			newParam.type = "data";
+			newParam.value = "TODO_TYPE_DATA";
+			newNode.paramList.push_back(newParam);
 		}
 
 		delete[] shaderParameterValue; shaderParameterValue = NULL;

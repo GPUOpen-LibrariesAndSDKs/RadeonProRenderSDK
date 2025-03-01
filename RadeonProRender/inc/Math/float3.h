@@ -32,6 +32,7 @@ namespace RadeonProRender
         float3 operator-() const        { return float3(-x, -y, -z); }
 
         float  sqnorm() const           { return x*x + y*y + z*z; }
+        float  norm() const             { return std::sqrt(x*x + y*y + z*z); }
         void   normalize()              { (*this)/=(std::sqrt(sqnorm()));} 
 
         float3& operator += (float3 const& o) { x+=o.x; y+=o.y; z+= o.z; return *this;}

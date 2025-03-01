@@ -257,6 +257,22 @@ extern RPR_API_ENTRY rpr_status rprDirectionalLightSetShadowSoftness(rpr_light l
 #define RPR_AOV_MATERIAL_IDX RPR_AOV_MATERIAL_ID
 
 
+
+
+// DEPRECATED - will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
+// RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also deprecated
+extern RPR_API_ENTRY rpr_status rprShapeSetLinearMotion(rpr_shape shape, rpr_float x, rpr_float y, rpr_float z);
+extern RPR_API_ENTRY rpr_status rprShapeSetAngularMotion(rpr_shape shape, rpr_float x, rpr_float y, rpr_float z, rpr_float w);
+extern RPR_API_ENTRY rpr_status rprShapeSetScaleMotion(rpr_shape shape, rpr_float x, rpr_float y, rpr_float z);
+ 
+// DEPRECATED - will be removed in the future - please use rprCameraSetMotionTransform and rprCameraSetMotionTransformCount instead.
+// RPR_CAMERA_LINEAR_MOTION , RPR_CAMERA_ANGULAR_MOTION  are also deprecated
+extern RPR_API_ENTRY rpr_status rprCameraSetLinearMotion(rpr_camera camera, rpr_float x, rpr_float y, rpr_float z);
+extern RPR_API_ENTRY rpr_status rprCameraSetAngularMotion(rpr_camera camera, rpr_float x, rpr_float y, rpr_float z, rpr_float w);
+
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Old API FR functions
@@ -375,7 +391,7 @@ extern RPR_API_ENTRY rpr_status rprDirectionalLightSetShadowSoftness(rpr_light l
 #define FR_CONTEXT_TONE_MAPPING_REINHARD02_POST_SCALE 0x119 
 #define FR_CONTEXT_TONE_MAPPING_REINHARD02_BURN 0x11A 
 #define FR_CONTEXT_MAX_RECURSION 0x11B 
-#define FR_CONTEXT_RAY_CAST_EPISLON 0x11C 
+#define FR_CONTEXT_RAY_CAST_EPSILON 0x11C 
 #define FR_CONTEXT_RADIANCE_CLAMP 0x11D 
 #define FR_CONTEXT_X_FLIP 0x11E 
 #define FR_CONTEXT_Y_FLIP 0x11F 
@@ -1213,7 +1229,7 @@ extern RPR_API_ENTRY fr_int frFrameBufferGetInfo(fr_framebuffer framebuffer, fr_
 extern RPR_API_ENTRY fr_int frFrameBufferClear(fr_framebuffer frame_buffer);
 extern RPR_API_ENTRY fr_int frFrameBufferFillWithColor(fr_framebuffer frame_buffer, fr_float r, fr_float g, fr_float b, fr_float a);
 extern RPR_API_ENTRY fr_int frFrameBufferSaveToFile(fr_framebuffer frame_buffer, fr_char const * file_path);
-extern RPR_API_ENTRY fr_int frContextResolveFrameBuffer(fr_context context, fr_framebuffer src_frame_buffer, fr_framebuffer dst_frame_buffer, fr_bool normalizeOnly);
+extern RPR_API_ENTRY fr_int frContextResolveFrameBuffer(fr_context context, fr_framebuffer src_frame_buffer, fr_framebuffer dst_frame_buffer, fr_bool noDisplayGamma);
 extern RPR_API_ENTRY fr_int frMaterialSystemGetInfo(fr_material_system in_material_system, fr_material_system_info type, size_t in_size, void * in_data, size_t * out_size);
 extern RPR_API_ENTRY fr_int frContextCreateMaterialSystem(fr_context in_context, fr_material_system_type type, fr_material_system * out_matsys);
 extern RPR_API_ENTRY fr_int frMaterialSystemGetSize(fr_context in_context, fr_uint * out_size);

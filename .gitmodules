@@ -1,0 +1,6 @@
+[submodule "hipbin"]
+	path = hipbin
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/RadeonProRenderSDKKernels
+[submodule "python/nanobind"]
+	path = python/nanobind
+	url = https://github.com/wjakob/nanobind

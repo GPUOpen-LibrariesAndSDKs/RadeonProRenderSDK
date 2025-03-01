@@ -22,6 +22,7 @@ struct RPR_TOOL_NODE_MATERIAL_IMPORTED
 		matNode = 0;
 		materialType = (rpr_material_node_type)0;
 		image = 0;
+		light = 0;
 		imageGamma = 1.0f;
 		tilingX = 1.0;
 		tilingY = 1.0;
@@ -31,6 +32,7 @@ struct RPR_TOOL_NODE_MATERIAL_IMPORTED
 	rpr_material_node matNode;
 	rpr_material_node_type materialType;   // example : RPR_MATERIAL_NODE_INPUT_LOOKUP
 	rpr_image image;
+	rpr_light light;
 	float imageGamma; // only used if image != null
 	std::string imagePath; // only used if image != null
 

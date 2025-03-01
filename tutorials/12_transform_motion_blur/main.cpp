@@ -64,7 +64,7 @@ int main()
 
 	// Create context using a single GPU 
 	// note that multiple GPUs can be enabled for example with creation_flags = RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GPU1
-	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, g_ContextCreationFlags, NULL, NULL, &context) );
+	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, g_ContextCreationFlags, g_contextProperties, NULL, &context) );
 
 	// Set the active plugin.
 	CHECK(  rprContextSetActivePlugin(context, plugins[0]) );
@@ -140,7 +140,7 @@ int main()
 	CHECK( rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,200));
 	CHECK( rprContextRender(context) );
 	CHECK( rprContextResolveFrameBuffer(context,fb_color,fb_color_resolved,false));
-	CHECK( rprContextResolveFrameBuffer(context,fb_velocity,fb_velocity_resolved,false));
+	CHECK( rprContextResolveFrameBuffer(context,fb_velocity,fb_velocity_resolved,true));
 	CHECK( rprFrameBufferSaveToFile(fb_color_resolved, "12_0.png") );
 	std::cout << "Rendering 12_0 finished." << std::endl;
 
@@ -162,7 +162,7 @@ int main()
 	CHECK( rprFrameBufferClear(fb_velocity) );
 	CHECK( rprContextRender(context) );
 	CHECK( rprContextResolveFrameBuffer(context,fb_color,fb_color_resolved,false));
-	CHECK( rprContextResolveFrameBuffer(context,fb_velocity,fb_velocity_resolved,false));
+	CHECK( rprContextResolveFrameBuffer(context,fb_velocity,fb_velocity_resolved,true));
 	CHECK( rprFrameBufferSaveToFile(fb_color_resolved, "12_1.png") );
 	CHECK( rprFrameBufferSaveToFile(fb_velocity_resolved, "12_1v.png") );
 	std::cout << "Rendering 12_1 finished." << std::endl;
@@ -176,7 +176,7 @@ int main()
 	CHECK( rprFrameBufferClear(fb_velocity) );
 	CHECK( rprContextRender(context) );
 	CHECK( rprContextResolveFrameBuffer(context,fb_color,fb_color_resolved,false));
-	CHECK( rprContextResolveFrameBuffer(context,fb_velocity,fb_velocity_resolved,false));
+	CHECK( rprContextResolveFrameBuffer(context,fb_velocity,fb_velocity_resolved,true));
 	CHECK( rprFrameBufferSaveToFile(fb_color_resolved, "12_2.png") );
 	CHECK( rprFrameBufferSaveToFile(fb_velocity_resolved, "12_2v.png") );
 	std::cout << "Rendering 12_2 finished." << std::endl;
@@ -190,7 +190,7 @@ int main()
 	CHECK( rprFrameBufferClear(fb_velocity) );
 	CHECK( rprContextRender(context) );
 	CHECK( rprContextResolveFrameBuffer(context,fb_color,fb_color_resolved,false));
-	CHECK( rprContextResolveFrameBuffer(context,fb_velocity,fb_velocity_resolved,false));
+	CHECK( rprContextResolveFrameBuffer(context,fb_velocity,fb_velocity_resolved,true));
 	CHECK( rprFrameBufferSaveToFile(fb_color_resolved, "12_3.png") );
 	CHECK( rprFrameBufferSaveToFile(fb_velocity_resolved, "12_3v.png") );
 	std::cout << "Rendering 12_3 finished." << std::endl;

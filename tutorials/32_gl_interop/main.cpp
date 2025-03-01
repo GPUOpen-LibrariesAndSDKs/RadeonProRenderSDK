@@ -113,13 +113,11 @@ struct MOUSE_DRAG_INFO
 {
 	MOUSE_DRAG_INFO()
 	{
-		dragging = false;
 		leftMouseButtonDown = false;
 		mousePosAtMouseButtonDown_X = -1;
 		mousePosAtMouseButtonDown_Y = -1;
 	}
 
-	bool dragging;
 	RadeonProRender::float3 lookat;
 	RadeonProRender::float3 up;
 	RadeonProRender::float3 pos;
@@ -524,7 +522,7 @@ int main(int argc, char** argv)
 		#ifndef USING_NORTHSTAR   // note that for Northstar, we don't need the GL_INTEROP flag
 		| RPR_CREATION_FLAGS_ENABLE_GL_INTEROP
 		#endif
-		, NULL, NULL, &g_context);
+		, g_contextProperties, NULL, &g_context);
 	CHECK(status);
 
 	// Set active plugin.

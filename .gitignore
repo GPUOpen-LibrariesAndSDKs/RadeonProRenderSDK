@@ -5,3 +5,6 @@ tutorials/Tutorials.sln
 tutorials/Tutorials.VC.db
 tutorials/Makefile
 **/.DS_Store
+python/build/
+python/test/cache/
+python/test/OUT_PYTHON_*

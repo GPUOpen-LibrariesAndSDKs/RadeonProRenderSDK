@@ -69,11 +69,11 @@ typedef rpr_uint rpr_material_system_type;
 typedef rpr_uint rpr_environment_override;
 
 
-#define RPR_VERSION_MAJOR 2 
-#define RPR_VERSION_MINOR 2 
-#define RPR_VERSION_REVISION 10 
-#define RPR_VERSION_BUILD 0xe46836cc 
-#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00200210 
+#define RPR_VERSION_MAJOR 3 
+#define RPR_VERSION_MINOR 1 
+#define RPR_VERSION_REVISION 6 
+#define RPR_VERSION_BUILD 0x1f29f423 
+#define RPR_VERSION_MAJOR_MINOR_REVISION 0x00300106 
 #define RPR_API_VERSION RPR_VERSION_MAJOR_MINOR_REVISION 
 #define RPR_API_VERSION_MINOR RPR_VERSION_BUILD 
 #define RPR_OBJECT_NAME 0x777777 
@@ -88,6 +88,7 @@ typedef enum // rpr_status
 	RPR_ERROR_COMPUTE_API_NOT_SUPPORTED = -1 ,
 	RPR_ERROR_OUT_OF_SYSTEM_MEMORY = -2 ,
 	RPR_ERROR_OUT_OF_VIDEO_MEMORY = -3 ,
+	RPR_ERROR_SHADER_COMPILATION = -4 ,
 	RPR_ERROR_INVALID_LIGHTPATH_EXPR = -5 ,
 	RPR_ERROR_INVALID_IMAGE = -6 ,
 	RPR_ERROR_INVALID_AA_METHOD = -7 ,
@@ -152,6 +153,7 @@ enum rpr_creation_flags_t // rpr_creation_flags
 	RPR_CREATION_FLAGS_ENABLE_GPU14 = (1 << 17) ,
 	RPR_CREATION_FLAGS_ENABLE_GPU15 = (1 << 18) ,
 	RPR_CREATION_FLAGS_ENABLE_HIP = (1 << 19) ,
+	RPR_CREATION_FLAGS_ENABLE_OPENCL = (1 << 20) ,
 	RPR_CREATION_FLAGS_ENABLE_DEBUG = (1 << 31) ,
 };
 
@@ -172,6 +174,15 @@ typedef enum // rpr_context_sampler_type
 	RPR_CONTEXT_SAMPLER_TYPE_RANDOM = 0x2 ,
 	RPR_CONTEXT_SAMPLER_TYPE_CMJ = 0x3 ,
 } rpr_context_sampler_type ;
+
+typedef enum // rpr_primvar_interpolation_type
+{
+	RPR_PRIMVAR_INTERPOLATION_CONSTANT = 0x1 ,
+	RPR_PRIMVAR_INTERPOLATION_UNIFORM = 0x2 ,
+	RPR_PRIMVAR_INTERPOLATION_VERTEX = 0x3 ,
+	RPR_PRIMVAR_INTERPOLATION_FACEVARYING_NORMAL = 0x4 ,
+	RPR_PRIMVAR_INTERPOLATION_FACEVARYING_UV = 0x5 ,
+} rpr_primvar_interpolation_type ;
 
 typedef enum // rpr_shape_type
 {
@@ -203,12 +214,6 @@ typedef enum // rpr_context_info
 	RPR_CONTEXT_SCENE = 0x109 ,
 	RPR_CONTEXT_ITERATIONS = 0x10B ,
 	RPR_CONTEXT_IMAGE_FILTER_TYPE = 0x10C ,
-	RPR_CONTEXT_IMAGE_FILTER_BOX_RADIUS = 0x10D ,
-	RPR_CONTEXT_IMAGE_FILTER_GAUSSIAN_RADIUS = 0x10E ,
-	RPR_CONTEXT_IMAGE_FILTER_TRIANGLE_RADIUS = 0x10F ,
-	RPR_CONTEXT_IMAGE_FILTER_MITCHELL_RADIUS = 0x110 ,
-	RPR_CONTEXT_IMAGE_FILTER_LANCZOS_RADIUS = 0x111 ,
-	RPR_CONTEXT_IMAGE_FILTER_BLACKMANHARRIS_RADIUS = 0x112 ,
 	RPR_CONTEXT_TONE_MAPPING_TYPE = 0x113 ,
 	RPR_CONTEXT_TONE_MAPPING_LINEAR_SCALE = 0x114 ,
 	RPR_CONTEXT_TONE_MAPPING_PHOTO_LINEAR_SENSITIVITY = 0x115 ,
@@ -218,7 +223,7 @@ typedef enum // rpr_context_info
 	RPR_CONTEXT_TONE_MAPPING_REINHARD02_POST_SCALE = 0x119 ,
 	RPR_CONTEXT_TONE_MAPPING_REINHARD02_BURN = 0x11A ,
 	RPR_CONTEXT_MAX_RECURSION = 0x11B ,
-	RPR_CONTEXT_RAY_CAST_EPISLON = 0x11C ,
+	RPR_CONTEXT_RAY_CAST_EPSILON = 0x11C ,
 	RPR_CONTEXT_RADIANCE_CLAMP = 0x11D ,
 	RPR_CONTEXT_X_FLIP = 0x11E ,
 	RPR_CONTEXT_Y_FLIP = 0x11F ,
@@ -313,6 +318,7 @@ typedef enum // rpr_context_info
 	RPR_CONTEXT_CONTOUR_USE_UV = 0x186 ,
 	RPR_CONTEXT_CONTOUR_NORMAL_THRESHOLD = 0x176 ,
 	RPR_CONTEXT_CONTOUR_UV_THRESHOLD = 0x187 ,
+	RPR_CONTEXT_CONTOUR_UV_SECONDARY = 0x194 ,
 	RPR_CONTEXT_CONTOUR_LINEWIDTH_OBJECTID = 0x177 ,
 	RPR_CONTEXT_CONTOUR_LINEWIDTH_MATERIALID = 0x178 ,
 	RPR_CONTEXT_CONTOUR_LINEWIDTH_NORMAL = 0x179 ,
@@ -334,7 +340,25 @@ typedef enum // rpr_context_info
 	RPR_CONTEXT_FOG_HEIGHT = 0x18B ,
 	RPR_CONTEXT_ATMOSPHERE_VOLUME_COLOR = 0x18C ,
 	RPR_CONTEXT_ATMOSPHERE_VOLUME_DENSITY = 0x18D ,
+	RPR_CONTEXT_ATMOSPHERE_VOLUME_RADIANCE_CLAMP = 0x18F ,
 	RPR_CONTEXT_FOG_HEIGHT_OFFSET = 0x18E ,
+	RPR_CONTEXT_INDIRECT_DOWNSAMPLE = 0x190 ,
+	RPR_CONTEXT_CRYPTOMATTE_EXTENDED = 0x191 ,
+	RPR_CONTEXT_CRYPTOMATTE_SPLIT_INDIRECT = 0x192 ,
+	RPR_CONTEXT_FOG_DIRECTION = 0x193 ,
+	RPR_CONTEXT_RANDOM_SEED = 0x1000 ,
+	RPR_CONTEXT_IBL_DISPLAY = 0x195 ,
+	RPR_CONTEXT_FRAMEBUFFER_SAVE_FLOAT32 = 0x196 ,
+	RPR_CONTEXT_UPDATE_TIME_CALLBACK_FUNC = 0x197 ,
+	RPR_CONTEXT_UPDATE_TIME_CALLBACK_DATA = 0x198 ,
+	RPR_CONTEXT_RENDER_TIME_CALLBACK_FUNC = 0x199 ,
+	RPR_CONTEXT_RENDER_TIME_CALLBACK_DATA = 0x19A ,
+	RPR_CONTEXT_FIRST_ITERATION_TIME_CALLBACK_FUNC = 0x19B ,
+	RPR_CONTEXT_FIRST_ITERATION_TIME_CALLBACK_DATA = 0x19C ,
+	RPR_CONTEXT_IMAGE_FILTER_RADIUS = 0x19D ,
+	RPR_CONTEXT_PRECOMPILED_BINARY_PATH = 0x19E ,
+	RPR_CONTEXT_REFLECTION_ENERGY_COMPENSATION_ENABLED = 0x19F ,
+	RPR_CONTEXT_NORMALIZE_LIGHT_INTENSITY_ENABLED = 0x1A0 ,
 	RPR_CONTEXT_NAME = RPR_OBJECT_NAME,
 	RPR_CONTEXT_UNIQUE_ID = RPR_OBJECT_UNIQUE_ID,
 	RPR_CONTEXT_CUSTOM_PTR = RPR_OBJECT_CUSTOM_PTR,
@@ -366,6 +390,8 @@ typedef enum // rpr_camera_info
 	RPR_CAMERA_ANGULAR_MOTION = 0x216 ,
 	RPR_CAMERA_MOTION_TRANSFORMS_COUNT = 0x217 ,
 	RPR_CAMERA_MOTION_TRANSFORMS = 0x218 ,
+	RPR_CAMERA_POST_SCALE = 0x219 ,
+	RPR_CAMERA_UV_DISTORTION = 0x21A ,
 	RPR_CAMERA_NAME = RPR_OBJECT_NAME,
 	RPR_CAMERA_UNIQUE_ID = RPR_OBJECT_UNIQUE_ID,
 	RPR_CAMERA_CUSTOM_PTR = RPR_OBJECT_CUSTOM_PTR,
@@ -444,6 +470,9 @@ typedef enum // rpr_shape_info
 	RPR_SHAPE_CONTOUR_IGNORE = 0x42D ,
 	RPR_SHAPE_RENDER_LAYER_LIST = 0x42E ,
 	RPR_SHAPE_SHADOW_COLOR = 0x42F ,
+	RPR_SHAPE_VISIBILITY_RECEIVE_SHADOW = 0x430 ,
+	RPR_SHAPE_PRIMVARS = 0x431,
+	RPR_SHAPE_ENVIRONMENT_LIGHT = 0x432,
 	RPR_SHAPE_NAME = RPR_OBJECT_NAME,
 	RPR_SHAPE_UNIQUE_ID = RPR_OBJECT_UNIQUE_ID,
 	RPR_SHAPE_CUSTOM_PTR = RPR_OBJECT_CUSTOM_PTR,
@@ -510,6 +539,7 @@ typedef enum // rpr_light_info
 	RPR_LIGHT_TRANSFORM = 0x803 ,
 	RPR_LIGHT_GROUP_ID = 0x805 ,
 	RPR_LIGHT_RENDER_LAYER_LIST = 0x806 ,
+	RPR_LIGHT_VISIBILITY_LIGHT = 0x807 ,
 	RPR_LIGHT_NAME = RPR_OBJECT_NAME,
 	RPR_LIGHT_UNIQUE_ID = RPR_OBJECT_UNIQUE_ID,
 	RPR_LIGHT_CUSTOM_PTR = RPR_OBJECT_CUSTOM_PTR,
@@ -581,6 +611,7 @@ typedef enum // rpr_component_type
 	RPR_COMPONENT_TYPE_FLOAT32 = 0x3,
 	RPR_COMPONENT_TYPE_UNKNOWN = 0x4,
 	RPR_COMPONENT_TYPE_DEEP = 0x5,
+	RPR_COMPONENT_TYPE_UINT32 = 0x6,
 } rpr_component_type ;
 
 typedef enum // rpr_buffer_element_type
@@ -708,6 +739,9 @@ typedef enum // rpr_material_node_type
 	RPR_MATERIAL_NODE_VORONOI_TEXTURE = 0x32 ,
 	RPR_MATERIAL_NODE_GRID_SAMPLER = 0x33 ,
 	RPR_MATERIAL_NODE_BLACKBODY = 0x34 ,
+	RPR_MATERIAL_NODE_RAMP = 0x35 ,
+	RPR_MATERIAL_NODE_PRIMVAR_LOOKUP = 0x36 ,
+	RPR_MATERIAL_NODE_ROUNDED_CORNER = 0x37 ,
 
 	// MaterialX materials
 	RPR_MATERIAL_NODE_MATX_DIFFUSE_BRDF = 0x1000,
@@ -784,6 +818,7 @@ typedef enum // rpr_material_node_type
 	RPR_MATERIAL_NODE_MATX_COMBINE3 = 0x1047,
 	RPR_MATERIAL_NODE_MATX_COMBINE4 = 0x1048,
 	RPR_MATERIAL_NODE_MATX_TRIPLANARPROJECTION = 0x1049,
+	RPR_MATERIAL_NODE_MATX_MULTIPLY = 0x104A,
 } rpr_material_node_type ;
 
 typedef enum // rpr_material_node_input
@@ -897,6 +932,10 @@ typedef enum // rpr_material_node_input
 	RPR_MATERIAL_INPUT_Y = 0x6a ,
 	RPR_MATERIAL_INPUT_Z = 0x6b ,
 	RPR_MATERIAL_INPUT_W = 0x6c ,
+	RPR_MATERIAL_INPUT_LIGHT = 0x6d ,
+	RPR_MATERIAL_INPUT_MID_IS_ALBEDO = 0x6e ,
+	RPR_MATERIAL_INPUT_SAMPLES = 0x6f ,
+	RPR_MATERIAL_INPUT_BASE_NORMAL = 0x70 ,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR = 0x910,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_WEIGHT = 0x927,
 	RPR_MATERIAL_INPUT_UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -968,6 +1007,11 @@ typedef enum // rpr_interpolation_mode
 {
 	RPR_INTERPOLATION_MODE_NONE = 0x0,
 	RPR_INTERPOLATION_MODE_LINEAR = 0x1,
+	RPR_INTERPOLATION_MODE_EXPONENTIAL_UP = 0x2,
+	RPR_INTERPOLATION_MODE_EXPONENTIAL_DOWN = 0x3,
+	RPR_INTERPOLATION_MODE_SMOOTH = 0x4,
+	RPR_INTERPOLATION_MODE_BUMP = 0x5,
+	RPR_INTERPOLATION_MODE_SPIKE = 0x6,
 } rpr_interpolation_mode ;
 
 typedef enum // rpr_ubermaterial_ior_mode
@@ -1026,6 +1070,15 @@ typedef enum // rpr_material_node_arithmetic_operation
 	RPR_MATERIAL_NODE_OP_AND = 0x27 ,
 	RPR_MATERIAL_NODE_OP_OR = 0x28 ,
 	RPR_MATERIAL_NODE_OP_TERNARY = 0x29 ,
+	RPR_MATERIAL_NODE_OP_EXP = 0x2a ,
+	RPR_MATERIAL_NODE_OP_ROTATE2D = 0x2b ,
+	RPR_MATERIAL_NODE_OP_ROTATE3D = 0x2c ,
+	RPR_MATERIAL_NODE_OP_NOP = 0x2d ,
+	RPR_MATERIAL_NODE_OP_CEIL = 0x102a ,
+	RPR_MATERIAL_NODE_OP_ROUND = 0x102b ,
+	RPR_MATERIAL_NODE_OP_SIGN = 0x102c ,
+	RPR_MATERIAL_NODE_OP_SQRT = 0x102f ,
+	RPR_MATERIAL_NODE_OP_CLAMP = 0x1035 ,
 } rpr_material_node_arithmetic_operation ;
 
 typedef enum // rpr_material_node_lookup_value
@@ -1045,6 +1098,17 @@ typedef enum // rpr_material_node_lookup_value
 	RPR_MATERIAL_NODE_LOOKUP_OBJECT_ID = 0xc ,
 	RPR_MATERIAL_NODE_LOOKUP_PRIMITIVE_RANDOM_COLOR = 0xd ,
 } rpr_material_node_lookup_value ;
+
+typedef enum // rpr_material_gradient_procedural_type
+{
+	RPR_MATERIAL_GRADIENT_PROCEDURAL_TYPE_LINEAR = 0x1 ,
+	RPR_MATERIAL_GRADIENT_PROCEDURAL_TYPE_QUADRATIC = 0x2 ,
+	RPR_MATERIAL_GRADIENT_PROCEDURAL_TYPE_EASING = 0x3 ,
+	RPR_MATERIAL_GRADIENT_PROCEDURAL_TYPE_DIAGONAL = 0x4 ,
+	RPR_MATERIAL_GRADIENT_PROCEDURAL_TYPE_SPHERICAL = 0x5 ,
+	RPR_MATERIAL_GRADIENT_PROCEDURAL_TYPE_QUAD_SPHERE = 0x6 ,
+	RPR_MATERIAL_GRADIENT_PROCEDURAL_TYPE_RADIAL = 0x7 ,
+} rpr_material_gradient_procedural_type ;
 
 typedef enum // rpr_material_node_uvtype_value
 {
@@ -1119,12 +1183,20 @@ typedef enum // rpr_aov
 	RPR_AOV_LPE_7 = 0x27 ,
 	RPR_AOV_LPE_8 = 0x28 ,
 	RPR_AOV_CAMERA_NORMAL = 0x29 ,
+	RPR_AOV_MATTE_PASS = 0x2a ,
+	RPR_AOV_SSS = 0x2b ,
 	RPR_AOV_CRYPTOMATTE_MAT0 = 0x30,
 	RPR_AOV_CRYPTOMATTE_MAT1 = 0x31,
 	RPR_AOV_CRYPTOMATTE_MAT2 = 0x32,
+	RPR_AOV_CRYPTOMATTE_MAT3 = 0x33,
+	RPR_AOV_CRYPTOMATTE_MAT4 = 0x34,
+	RPR_AOV_CRYPTOMATTE_MAT5 = 0x35,
 	RPR_AOV_CRYPTOMATTE_OBJ0 = 0x38,
 	RPR_AOV_CRYPTOMATTE_OBJ1 = 0x39,
 	RPR_AOV_CRYPTOMATTE_OBJ2 = 0x3a,
+	RPR_AOV_CRYPTOMATTE_OBJ3 = 0x3b,
+	RPR_AOV_CRYPTOMATTE_OBJ4 = 0x3c,
+	RPR_AOV_CRYPTOMATTE_OBJ5 = 0x3d,
 	RPR_AOV_DEEP_COLOR = 0x40,
 	RPR_AOV_LIGHT_GROUP4 = 0x50 ,
 	RPR_AOV_LIGHT_GROUP5 = 0x51 ,
@@ -1138,6 +1210,7 @@ typedef enum // rpr_aov
 	RPR_AOV_LIGHT_GROUP13 = 0x59 ,
 	RPR_AOV_LIGHT_GROUP14 = 0x5a ,
 	RPR_AOV_LIGHT_GROUP15 = 0x5b ,
+	RPR_AOV_MESH_ID = 0x60 ,
 } rpr_aov ;
 
 typedef enum // rpr_post_effect_type
@@ -1167,6 +1240,8 @@ typedef enum // rpr_material_node_input_type
 	RPR_MATERIAL_NODE_INPUT_TYPE_IMAGE = 0x4 ,
 	RPR_MATERIAL_NODE_INPUT_TYPE_BUFFER = 0x5 ,
 	RPR_MATERIAL_NODE_INPUT_TYPE_GRID = 0x6 ,
+	RPR_MATERIAL_NODE_INPUT_TYPE_DATA = 0x7 ,
+	RPR_MATERIAL_NODE_INPUT_TYPE_LIGHT = 0x8 ,
 } rpr_material_node_input_type ;
 
 typedef enum // rpr_subdiv_boundary_interfop_type
@@ -1305,6 +1380,7 @@ typedef enum // rpr_curve_parameter
 	RPR_CURVE_VISIBILITY_GLOSSY_REFLECTION = RPR_SHAPE_VISIBILITY_GLOSSY_REFLECTION,
 	RPR_CURVE_VISIBILITY_GLOSSY_REFRACTION = RPR_SHAPE_VISIBILITY_GLOSSY_REFRACTION,
 	RPR_CURVE_VISIBILITY_LIGHT = RPR_SHAPE_VISIBILITY_LIGHT,
+	RPR_CURVE_VISIBILITY_RECEIVE_SHADOW = RPR_SHAPE_VISIBILITY_RECEIVE_SHADOW,
 } rpr_curve_parameter ;
 
 typedef struct //rpr_image_desc
@@ -1902,20 +1978,6 @@ extern RPR_API_ENTRY rpr_status rprContextGetInternalParameterBuffer(rpr_context
   extern RPR_API_ENTRY rpr_status rprCameraSetFocalLength(rpr_camera camera, rpr_float flength);
 
 
-    /* 
-    *  DEPRECATED in Northstar - will be removed in the future - please use rprCameraSetMotionTransform and rprCameraSetMotionTransformCount instead.
-    *  RPR_CAMERA_LINEAR_MOTION , RPR_CAMERA_ANGULAR_MOTION are also DEPRECATED
-    */
-  extern RPR_API_ENTRY rpr_status rprCameraSetLinearMotion(rpr_camera camera, rpr_float x, rpr_float y, rpr_float z);
-
-
-    /* 
-    *  DEPRECATED in Northstar - will be removed in the future - please use rprCameraSetMotionTransform and rprCameraSetMotionTransformCount instead.
-    *  RPR_CAMERA_LINEAR_MOTION , RPR_CAMERA_ANGULAR_MOTION are also DEPRECATED
-    */
-  extern RPR_API_ENTRY rpr_status rprCameraSetAngularMotion(rpr_camera camera, rpr_float x, rpr_float y, rpr_float z, rpr_float w);
-
-
     /* Number of motion matrices (set with rprCameraSetMotionTransform) to use.
     *  Set  transformCount=0  if you don't use Motion.
     *  For the moment, if you use motion in Northstar, only transformCount=1 is supported.
@@ -2011,9 +2073,7 @@ extern RPR_API_ENTRY rpr_status rprContextGetInternalParameterBuffer(rpr_context
     *      RPR_ERROR_INVALID_PARAMETER
     *
     *  @param  camera    The camera to set aperture blades for
-    *  @param  exposure  Represents a time length in the same time scale than rprShapeSetLinearMotion,rprCameraSetAngularMotion...
-    *                    example: rprShapeSetLinearMotion(shapeA,3,0,0) means in 1 time unit, shapeA translates of +3 spatial unit.
-    *                             rprCameraSetExposure(cam,2) means the rendering will represent shapeA moving along +6 spatial units.
+    *  @param  exposure  Represents a time length in the same time scale than rprShapeSetMotionTransform,rprCameraSetMotionTransform...
     *  @return           RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprCameraSetExposure(rpr_camera camera, rpr_float exposure);
@@ -2059,7 +2119,7 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
   extern RPR_API_ENTRY rpr_status rprCameraSetOrthoHeight(rpr_camera camera, rpr_float height);
 
 
-    /** @brief Set near plane of a camear
+    /** @brief Set near plane of a camera
     *
     *  @param  camera  The camera to set near plane for
     *  @param  near   Near plane distance in meters, default is 0.01f
@@ -2068,13 +2128,31 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
   extern RPR_API_ENTRY rpr_status rprCameraSetNearPlane(rpr_camera camera, rpr_float near);
 
 
-    /** @brief Set far plane of a camear
+    /** @brief Set the post scale of camera ( 2D camera zoom )
+    *
+    *  @param  camera  The camera to set
+    *  @param  scale   post scale value.
+    *  @return         RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprCameraSetPostScale(rpr_camera camera, rpr_float scale);
+
+
+    /** @brief Set far plane of a camera
     *
     *  @param  camera  The camera to set far plane for
     *  @param  far   Far plane distance in meters, default is 100000000.f
     *  @return         RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprCameraSetFarPlane(rpr_camera camera, rpr_float far);
+
+
+    /** @brief Set distorion image for camera
+    *
+    *  @param  camera          The camera to set UV Distortion for
+    *  @param  distortionMap   distorion image
+    *  @return                 RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprCameraSetUVDistortion(rpr_camera camera, rpr_image distortionMap);
 
 /* rpr_image*/
     /** @brief Query information about an image
@@ -2181,6 +2259,19 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
     *  @return             RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprShapeSetVertexValue(rpr_shape in_shape, rpr_int setIndex, rpr_int const * indices, rpr_float const * values, rpr_int indicesCount);
+
+
+    /* @brief set primvars data for a specific 'key'
+    * 
+    * A shape can have several primvars data. Each primvar of the shape is identified with a 'key'
+    * 'data' is a list of float
+    * 'floatCount' is a number of float in the 'data' buffer
+    * 'componentCount' specifies the number of float(s) per component.  For example if you want to attach an RGB color to vertices, you need 'componentCount'=3  and  'floatCount' = 3 * 'number of vertices'
+    * 'interop' defines how the data is interpolated.
+    * 
+    * @return             RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprShapeSetPrimvar(rpr_shape in_shape, rpr_uint key, rpr_float const * data, rpr_uint floatCount, rpr_uint componentCount, rpr_primvar_interpolation_type  interop);
 
 
     /** @brief Set shape subdivision
@@ -2366,24 +2457,6 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
   extern RPR_API_ENTRY rpr_status rprShapeSetVolumeMaterial(rpr_shape shape, rpr_material_node node);
 
 
-    /* DEPRECATED - will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
-    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
-    */
-  extern RPR_API_ENTRY rpr_status rprShapeSetLinearMotion(rpr_shape shape, rpr_float x, rpr_float y, rpr_float z);
-
-
-    /* DEPRECATED, will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
-    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
-    */
-  extern RPR_API_ENTRY rpr_status rprShapeSetAngularMotion(rpr_shape shape, rpr_float x, rpr_float y, rpr_float z, rpr_float w);
-
-
-    /* DEPRECATED, will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
-    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
-    */
-  extern RPR_API_ENTRY rpr_status rprShapeSetScaleMotion(rpr_shape shape, rpr_float x, rpr_float y, rpr_float z);
-
-
     /* Number of motion matrices (set with rprShapeSetMotionTransform) to use.
     *  Set  transformCount=0  if you don't use Motion.
     *  For the moment, if you use motion in Northstar, only transformCount=1 is supported.
@@ -2417,6 +2490,7 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
     *                             RPR_SHAPE_VISIBILITY_GLOSSY_REFLECTION
     *                             RPR_SHAPE_VISIBILITY_GLOSSY_REFRACTION
     *                             RPR_SHAPE_VISIBILITY_LIGHT
+    *                             RPR_SHAPE_VISIBILITY_RECEIVE_SHADOW
     *  @param  visible          set the flag to TRUE or FALSE
     *  @return                  RPR_SUCCESS in case of success, error code otherwise
     */
@@ -2436,6 +2510,7 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
     *                             RPR_CURVE_VISIBILITY_GLOSSY_REFLECTION
     *                             RPR_CURVE_VISIBILITY_GLOSSY_REFRACTION
     *                             RPR_CURVE_VISIBILITY_LIGHT
+    *                             RPR_CURVE_VISIBILITY_RECEIVE_SHADOW
     *  @param  visible          set the flag to TRUE or FALSE
     *  @return                  RPR_SUCCESS in case of success, error code otherwise
     */
@@ -2444,6 +2519,9 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
 
     /** @brief Set visibility flag
     *
+    * This function sets all RPR_SHAPE_VISIBILITY_* flags to the 'visible' argument value
+    * Calling rprShapeSetVisibilityFlag(xxx,visible); on each flags would lead to the same result.
+    *
     *  @param  shape       The shape to set visibility for
     *  @param  visible     Determines if the shape is visible or not
     *  @return             RPR_SUCCESS in case of success, error code otherwise
@@ -2451,7 +2529,21 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
   extern RPR_API_ENTRY rpr_status rprShapeSetVisibility(rpr_shape shape, rpr_bool visible);
 
 
+    /** @brief Set visibility flag for Light
+    *
+    *  @param  light           The light to set visibility for
+    *  @param  visibilityFlag     one of the visibility flags :
+    *                            - RPR_LIGHT_VISIBILITY_LIGHT
+    *  @param  visible          set the flag to TRUE or FALSE
+    *  @return                  RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprLightSetVisibilityFlag(rpr_light light, rpr_light_info visibilityFlag, rpr_bool visible);
+
+
     /** @brief Set visibility flag
+    *
+    * This function sets all RPR_CURVE_VISIBILITY_* flags to the 'visible' argument value
+    * Calling rprCurveSetVisibilityFlag(xxx,visible); on each flags would lead to the same result.
     *
     *  @param  curve       The curve to set visibility for
     *  @param  visible     Determines if the curve is visible or not
@@ -2461,6 +2553,9 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
 
 
     /** @brief Set visibility flag for specular refleacted\refracted rays
+    *
+    * This function sets both RPR_SHAPE_VISIBILITY_REFLECTION and RPR_SHAPE_VISIBILITY_REFRACTION flags to the 'visible' argument value
+    * Calling rprShapeSetVisibilityFlag(xxx,visible); on those 2 flags would lead to the same result.
     *
     *  @param  shape       The shape to set visibility for
     *  @param  visible     Determines if the shape is visible or not
@@ -2506,6 +2601,15 @@ extern RPR_API_ENTRY rpr_status rprCameraSetTiltCorrection(rpr_camera camera, rp
     *  @return                   RPR_SUCCESS in case of success, error code otherwise
     */
   extern RPR_API_ENTRY rpr_status rprShapeSetContourIgnore(rpr_shape shape, rpr_bool ignoreInContour);
+
+
+    /** @brief Set 1 if the shape should be treated as an environment light (finite sphere environment light).
+    *
+    *  @param  shape             The shape to set
+    *  @param  envLight   0 or 1.
+    *  @return                   RPR_SUCCESS in case of success, error code otherwise
+    */
+  extern RPR_API_ENTRY rpr_status rprShapeSetEnvironmentLight(rpr_shape shape, rpr_bool envLight);
 
 
       /**
@@ -2715,10 +2819,10 @@ extern RPR_API_ENTRY rpr_status rprContextCreateDiskLight(rpr_context context, r
     /** @brief Set Radius for Sphere Light
     *
     *
-    *  @param angle  Outer angle in radians
+    *  @param radius  Radius to set
     *  @return status RPR_SUCCESS in case of success, error code otherwise
     */
-  extern RPR_API_ENTRY rpr_status rprSphereLightSetRadius(rpr_light light, rpr_float angle);
+  extern RPR_API_ENTRY rpr_status rprSphereLightSetRadius(rpr_light light, rpr_float radius);
 
 
     /** @brief Set Power for Disk Light
@@ -3277,7 +3381,8 @@ extern RPR_API_ENTRY rpr_status rprSceneGetEnvironmentLight(rpr_scene in_scene, 
   extern RPR_API_ENTRY rpr_status rprFrameBufferFillWithColor(rpr_framebuffer frame_buffer, rpr_float r, rpr_float g, rpr_float b, rpr_float a);
 
 
-    /** @brief Save frame buffer to file
+    /** @brief Save frame buffer to file. In case the file format is .bin, the header of the saved file contains
+    * rpr_framebuffer_desc and rpr_framebuffer_format at very begining. The remaining data is raw data of saved framebuffer.
     *
     *   Possible error codes:
     *      RPR_ERROR_OUT_OF_SYSTEM_MEMORY
@@ -3307,20 +3412,20 @@ extern RPR_API_ENTRY rpr_status rprSceneGetEnvironmentLight(rpr_scene in_scene, 
 
     /** @brief Resolve framebuffer
     *
-    *   Resolve applies AA filters and tonemapping operators to the framebuffer data
+    * Convert the input Renderer's native raw format 'src_frame_buffer' into an output 'dst_frame_buffer' that can be used for final rendering.
     *
-    *   Possible error codes:
-    *      RPR_ERROR_OUT_OF_SYSTEM_MEMORY
-    *      RPR_ERROR_OUT_OF_VIDEO_MEMORY
+    * src_frame_buffer and dst_frame_buffer should usually have the same dimension/format.
+    * src_frame_buffer is the result of a rprContextRender and should be attached to an AOV with rprContextSetAOV before the rprContextRender call.
+    * dst_frame_buffer should not be attached to any AOV.
     *
-    * if normalizeOnly is TRUE : it only normalizes src_frame_buffer, and write the result in dst_frame_buffer.
-    * if normalizeOnly is FALSE : it applies all the rpr_post_process attached to the context with rprContextAttachPostEffect
+    * The post process that is applied to src_frame_buffer depends on the AOV it's attached to. So it's important to not modify its AOV ( with rprContextSetAOV )
+    * between the rprContextRender and rprContextResolveFrameBuffer calls.
     *
-    * Note: in RPR API 1.310, the default value of normalizeOnly has been removed.
-    *       Set it to FALSE, if you don't use this argument.
+    * If noDisplayGamma=FALSE, then RPR_CONTEXT_DISPLAY_GAMMA is applied to the dst_frame_buffer otherwise, display gamma is not used.
+    * It's recommended to set it to FALSE for AOVs representing colors ( like RPR_AOV_COLOR ) and use TRUE for other AOVs.
     *
     */
-  extern RPR_API_ENTRY rpr_status rprContextResolveFrameBuffer(rpr_context context, rpr_framebuffer src_frame_buffer, rpr_framebuffer dst_frame_buffer, rpr_bool normalizeOnly);
+  extern RPR_API_ENTRY rpr_status rprContextResolveFrameBuffer(rpr_context context, rpr_framebuffer src_frame_buffer, rpr_framebuffer dst_frame_buffer, rpr_bool noDisplayGamma);
 
 
     /** @brief Create material system
@@ -3389,6 +3494,14 @@ extern RPR_API_ENTRY rpr_status rprSceneGetEnvironmentLight(rpr_scene in_scene, 
   extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputFByKey(rpr_material_node in_node, rpr_material_node_input in_input, rpr_float in_value_x, rpr_float in_value_y, rpr_float in_value_z, rpr_float in_value_w);
 
 
+    /** @brief Set generic data input value: Some complex materials inputs may need more than 4-floats or int.
+    *  This API can be used to set any generic input data.
+    *  Use it only when documentation requests to do it for specific material inputs.
+    *
+    */
+  extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputDataByKey(rpr_material_node in_node, rpr_material_node_input in_input, void const * data, size_t dataSizeByte);
+
+
     /** @brief Set uint input value
     *
     *   Possible error codes:
@@ -3407,8 +3520,24 @@ extern RPR_API_ENTRY rpr_status rprSceneGetEnvironmentLight(rpr_scene in_scene, 
     *
     */
   extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputImageDataByKey(rpr_material_node in_node, rpr_material_node_input in_input, rpr_image image);
-extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputBufferDataByKey(rpr_material_node in_node, rpr_material_node_input in_input, rpr_buffer buffer);
-extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputGridDataByKey(rpr_material_node in_node, rpr_material_node_input in_input, rpr_grid grid);
+
+
+    /** @brief Set light input value
+    *
+    */
+  extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputLightDataByKey(rpr_material_node in_node, rpr_material_node_input in_input, rpr_light light);
+
+
+    /** @brief Set Buffer input value
+    *
+    */
+  extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputBufferDataByKey(rpr_material_node in_node, rpr_material_node_input in_input, rpr_buffer buffer);
+
+
+    /** @brief Set Grid input value
+    *
+    */
+  extern RPR_API_ENTRY rpr_status rprMaterialNodeSetInputGridDataByKey(rpr_material_node in_node, rpr_material_node_input in_input, rpr_grid grid);
 extern RPR_API_ENTRY rpr_status rprMaterialNodeGetInfo(rpr_material_node in_node, rpr_material_node_info in_info, size_t in_size, void * in_data, size_t * out_size);
 extern RPR_API_ENTRY rpr_status rprMaterialNodeGetInputInfo(rpr_material_node in_node, rpr_int in_input_idx, rpr_material_node_input_info in_info, size_t in_size, void * in_data, size_t * out_size);
 extern RPR_API_ENTRY rpr_status rprContextCreateComposite(rpr_context context, rpr_composite_type in_type, rpr_composite * out_composite);

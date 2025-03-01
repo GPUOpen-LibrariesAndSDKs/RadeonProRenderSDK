@@ -1,12 +1,13 @@
+
+newoption {
+	trigger = "centos",
+	description = "needed for CentOS 7 OS"
+}
+
+
 function fileExists(name)
    local f=io.open(name,"r")
    if f~=nil then io.close(f) return true else return false end
-end
-
-function os.winSdkVersion()
-   local reg_arch = iif( os.is64bit(), "\\Wow6432Node\\", "\\" )
-   local sdk_version = os.getWindowsRegistry( "HKLM:SOFTWARE" .. reg_arch .."Microsoft\\Microsoft SDKs\\Windows\\v10.0\\ProductVersion" )
-   if sdk_version ~= nil then return sdk_version end
 end
 
 solution "Tutorials"
@@ -43,6 +44,7 @@ solution "Tutorials"
 		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\Tahoe64.dll\" \".\\Bin\\\"")
 		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\Northstar64.dll\" \".\\Bin\\\"")
 		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\Hybrid.dll\" \".\\Bin\\\"")
+		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\HybridPro.dll\" \".\\Bin\\\"")
 		os.execute("xcopy /Y \"..\\RadeonProRender\\binWin64\\ProRenderGLTF.dll\" \".\\Bin\\\"")
 	end
 
@@ -60,12 +62,16 @@ solution "Tutorials"
     
     configuration {} -- back to all configurations
 	if os.istarget("windows") then
-                systemversion(os.winSdkVersion() .. ".0")
-                libdirs {"../RadeonProRender/libWin64" }
+        libdirs {"../RadeonProRender/libWin64" }
+		debugdir "$(ProjectDir)/../Bin/"
 	end
 	if os.istarget("linux") then
 		defines{ "__LINUX__" }
-		libdirs {"../RadeonProRender/binUbuntu18" }
+		if _OPTIONS["centos"] ~= nil then
+			libdirs {"../RadeonProRender/binCentOS7" }
+		else
+			libdirs {"../RadeonProRender/binUbuntu20" }
+		end
 	end
 	if os.istarget("macosx") then
 		libdirs {"../RadeonProRender/binMacOS" }
@@ -86,10 +92,16 @@ solution "Tutorials"
 	include "25_toon"
 	include "26_materialx"
 	include "27_cutplanes"
+	include "28_ies_light"
+	include "29_ocio"
 	include "30_tiled_render"
 	include "31_framebuffer_access"
 	include "32_gl_interop"
 	include "33_aov"
+	include "34_material_per_face"
+	include "35_advanced_texturing"
+	include "36_shadow_catcher"
+	include "37_primvar"
 	include "50_curve"
 	include "51_volume"
 	include "60_mesh_export"

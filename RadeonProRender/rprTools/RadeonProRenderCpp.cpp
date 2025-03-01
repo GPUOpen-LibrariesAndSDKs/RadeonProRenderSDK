@@ -13,6 +13,7 @@
 #include "RadeonProRender_MaterialX.h"
 #include <cassert>
 #include <vector>
+#include "rprDeprecatedApi.h"
 
 #ifdef RPR_CPPWRAPER_DISABLE_MUTEXLOCK
 #define RPR_CPPWRAPER_MUTEXLOCK
@@ -463,6 +464,12 @@ Status Context::SetAOVindexLookup(rpr_int key, float colorR, float colorG, float
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
+Status Context::SetAOVindicesLookup(rpr_int keyOffset, rpr_int keyCount, rpr_float const * colorRGBA) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprContextSetAOVindicesLookup(m_context, keyOffset, keyCount, colorRGBA)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
 
 Status Context::SetCuttingPlane(rpr_int index, float x, float y, float z, float w) {
     RPR_CPPWRAPER_CALL_PREFIX
@@ -552,9 +559,9 @@ Status Context::GetFunctionPtr(rpr_char const* function_name, void** out_functio
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
-Status Context::ResolveFrameBuffer(FrameBuffer* src_frame_buffer, FrameBuffer* dst_frame_buffer, rpr_bool normalizeOnly) {
+Status Context::ResolveFrameBuffer(FrameBuffer* src_frame_buffer, FrameBuffer* dst_frame_buffer, rpr_bool noDisplayGamma) {
     RPR_CPPWRAPER_CALL_PREFIX
-    rprContextResolveFrameBuffer(m_context, GetRprObject(src_frame_buffer), GetRprObject(dst_frame_buffer), normalizeOnly)
+    rprContextResolveFrameBuffer(m_context, GetRprObject(src_frame_buffer), GetRprObject(dst_frame_buffer), noDisplayGamma)
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
@@ -819,9 +826,21 @@ Status Camera::SetNearPlane(rpr_float near) {
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
+Status Camera::SetPostScale(rpr_float scale) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprCameraSetPostScale(GetRprObject(this), scale)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
 Status Camera::SetFarPlane(rpr_float far) {
     RPR_CPPWRAPER_CALL_PREFIX
     rprCameraSetFarPlane(GetRprObject(this), far)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
+Status Camera::SetUVDistortion(Image* image) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprCameraSetUVDistortion(GetRprObject(this), GetRprObject(image))
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
@@ -840,6 +859,12 @@ Status Shape::SetTransform(float const* transform, rpr_bool transpose) {
 Status Shape::SetVertexValue(rpr_int setIndex, rpr_int const* indices, rpr_float const* values, rpr_int indicesCount) {
     RPR_CPPWRAPER_CALL_PREFIX
     rprShapeSetVertexValue(GetRprObject(this), setIndex, indices, values, indicesCount)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
+Status Shape::SetPrimvar(rpr_uint key, rpr_float const * data, rpr_uint floatCount, rpr_uint componentCount, PrimvarInterpolationType interop) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprShapeSetPrimvar(GetRprObject(this), key, data, floatCount, componentCount, interop )
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
@@ -996,6 +1021,12 @@ Status Light::SetTransform(float const* transform, rpr_bool transpose) {
 Status Light::SetGroupId(rpr_uint groupId) {
     RPR_CPPWRAPER_CALL_PREFIX
     rprLightSetGroupId(GetRprObject(this), groupId)
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
+Status Light::SetVisibilityFlag(LightInfo visibilityFlag, rpr_bool visible) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprLightSetVisibilityFlag(GetRprObject(this), visibilityFlag, visible)
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
@@ -1364,6 +1395,12 @@ Status MaterialNode::SetInput(MaterialNodeInput in_input, Image* image) {
     RPR_CPPWRAPER_CALL_SUFFIX
 }
 
+Status MaterialNode::SetInput(MaterialNodeInput in_input, Light* light) {
+    RPR_CPPWRAPER_CALL_PREFIX
+    rprMaterialNodeSetInputLightDataByKey(GetRprObject(this), in_input, GetRprObject(light))
+    RPR_CPPWRAPER_CALL_SUFFIX
+}
+
 Status MaterialNode::SetInput(MaterialNodeInput in_input, Buffer* buffer) {
     RPR_CPPWRAPER_CALL_PREFIX
     rprMaterialNodeSetInputBufferDataByKey(GetRprObject(this), in_input, GetRprObject(buffer))
@@ -1398,17 +1435,7 @@ MaterialXNode::MaterialXNode(
 }
 
 MaterialXNode::~MaterialXNode() {
-    for (rpr_uint i = 0; i < m_numAuxiliaryNodes; ++i) {
-        if (m_auxiliaryNodes[i]) {
-            rprObjectDelete(m_auxiliaryNodes[i]);
-        }
-    }
-    for (rpr_uint i = 0; i < m_numAuxiliaryImages; ++i) {
-        if (m_auxiliaryImages[i]) {
-            rprObjectDelete(m_auxiliaryImages[i]);
-        }
-    }
-    rprLoadMaterialX_free(m_auxiliaryNodes, m_auxiliaryImages);
+
 }
 
 Status PostEffect::SetParameter(rpr_char const* name, rpr_uint x) {

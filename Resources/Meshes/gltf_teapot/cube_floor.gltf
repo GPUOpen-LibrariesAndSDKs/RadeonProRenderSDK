@@ -1,0 +1,1123 @@
+{
+    "accessors": [
+        {
+            "bufferView": 0,
+            "byteOffset": 0,
+            "componentType": 5125,
+            "count": 12288,
+            "name": "",
+            "normalized": false,
+            "type": "SCALAR"
+        },
+        {
+            "bufferView": 1,
+            "byteOffset": 0,
+            "componentType": 5126,
+            "count": 12288,
+            "max": [
+                3.97305393218994,
+                0.0,
+                2.29306507110596
+            ],
+            "min": [
+                -3.44277310371399,
+                -3.63116693496704,
+                -2.31793999671936
+            ],
+            "name": "",
+            "normalized": false,
+            "type": "VEC3"
+        },
+        {
+            "bufferView": 2,
+            "byteOffset": 0,
+            "componentType": 5126,
+            "count": 12288,
+            "max": [
+                0.99940013885498,
+                1.0,
+                0.999998867511749
+            ],
+            "min": [
+                -0.999580502510071,
+                -1.0,
+                -0.999998688697815
+            ],
+            "name": "",
+            "normalized": false,
+            "type": "VEC3"
+        },
+        {
+            "bufferView": 3,
+            "byteOffset": 0,
+            "componentType": 5126,
+            "count": 12288,
+            "max": [
+                2.0,
+                1.0
+            ],
+            "min": [
+                0.0,
+                -1.0
+            ],
+            "name": "",
+            "normalized": false,
+            "type": "VEC2"
+        },
+        {
+            "bufferView": 4,
+            "byteOffset": 0,
+            "componentType": 5125,
+            "count": 6,
+            "name": "",
+            "normalized": false,
+            "type": "SCALAR"
+        },
+        {
+            "bufferView": 5,
+            "byteOffset": 0,
+            "componentType": 5126,
+            "count": 6,
+            "max": [
+                15.0,
+                0.0,
+                15.0
+            ],
+            "min": [
+                -15.0,
+                0.0,
+                -15.0
+            ],
+            "name": "",
+            "normalized": false,
+            "type": "VEC3"
+        },
+        {
+            "bufferView": 6,
+            "byteOffset": 0,
+            "componentType": 5126,
+            "count": 6,
+            "max": [
+                1.52590218931437e-05,
+                1.0,
+                0.0
+            ],
+            "min": [
+                1.52590218931437e-05,
+                1.0,
+                0.0
+            ],
+            "name": "",
+            "normalized": false,
+            "type": "VEC3"
+        },
+        {
+            "bufferView": 7,
+            "byteOffset": 0,
+            "componentType": 5126,
+            "count": 6,
+            "max": [
+                1.0,
+                1.0
+            ],
+            "min": [
+                0.0,
+                0.0
+            ],
+            "name": "",
+            "normalized": false,
+            "type": "VEC2"
+        }
+    ],
+    "asset": {
+        "copyright": "Advanced Micro Devices Copyright 2017",
+        "generator": "Radeon ProRender GLTF Library",
+        "minVersion": "2.0",
+        "version": "2.0"
+    },
+    "bufferViews": [
+        {
+            "buffer": 0,
+            "byteLength": 49152,
+            "byteOffset": 0,
+            "name": "",
+            "target": 34963
+        },
+        {
+            "buffer": 0,
+            "byteLength": 147456,
+            "byteOffset": 49152,
+            "byteStride": 12,
+            "name": "",
+            "target": 34962
+        },
+        {
+            "buffer": 0,
+            "byteLength": 147456,
+            "byteOffset": 196608,
+            "byteStride": 12,
+            "name": "",
+            "target": 34962
+        },
+        {
+            "buffer": 0,
+            "byteLength": 98304,
+            "byteOffset": 344064,
+            "byteStride": 8,
+            "name": "",
+            "target": 34962
+        },
+        {
+            "buffer": 0,
+            "byteLength": 24,
+            "byteOffset": 442368,
+            "name": "",
+            "target": 34963
+        },
+        {
+            "buffer": 0,
+            "byteLength": 72,
+            "byteOffset": 442392,
+            "byteStride": 12,
+            "name": "",
+            "target": 34962
+        },
+        {
+            "buffer": 0,
+            "byteLength": 72,
+            "byteOffset": 442464,
+            "byteStride": 12,
+            "name": "",
+            "target": 34962
+        },
+        {
+            "buffer": 0,
+            "byteLength": 48,
+            "byteOffset": 442536,
+            "byteStride": 8,
+            "name": "",
+            "target": 34962
+        }
+    ],
+    "buffers": [
+        {
+            "byteLength": 442584,
+            "name": "",
+            "uri": "autoBuffersCollector_0.bin"
+        }
+    ],
+    "cameras": [
+        {
+            "extensions": {
+                "AMD_RPR_camera": {
+                    "angularMotion": [
+                        0.0,
+                        1.0,
+                        0.0,
+                        0.0
+                    ],
+                    "apertureBlades": 0,
+                    "cameraMode": 1,
+                    "exposure": 0.0,
+                    "farPlane": 10000.0,
+                    "focalLength": 75.0,
+                    "focalTilt": 0.0,
+                    "focusDistance": 1.0,
+                    "fstop": 3.40282346638529e+38,
+                    "ipd": 0.063000001013279,
+                    "lookAt": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ],
+                    "orthoHeight": 1.0,
+                    "orthoWidth": 1.0,
+                    "position": [
+                        10.0,
+                        6.0,
+                        23.0
+                    ],
+                    "sensorSize": [
+                        -1.0,
+                        24.0
+                    ],
+                    "up": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ],
+                    "use_sensorSize_V2": true
+                }
+            },
+            "name": "",
+            "perspective": {
+                "aspectRatio": 1.5,
+                "yfov": 0.317310512065887,
+                "zfar": 10000.0,
+                "znear": 0.00999999977648258
+            },
+            "type": "perspective"
+        }
+    ],
+    "extensions": {
+        "AMD_RPR_lights": {
+            "lights": [
+                {
+                    "environment": {
+                        "image": 0,
+                        "intensityScale": 0.800000011920929,
+                        "override_background": -1,
+                        "override_reflection": -1,
+                        "override_refraction": -1,
+                        "override_transparency": -1
+                    },
+                    "extras": {
+                        "rpr.light.extra.parameters": { }
+                    },
+                    "name": "",
+                    "type": "ENVIRONMENT"
+                }
+            ]
+        },
+        "AMD_RPR_material": {
+            "nodes": [
+                {
+                    "inputs": [
+                        {
+                            "name": "diffuse.color",
+                            "type": "FLOAT4",
+                            "value": [
+                                0.50196099281311,
+                                0.0,
+                                0.0,
+                                0.0
+                            ]
+                        },
+                        {
+                            "name": "diffuse.weight",
+                            "type": "FLOAT4",
+                            "value": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ]
+                        },
+                        {
+                            "name": "diffuse.roughness",
+                            "type": "FLOAT4",
+                            "value": [
+                                0.5,
+                                0.5,
+                                0.5,
+                                0.5
+                            ]
+                        },
+                        {
+                            "name": "diffuse.normal",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "reflection.color",
+                            "type": "FLOAT4",
+                            "value": [
+                                0.490195989608765,
+                                0.490195989608765,
+                                0.490195989608765,
+                                0.0
+                            ]
+                        },
+                        {
+                            "name": "reflection.weight",
+                            "type": "FLOAT4",
+                            "value": [
+                                0.990000009536743,
+                                0.990000009536743,
+                                0.990000009536743,
+                                0.990000009536743
+                            ]
+                        },
+                        {
+                            "name": "reflection.roughness",
+                            "type": "FLOAT4",
+                            "value": [
+                                0.00800000037997961,
+                                0.00800000037997961,
+                                0.00800000037997961,
+                                0.00800000037997961
+                            ]
+                        },
+                        {
+                            "name": "reflection.anisotropy",
+                            "type": "FLOAT4",
+                            "value": [
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0
+                            ]
+                        },
+                        {
+                            "name": "reflection.anistropyrotation",
+                            "type": "FLOAT4",
+                            "value": [
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0
+                            ]
+                        },
+                        {
+                            "name": "reflection.mode",
+                            "type": "UINT",
+                            "value": 1
+                        },
+                        {
+                            "name": "reflection.ior",
+                            "type": "FLOAT4",
+                            "value": [
+                                1.46000003814697,
+                                1.46000003814697,
+                                1.46000003814697,
+                                1.46000003814697
+                            ]
+                        },
+                        {
+                            "name": "reflection.metalness",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "reflection.normal",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "refraction.color",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "refraction.weight",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "refraction.roughness",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "refraction.ior",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "refraction.normal",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "refraction.thinsurface",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "refraction.absorptioncolor",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "refraction.absorptiondistance",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "refraction.caustics",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "coating.color",
+                            "type": "FLOAT4",
+                            "value": [
+                                0.490195989608765,
+                                0.490195989608765,
+                                0.490195989608765,
+                                0.0
+                            ]
+                        },
+                        {
+                            "name": "coating.weight",
+                            "type": "FLOAT4",
+                            "value": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ]
+                        },
+                        {
+                            "name": "coating.roughness",
+                            "type": "FLOAT4",
+                            "value": [
+                                0.00800000037997961,
+                                0.00800000037997961,
+                                0.00800000037997961,
+                                0.00800000037997961
+                            ]
+                        },
+                        {
+                            "name": "coating.mode",
+                            "type": "UINT",
+                            "value": 1
+                        },
+                        {
+                            "name": "coating.ior",
+                            "type": "FLOAT4",
+                            "value": [
+                                1.46000003814697,
+                                1.46000003814697,
+                                1.46000003814697,
+                                1.46000003814697
+                            ]
+                        },
+                        {
+                            "name": "coating.metalness",
+                            "type": "FLOAT4",
+                            "value": [
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0
+                            ]
+                        },
+                        {
+                            "name": "coating.normal",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "coating.transmissioncolor",
+                            "type": "FLOAT4",
+                            "value": [
+                                0.0,
+                                0.0,
+                                0.0,
+                                1.0
+                            ]
+                        },
+                        {
+                            "name": "coating.thickness",
+                            "type": "FLOAT4",
+                            "value": [
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0
+                            ]
+                        },
+                        {
+                            "name": "sheen",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "sheen.tint",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "sheen.weight",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "emission.color",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "emission.weight",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "emission.mode",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "transparency",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "sss.scattercolor",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "sss.scatterdistance",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "sss.scatterdirection",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "sss.weight",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "sss.multiscatter",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "backscatter.weight",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "backscatter.color",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "schlickapprox",
+                            "type": "NODE",
+                            "value": -1
+                        }
+                    ],
+                    "name": "Uber_0",
+                    "type": "UBERV2"
+                },
+                {
+                    "inputs": [
+                        {
+                            "name": "color",
+                            "type": "NODE",
+                            "value": 2
+                        },
+                        {
+                            "name": "normal",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "roughness",
+                            "type": "NODE",
+                            "value": -1
+                        }
+                    ],
+                    "type": "DIFFUSE"
+                },
+                {
+                    "inputs": [
+                        {
+                            "name": "uv",
+                            "type": "NODE",
+                            "value": 3
+                        },
+                        {
+                            "name": "data",
+                            "type": "IMAGE",
+                            "value": 1
+                        },
+                        {
+                            "name": "wrap_u",
+                            "type": "UINT",
+                            "value": 1
+                        },
+                        {
+                            "name": "wrap_v",
+                            "type": "UINT",
+                            "value": 1
+                        }
+                    ],
+                    "type": "IMAGE_TEXTURE"
+                },
+                {
+                    "inputs": [
+                        {
+                            "name": "color0",
+                            "type": "NODE",
+                            "value": 4
+                        },
+                        {
+                            "name": "color1",
+                            "type": "FLOAT4",
+                            "value": [
+                                2.0,
+                                4.0,
+                                0.0,
+                                0.0
+                            ]
+                        },
+                        {
+                            "name": "op",
+                            "type": "UINT",
+                            "value": 2
+                        },
+                        {
+                            "name": "color2",
+                            "type": "NODE",
+                            "value": -1
+                        },
+                        {
+                            "name": "color3",
+                            "type": "NODE",
+                            "value": -1
+                        }
+                    ],
+                    "type": "ARITHMETIC"
+                },
+                {
+                    "inputs": [
+                        {
+                            "name": "value",
+                            "type": "UINT",
+                            "value": 0
+                        }
+                    ],
+                    "type": "INPUT_LOOKUP"
+                }
+            ]
+        },
+        "AMD_RPR_post_effects": { }
+    },
+    "extensionsUsed": [
+        "AMD_RPR_post_effects",
+        "AMD_RPR_camera",
+        "AMD_RPR_lights",
+        "AMD_RPR_scene_lights",
+        "AMD_RPR_material",
+        "AMD_RPR_heteroVolumes",
+        "AMD_RPR_grids"
+    ],
+    "extras": {
+        "rpr.context.parameters": {
+            "aaenabled": 1,
+            "activepixelcount": 0,
+            "aoraycount": 1,
+            "aoraylength": 5.0,
+            "as.minspp": 8,
+            "as.threshold": 0.0,
+            "as.tilesize": 8,
+            "atmosphere.volume.color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "atmosphere.volume.density": 0.0,
+            "atmosphere.volume.radianceclamp": 100.0,
+            "beautymotionblur": 1,
+            "causticsreduction": 1.0,
+            "contour.antialiasing": 0.0,
+            "contour.debug_enabled": 0,
+            "contour.linewidth_materialid": 0.0,
+            "contour.linewidth_normal": 0.0,
+            "contour.linewidth_objectid": 0.0,
+            "contour.linewidth_uv": 0.0,
+            "contour.normal_threshold": 0.0,
+            "contour.use_materialid": 0,
+            "contour.use_normal": 0,
+            "contour.use_objectid": 0,
+            "contour.use_uv": 0,
+            "contour.uv_secondary": 0,
+            "contour.uv_threshold": 0.0399999991059303,
+            "cpuintegrator": "",
+            "cpuname": "",
+            "cputhreadlimit": 128,
+            "cryptomatte.extended": 0,
+            "cryptomatte.split_indirect": 0,
+            "deep.colorenabled": 1,
+            "deep.gpuallocationlevel": 4,
+            "deep.subpixelmergezthreshold": 0.00999999977648258,
+            "displaygamma": 2.20000004768372,
+            "displayibl": 1,
+            "fog.color": [
+                0.5,
+                0.5,
+                0.5,
+                0.5
+            ],
+            "fog.direction": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+            ],
+            "fog.distance": -1.0,
+            "fog.height": 2.0,
+            "fog.height_offset": 0.0,
+            "framecount": 4294967295,
+            "gpu0name": "AMD Radeon PRO W6800",
+            "gpu10name": "",
+            "gpu11name": "",
+            "gpu12name": "",
+            "gpu13name": "",
+            "gpu14name": "",
+            "gpu15name": "",
+            "gpu1name": "",
+            "gpu2name": "",
+            "gpu3name": "",
+            "gpu4name": "",
+            "gpu5name": "",
+            "gpu6name": "",
+            "gpu7name": "",
+            "gpu8name": "",
+            "gpu9name": "",
+            "gpuintegrator": "",
+            "gpumemorylimit": 0.899999976158142,
+            "imagefilter.radius": 2.0,
+            "imagefilter.type": 0,
+            "iterations": 1,
+            "lasterror": "",
+            "maxdepth.diffuse": 65535,
+            "maxdepth.glossy": 65535,
+            "maxdepth.refraction": 4095,
+            "maxdepth.refraction.glossy": 65535,
+            "maxdepth.shadow": 10,
+            "maxrecursion": 2,
+            "metalperformanceshader": 0,
+            "mipmaplodoffset": 0.0,
+            "ocioconfigpath": "",
+            "ociorenderingcolorspace": "",
+            "ooccachepath": "",
+            "ooctexcache": 0,
+            "pdfthreshold": 0.00499999988824129,
+            "pluginversion": 3972701131,
+            "precompiled.binary.path": "../../hipbin",
+            "preview": 0,
+            "radianceclamp": 3.40282346638529e+38,
+            "randseed": 0,
+            "raycastepsilon": 9.99999974737875e-05,
+            "renderlayermask": 4294967295,
+            "rendermode": 1,
+            "roughnesscap": 0.0,
+            "rpr_api_version": 3145986,
+            "russianroulettedepth": 4,
+            "samplertype": 1,
+            "shadowcatcherbaking": 1,
+            "singlelevelbvh": 0,
+            "stacksize": 64,
+            "texturecachepath": "",
+            "texturecompression": 0,
+            "texturegamma": 1.0,
+            "tilesize": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "tonemapping.exponential.intensity": 1.0,
+            "tonemapping.linear.scale": 1.0,
+            "tonemapping.photolinear.exposure": 0.00100000004749745,
+            "tonemapping.photolinear.fstop": 2.79999995231628,
+            "tonemapping.photolinear.sensitivity": 100.0,
+            "tonemapping.reinhard02.burn": 3.75,
+            "tonemapping.reinhard02.postscale": 1.20000004768372,
+            "tonemapping.reinhard02.prescale": 1.0,
+            "tonemapping.type": 0,
+            "tracing": 0,
+            "tracingfolder": "",
+            "transparentbackground": 0,
+            "windingordercorrection": 1,
+            "xflip": 0,
+            "yflip": 1
+        },
+        "rpr.debuginfo": {
+            "ErrorMessage": "No Error",
+            "GLTF_EXPORTER_VERSION": 11,
+            "GLTF_EXPORTER_VERSION_MINOR": 107,
+            "RPR_API_VERSION": "0x0000000000300102",
+            "WarningMessage": "No Warning",
+            "plugin.name": "Northstar"
+        },
+        "rpr.extraparameters.buffer": { },
+        "rpr.extraparameters.float": { },
+        "rpr.extraparameters.float2": { },
+        "rpr.extraparameters.float4": { },
+        "rpr.extraparameters.int": { },
+        "rpr.extraparameters.string": { }
+    },
+    "images": [
+        {
+            "extras": {
+                "rpr.image.parameters": {
+                    "filter": 2,
+                    "gamma": -1.0,
+                    "mipmapEnabled": 0,
+                    "wrap": 1
+                }
+            },
+            "mimeType": "image/hdr",
+            "name": "img",
+            "uri": "../../Textures/turning_area_4k.hdr"
+        },
+        {
+            "extras": {
+                "rpr.image.parameters": {
+                    "filter": 2,
+                    "gamma": -1.0,
+                    "mipmapEnabled": 0,
+                    "wrap": 1
+                }
+            },
+            "mimeType": "image/png",
+            "name": "img(2)",
+            "uri": "../../Textures/amd.png"
+        }
+    ],
+    "materials": [
+        {
+            "alphaMode": "OPAQUE",
+            "doubleSided": true,
+            "extensions": {
+                "AMD_RPR_material": {
+                    "materialNodeIndex": 0
+                }
+            },
+            "name": "Uber_0",
+            "pbrMetallicRoughness": {
+                "baseColorFactor": [
+                    0.50196099281311,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "metallicFactor": 0.0,
+                "roughnessFactor": 1.0
+            }
+        },
+        {
+            "alphaMode": "OPAQUE",
+            "doubleSided": true,
+            "extensions": {
+                "AMD_RPR_material": {
+                    "materialNodeIndex": 1
+                }
+            },
+            "name": "",
+            "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                    "index": 1,
+                    "texCoord": 0
+                },
+                "metallicFactor": 0.0,
+                "roughnessFactor": 1.0
+            }
+        }
+    ],
+    "meshes": [
+        {
+            "name": "",
+            "primitives": [
+                {
+                    "attributes": {
+                        "NORMAL": 2,
+                        "POSITION": 1,
+                        "TEXCOORD_0": 3
+                    },
+                    "indices": 0,
+                    "material": 0,
+                    "mode": 4
+                }
+            ]
+        },
+        {
+            "name": "",
+            "primitives": [
+                {
+                    "attributes": {
+                        "NORMAL": 6,
+                        "POSITION": 5,
+                        "TEXCOORD_0": 7
+                    },
+                    "indices": 4,
+                    "material": 1,
+                    "mode": 4
+                }
+            ]
+        }
+    ],
+    "nodes": [
+        {
+            "camera": 0,
+            "matrix": [
+                -0.917070031166077,
+                -0.0,
+                0.398726105690002,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0,
+                0.391030937433243,
+                0.195515468716621,
+                0.899371147155762,
+                0.0,
+                10.0,
+                6.0,
+                23.0,
+                1.0
+            ],
+            "name": ""
+        },
+        {
+            "extensions": {
+                "AMD_RPR_lights": {
+                    "light": 0
+                }
+            },
+            "name": ""
+        },
+        {
+            "extras": {
+                "rpr.shape.parameters": {
+                    "angularMotion": [
+                        0.0,
+                        1.0,
+                        0.0,
+                        0.0
+                    ],
+                    "displacementScale": [
+                        0.0,
+                        1.0
+                    ],
+                    "layerMask": 4294967295,
+                    "linearMotion": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "objectGroupID": 0,
+                    "shadow": 1,
+                    "shadowCatcher": 0,
+                    "subdivisionBoundaryInterop": 2,
+                    "subdivisionCreaseWeight": 0.0,
+                    "subdivisionFactor": 0,
+                    "visibilityPrimaryOnly": 1
+                }
+            },
+            "matrix": [
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                -1.0,
+                -8.74227765734759e-08,
+                0.0,
+                0.0,
+                8.74227765734759e-08,
+                -1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "mesh": 0,
+            "name": ""
+        },
+        {
+            "extras": {
+                "rpr.shape.parameters": {
+                    "angularMotion": [
+                        0.0,
+                        1.0,
+                        0.0,
+                        0.0
+                    ],
+                    "displacementScale": [
+                        0.0,
+                        1.0
+                    ],
+                    "layerMask": 4294967295,
+                    "linearMotion": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "objectGroupID": 0,
+                    "shadow": 1,
+                    "shadowCatcher": 0,
+                    "subdivisionBoundaryInterop": 2,
+                    "subdivisionCreaseWeight": 0.0,
+                    "subdivisionFactor": 0,
+                    "visibilityPrimaryOnly": 1
+                }
+            },
+            "matrix": [
+                0.699999988079071,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.699999988079071,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "mesh": 1,
+            "name": ""
+        }
+    ],
+    "samplers": [
+        {
+            "magFilter": 9729,
+            "minFilter": 9986,
+            "name": "default_sampler",
+            "wrapS": 10497,
+            "wrapT": 10497
+        }
+    ],
+    "scene": 0,
+    "scenes": [
+        {
+            "extensions": {
+                "AMD_RPR_grids": { },
+                "AMD_RPR_heteroVolumes": { }
+            },
+            "extras": {
+                "rpr.scene.parameters": { }
+            },
+            "name": "",
+            "nodes": [
+                0,
+                1,
+                2,
+                3
+            ]
+        }
+    ],
+    "textures": [
+        {
+            "name": "img",
+            "sampler": 0,
+            "source": 0
+        },
+        {
+            "name": "img(2)",
+            "sampler": 0,
+            "source": 1
+        }
+    ]
+}

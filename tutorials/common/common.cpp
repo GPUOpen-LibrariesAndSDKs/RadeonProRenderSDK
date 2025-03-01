@@ -93,6 +93,15 @@ void ErrorManager(int errorCode, const char* fileName, int line, rpr_context ctx
 	std::cout<<"file = "<< fileName << std::endl;
 	std::cout<<"line = "<< line << std::endl;
 	std::cout<<"error code = "<< errorCode << std::endl;
+
+	if ( errorCode == RPR_ERROR_SHADER_COMPILATION )
+	{
+		std::cout<< std::endl<< std::endl <<"==== KERNEL ERROR ===="<< std::endl;
+		std::cout<<"It's possible that some precompiled kernel files are missing."<< std::endl;
+		std::cout<<"Since Northstar 3.01.00, precompiled kernels must be downloaded from a separate link and inluded in projects."<< std::endl;
+		std::cout<<"Check the readme of this SDK for more information."<< std::endl<< std::endl<< std::endl;
+	}
+
 	assert(0);
 }
 
@@ -284,12 +293,12 @@ MatballScene::MatballScene()
 	return;
 }
 
-void MatballScene::Render(const std::string& outImgFileName, int iterationCount)
+void MatballScene::Render(const std::string& outImgFileName, int iterationCount, bool useResolveFramebuffer)
 {
 	// clear framebuffer before starting a new rendering.
 	CHECK( rprFrameBufferClear(m_frame_buffer) );
 
-	if ( !m_usingHybridContext ) // there is no iteration for Hyrbid
+	if ( iterationCount > 0 ) // if iterationCount=-1 , we ignore this parameter  ( may be needed if using Hybrid.DLL )
 	{
 		CHECK( rprContextSetParameterByKey1u(m_context, RPR_CONTEXT_ITERATIONS, iterationCount) );
 	}
@@ -297,9 +306,9 @@ void MatballScene::Render(const std::string& outImgFileName, int iterationCount)
 	std::cout<<"Rendering "<<outImgFileName<<" ..."<<std::endl;
 	CHECK( rprContextRender(m_context) );
 	
-	if ( !m_usingHybridContext ) // There is no framebuffer resolve for Hyrbid
+	if ( useResolveFramebuffer )
 	{
-		// last argument is FALSE because we don't want a simple normalization: we also want to apply the display gamma (changed with RPR_CONTEXT_DISPLAY_GAMMA)
+		// last argument is FALSE because we want to apply the display gamma (changed with RPR_CONTEXT_DISPLAY_GAMMA) to this COLOR AOV.
 		CHECK( rprContextResolveFrameBuffer(m_context, m_frame_buffer, m_frame_buffer_res, false) );
 
 		CHECK( rprFrameBufferSaveToFile(m_frame_buffer_res, outImgFileName.c_str() ) );
@@ -339,10 +348,8 @@ void MatballScene::Clean()
 }
 
 
-MatballScene::MATBALL MatballScene::Init(rpr_context context, int shapeShiftX, int shapeShiftY, bool usingHybridContext)
+MatballScene::MATBALL MatballScene::Init(rpr_context context, int shapeShiftX, int shapeShiftY, bool forceUberMaterialForFloor)
 {
-
-	m_usingHybridContext = usingHybridContext;
 	m_context = context;
 
 	//create scene
@@ -387,12 +394,12 @@ MatballScene::MATBALL MatballScene::Init(rpr_context context, int shapeShiftX, i
 	CHECK( rprMaterialSystemCreateNode(m_matsys,RPR_MATERIAL_NODE_IMAGE_TEXTURE,&m_floorImageMaterial) );
 	CHECK( rprMaterialNodeSetInputImageDataByKey(m_floorImageMaterial,RPR_MATERIAL_INPUT_DATA,m_floorImage) );
 	
-	if ( !usingHybridContext )
+	if ( !forceUberMaterialForFloor )
 	{
 		CHECK( rprMaterialSystemCreateNode(m_matsys,RPR_MATERIAL_NODE_DIFFUSE,&m_floorMaterial) );
 		CHECK( rprMaterialNodeSetInputNByKey(m_floorMaterial, RPR_MATERIAL_INPUT_COLOR, m_floorImageMaterial) );
 	}
-	else // Hybrid only manages UBER material meaning we can't use the RPR_MATERIAL_NODE_DIFFUSE like with Northstar.
+	else // Hybrid/HybridPro only manages UBER material meaning we can't use the RPR_MATERIAL_NODE_DIFFUSE like with Northstar.
 	{
 		CHECK(rprMaterialSystemCreateNode(m_matsys,RPR_MATERIAL_NODE_UBERV2,&m_floorMaterial));
 		CHECK(rprMaterialNodeSetInputNByKey(m_floorMaterial, RPR_MATERIAL_INPUT_UBER_DIFFUSE_COLOR, m_floorImageMaterial));
@@ -559,6 +566,84 @@ rpr_status CreateNatureEnvLight(rpr_context context, rpr_scene scene, RPRGarbage
 	CHECK(rprSceneAttachLight(scene, lightEnv));
 	
 	return RPR_SUCCESS;
+}
+
+
+
+// create a simple quad shape
+rpr_shape CreateQuad(RPRGarbageCollector& gc, rpr_context context, rpr_scene scene, vertex* meshVertices, unsigned int meshVertices_nbOfElement )
+{
+	rpr_int indices[] = { 3,2,1,0, };
+	rpr_int num_face_vertices[] = { 4, };
+
+	const unsigned int num_face_vertices_nbOfElement = sizeof(num_face_vertices)/sizeof(num_face_vertices[0]);
+
+	rpr_shape mesh = nullptr;
+
+    CHECK(  rprContextCreateMesh(context,
+        (rpr_float const*)&meshVertices[0], meshVertices_nbOfElement , sizeof(vertex),
+        (rpr_float const*)((char*)&meshVertices[0] + sizeof(rpr_float)*3), meshVertices_nbOfElement, sizeof(vertex),
+        (rpr_float const*)((char*)&meshVertices[0] + sizeof(rpr_float)*6), meshVertices_nbOfElement, sizeof(vertex),
+        (rpr_int const*)indices, sizeof(rpr_int),
+        (rpr_int const*)indices, sizeof(rpr_int),
+        (rpr_int const*)indices, sizeof(rpr_int),
+        num_face_vertices, num_face_vertices_nbOfElement, &mesh) );
+	gc.GCAdd(mesh);
+    
+	if ( scene ) {  CHECK( rprSceneAttachShape(scene, mesh) ); }
+
+	return mesh;
+}
+
+// Create a Quad shape on the YZ plane
+rpr_shape CreateQuad_YZ(RPRGarbageCollector& gc, rpr_context context, rpr_scene scene, float ax, float ay, float bx, float by, float X, float normal)
+{
+	vertex meshVertices[] = 
+	{
+		{  X, ax, by,  normal, 0.0f, 0.0f,    0.0f, 0.0f  },
+		{  X, bx, by,  normal, 0.0f, 0.0f,    1.0f, 0.0f  },
+		{  X, bx, ay,  normal, 0.0f, 0.0f,    1.0f, 1.0f  },
+		{  X, ax, ay,  normal, 0.0f, 0.0f,    0.0f, 1.0f },
+	};
+
+	const unsigned int meshVertices_nbOfElement = sizeof(meshVertices)/sizeof(meshVertices[0]);
+	
+	rpr_shape mesh = CreateQuad(gc, context, scene, meshVertices, meshVertices_nbOfElement);
+	return mesh;
+}
+
+// Create a Quad shape on the XZ plane
+rpr_shape CreateQuad_XZ(RPRGarbageCollector& gc, rpr_context context, rpr_scene scene, float ax, float ay, float bx, float by, float Y, float normal)
+{
+	vertex meshVertices[] = 
+	{
+		{  ax, Y, by,  0.0f, normal, 0.0f,    0.0f, 0.0f  },
+		{  bx, Y, by,  0.0f, normal, 0.0f,    1.0f, 0.0f  },
+		{  bx, Y, ay,  0.0f, normal, 0.0f,    1.0f, 1.0f  },
+		{  ax, Y, ay,  0.0f, normal, 0.0f,    0.0f, 1.0f },
+	};
+
+	const unsigned int meshVertices_nbOfElement = sizeof(meshVertices)/sizeof(meshVertices[0]);
+
+	rpr_shape mesh = CreateQuad(gc, context, scene, meshVertices, meshVertices_nbOfElement);
+	return mesh;
+}
+
+// Create a Quad shape on the XY plane
+rpr_shape CreateQuad_XY(RPRGarbageCollector& gc, rpr_context context, rpr_scene scene, float ax, float ay, float bx, float by, float Z, float normal)
+{
+	vertex meshVertices[] = 
+	{
+		{  ax, by, Z,  0.0f, 0.0f, normal,    0.0f, 0.0f  },
+		{  bx, by, Z,  0.0f, 0.0f, normal,    1.0f, 0.0f  },
+		{  bx, ay, Z,  0.0f, 0.0f, normal,    1.0f, 1.0f  },
+		{  ax, ay, Z,  0.0f, 0.0f, normal,    0.0f, 1.0f },
+	};
+
+	const unsigned int meshVertices_nbOfElement = sizeof(meshVertices)/sizeof(meshVertices[0]);
+
+	rpr_shape mesh = CreateQuad(gc, context, scene, meshVertices, meshVertices_nbOfElement);
+	return mesh;
 }
 
 

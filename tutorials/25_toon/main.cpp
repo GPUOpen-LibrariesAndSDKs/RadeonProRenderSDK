@@ -43,7 +43,7 @@ int main()
 
 	// Create context using a single GPU 
 	// note that multiple GPUs can be enabled for example with creation_flags = RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GPU1
-	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, g_ContextCreationFlags, NULL, NULL, &context) );
+	CHECK( rprCreateContext(RPR_API_VERSION, plugins, pluginCount, g_ContextCreationFlags, g_contextProperties, NULL, &context) );
 
 	// Set the active plugin.
 	CHECK(  rprContextSetActivePlugin(context, plugins[0]) );
@@ -68,6 +68,9 @@ int main()
 		CHECK(rprSceneAttachLight(matballScene.m_scene, light));
 	}
 
+	// factor for 3.01.04 SDK release
+	const float factor = 0.25f;
+
 
 	// 3 tones toon
 	{
@@ -75,11 +78,11 @@ int main()
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_TOON_RAMP, &toonRamp));
 		g_gc.GCAdd(toonRamp);
 
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION1, 0.7f,     0.0f, 0.0f, 0.f));
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION2, 0.9f,     0.0f, 0.0f, 0.f));
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION1, 0.7f*factor,     0.0f, 0.0f, 0.f));
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION2, 0.9f*factor,     0.0f, 0.0f, 0.f));
 
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE1, 0.0f,     0.0f, 0.0f, 0.f));
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE2, 0.0f,     0.0f, 0.0f, 0.f));
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE1, 0.0f*factor,     0.0f, 0.0f, 0.f));
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE2, 0.0f*factor,     0.0f, 0.0f, 0.f));
 
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_HIGHLIGHT, 199.0f/255.0f, 230.0f/255.0f, 116.0f/255.0f,     0.f));
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_MID,       112.0f/255.0f, 176.0f/255.0f,  75.0f/255.0f,     0.f));
@@ -108,11 +111,11 @@ int main()
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_TOON_RAMP, &toonRamp));
 		g_gc.GCAdd(toonRamp);
 
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION1, 0.6f,     0.0f, 0.0f, 0.f));
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION2, 0.9f,     0.0f, 0.0f, 0.f));
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION1, 0.6f*factor,     0.0f, 0.0f, 0.f));
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION2, 0.9f*factor,     0.0f, 0.0f, 0.f));
 
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE1, 0.0f,     0.0f, 0.0f, 0.f));
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE2, 0.0f,     0.0f, 0.0f, 0.f));
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE1, 0.0f*factor,     0.0f, 0.0f, 0.f));
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE2, 0.0f*factor,     0.0f, 0.0f, 0.f));
 
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_HIGHLIGHT, 246.0f/255.0f, 235.0f/255.0f, 171.0f/255.0f,     0.f));
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_MID,       246.0f/255.0f, 235.0f/255.0f, 171.0f/255.0f,     0.f));
@@ -142,11 +145,11 @@ int main()
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_TOON_RAMP, &toonRamp));
 		g_gc.GCAdd(toonRamp);
 
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION1, 0.6f,     0.0f, 0.0f, 0.f));  // limit between Shadow   and Mid
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION2, 0.95f,     0.0f, 0.0f, 0.f)); // limit between Highlight and Mid
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION1, 0.6f*factor,     0.0f, 0.0f, 0.f));  // limit between Shadow   and Mid
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION2, 0.95f*factor,     0.0f, 0.0f, 0.f)); // limit between Highlight and Mid
 
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE2, 0.1f,     0.0f, 0.0f, 0.f)); // interp range between highlight and mid
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE1, 0.1f,     0.0f, 0.0f, 0.f)); // interp range between mid and shadow
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE2, 0.1f*factor,     0.0f, 0.0f, 0.f)); // interp range between highlight and mid
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE1, 0.1f*factor,     0.0f, 0.0f, 0.f)); // interp range between mid and shadow
 	
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_HIGHLIGHT, 199.0f/255.0f, 230.0f/255.0f, 116.0f/255.0f,     0.f));
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_MID,       112.0f/255.0f, 176.0f/255.0f,  75.0f/255.0f,     0.f));
@@ -176,11 +179,11 @@ int main()
 		CHECK( rprMaterialSystemCreateNode(matballScene.m_matsys, RPR_MATERIAL_NODE_TOON_RAMP, &toonRamp));
 		g_gc.GCAdd(toonRamp);
 
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION1, 0.7f,     0.0f, 0.0f, 0.f));
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION2, 0.9f,     0.0f, 0.0f, 0.f));
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION1, 0.7f*factor,     0.0f, 0.0f, 0.f));
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION2, 0.9f*factor,     0.0f, 0.0f, 0.f));
 
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE2, 0.0f,     0.0f, 0.0f, 0.f)); // interp range between highlight and mid
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE1, 0.2f,     0.0f, 0.0f, 0.f)); // interp range between mid and shadow
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE2, 0.0f*factor,     0.0f, 0.0f, 0.f)); // interp range between highlight and mid
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE1, 0.2f*factor,     0.0f, 0.0f, 0.f)); // interp range between mid and shadow
 	
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_HIGHLIGHT, 140.0f/255.0f, 209.0f/255.0f, 241.0f/255.0f,     0.f));
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_MID      , 140.0f/255.0f, 209.0f/255.0f, 241.0f/255.0f,     0.f));
@@ -218,16 +221,16 @@ int main()
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_HIGHLIGHT, 229.0f/255.0f, 220.0f/255.0f, 184.0f/255.0f,     0.f));
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_HIGHLIGHT2, 236.0f/255.0f, 220.0f/255.0f, 223.0f/255.0f,     0.f));
 
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE2, 0.1f,     0.0f, 0.0f, 0.f)); // interp range between highlight and mid
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE1, 0.1f,     0.0f, 0.0f, 0.f)); // interp range between mid and shadow
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE2, 0.1f*factor,     0.0f, 0.0f, 0.f)); // interp range between highlight and mid
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE1, 0.1f*factor,     0.0f, 0.0f, 0.f)); // interp range between mid and shadow
 
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION_HIGHLIGHT  , 0.9999f,     0.0f, 0.0f, 0.f)); // limit HIGHLIGHT/HIGHLIGHT2
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION2,           0.95f,     0.0f, 0.0f, 0.f));    // limit MID/HIGHLIGHT
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION1,            0.6f,     0.0f, 0.0f, 0.f));    // limit SHADOW/MID
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION_SHADOW     , 0.4f,     0.0f, 0.0f, 0.f));    // limit SHADOW2/SHADOW
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION_HIGHLIGHT  , 0.9999f*factor,     0.0f, 0.0f, 0.f)); // limit HIGHLIGHT/HIGHLIGHT2
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION2,           0.95f*factor,     0.0f, 0.0f, 0.f));    // limit MID/HIGHLIGHT
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION1,            0.6f*factor,     0.0f, 0.0f, 0.f));    // limit SHADOW/MID
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION_SHADOW     , 0.4f*factor,     0.0f, 0.0f, 0.f));    // limit SHADOW2/SHADOW
 	
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE_SHADOW, 0.1f,     0.0f, 0.0f, 0.f));
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE_HIGHLIGHT, 0.1f,     0.0f, 0.0f, 0.f));
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE_SHADOW, 0.1f*factor,     0.0f, 0.0f, 0.f));
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE_HIGHLIGHT, 0.1f*factor,     0.0f, 0.0f, 0.f));
 
 		CHECK( rprMaterialNodeSetInputUByKey(toonRamp,RPR_MATERIAL_INPUT_TOON_5_COLORS, 1));
 
@@ -268,16 +271,16 @@ int main()
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_HIGHLIGHT, 229.0f/255.0f, 220.0f/255.0f, 184.0f/255.0f,     0.f));
 		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_HIGHLIGHT2, 236.0f/255.0f, 220.0f/255.0f, 223.0f/255.0f,     0.f));
 
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE2, 0.1f,     0.0f, 0.0f, 0.f)); // interp range between highlight and mid
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE1, 0.1f,     0.0f, 0.0f, 0.f)); // interp range between mid and shadow
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE2, 0.1f*factor,     0.0f, 0.0f, 0.f)); // interp range between highlight and mid
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE1, 0.1f*factor,     0.0f, 0.0f, 0.f)); // interp range between mid and shadow
 
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION_HIGHLIGHT  , 0.9999f,     0.0f, 0.0f, 0.f)); // limit HIGHLIGHT/HIGHLIGHT2
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION2,           0.95f,     0.0f, 0.0f, 0.f));    // limit MID/HIGHLIGHT
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION1,            0.6f,     0.0f, 0.0f, 0.f));    // limit SHADOW/MID
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION_SHADOW     , 0.4f,     0.0f, 0.0f, 0.f));    // limit SHADOW2/SHADOW
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION_HIGHLIGHT  , 0.9999f*factor,     0.0f, 0.0f, 0.f)); // limit HIGHLIGHT/HIGHLIGHT2
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION2,           0.95f*factor,     0.0f, 0.0f, 0.f));    // limit MID/HIGHLIGHT
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION1,            0.6f*factor,     0.0f, 0.0f, 0.f));    // limit SHADOW/MID
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_POSITION_SHADOW     , 0.4f*factor,     0.0f, 0.0f, 0.f));    // limit SHADOW2/SHADOW
 	
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE_SHADOW, 0.1f,     0.0f, 0.0f, 0.f));
-		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE_HIGHLIGHT, 0.1f,     0.0f, 0.0f, 0.f));
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE_SHADOW, 0.1f*factor,     0.0f, 0.0f, 0.f));
+		CHECK( rprMaterialNodeSetInputFByKey(toonRamp,RPR_MATERIAL_INPUT_RANGE_HIGHLIGHT, 0.1f*factor,     0.0f, 0.0f, 0.f));
 
 		CHECK( rprMaterialNodeSetInputUByKey(toonRamp,RPR_MATERIAL_INPUT_TOON_5_COLORS, 1));
 

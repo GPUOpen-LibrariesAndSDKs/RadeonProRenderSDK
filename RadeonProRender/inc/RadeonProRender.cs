@@ -90,6 +90,7 @@ SUCCESS = 0 ,
 ERROR_COMPUTE_API_NOT_SUPPORTED = -1 ,
 ERROR_OUT_OF_SYSTEM_MEMORY = -2 ,
 ERROR_OUT_OF_VIDEO_MEMORY = -3 ,
+ERROR_SHADER_COMPILATION = -4 ,
 ERROR_INVALID_LIGHTPATH_EXPR = -5 ,
 ERROR_INVALID_IMAGE = -6 ,
 ERROR_INVALID_AA_METHOD = -7 ,
@@ -154,6 +155,7 @@ ENABLE_GPU13 = (1 << 16) ,
 ENABLE_GPU14 = (1 << 17) ,
 ENABLE_GPU15 = (1 << 18) ,
 ENABLE_HIP = (1 << 19) ,
+ENABLE_OPENCL = (1 << 20) ,
 ENABLE_DEBUG = (1 << 31) ,
 }
 /*rpr_aa_filter*/
@@ -173,6 +175,15 @@ public enum ContextSamplerType : int
 SOBOL = 0x1 ,
 RANDOM = 0x2 ,
 CMJ = 0x3 ,
+}
+/*rpr_primvar_interpolation_type*/
+public enum PrimvarInterpolationType : int
+{
+CONSTANT = 0x1 ,
+UNIFORM = 0x2 ,
+VERTEX = 0x3 ,
+FACEVARYING_NORMAL = 0x4 ,
+FACEVARYING_UV = 0x5 ,
 }
 /*rpr_shape_type*/
 public enum ShapeType : int
@@ -205,12 +216,6 @@ ACTIVE_PLUGIN = 0x108 ,
 SCENE = 0x109 ,
 ITERATIONS = 0x10B ,
 IMAGE_FILTER_TYPE = 0x10C ,
-IMAGE_FILTER_BOX_RADIUS = 0x10D ,
-IMAGE_FILTER_GAUSSIAN_RADIUS = 0x10E ,
-IMAGE_FILTER_TRIANGLE_RADIUS = 0x10F ,
-IMAGE_FILTER_MITCHELL_RADIUS = 0x110 ,
-IMAGE_FILTER_LANCZOS_RADIUS = 0x111 ,
-IMAGE_FILTER_BLACKMANHARRIS_RADIUS = 0x112 ,
 TONE_MAPPING_TYPE = 0x113 ,
 TONE_MAPPING_LINEAR_SCALE = 0x114 ,
 TONE_MAPPING_PHOTO_LINEAR_SENSITIVITY = 0x115 ,
@@ -220,7 +225,7 @@ TONE_MAPPING_REINHARD02_PRE_SCALE = 0x118 ,
 TONE_MAPPING_REINHARD02_POST_SCALE = 0x119 ,
 TONE_MAPPING_REINHARD02_BURN = 0x11A ,
 MAX_RECURSION = 0x11B ,
-RAY_CAST_EPISLON = 0x11C ,
+RAY_CAST_EPSILON = 0x11C ,
 RADIANCE_CLAMP = 0x11D ,
 X_FLIP = 0x11E ,
 Y_FLIP = 0x11F ,
@@ -315,6 +320,7 @@ CONTOUR_USE_NORMAL = 0x175 ,
 CONTOUR_USE_UV = 0x186 ,
 CONTOUR_NORMAL_THRESHOLD = 0x176 ,
 CONTOUR_UV_THRESHOLD = 0x187 ,
+CONTOUR_UV_SECONDARY = 0x194 ,
 CONTOUR_LINEWIDTH_OBJECTID = 0x177 ,
 CONTOUR_LINEWIDTH_MATERIALID = 0x178 ,
 CONTOUR_LINEWIDTH_NORMAL = 0x179 ,
@@ -336,7 +342,25 @@ FOG_DISTANCE = 0x18A ,
 FOG_HEIGHT = 0x18B ,
 ATMOSPHERE_VOLUME_COLOR = 0x18C ,
 ATMOSPHERE_VOLUME_DENSITY = 0x18D ,
+ATMOSPHERE_VOLUME_RADIANCE_CLAMP = 0x18F ,
 FOG_HEIGHT_OFFSET = 0x18E ,
+INDIRECT_DOWNSAMPLE = 0x190 ,
+CRYPTOMATTE_EXTENDED = 0x191 ,
+CRYPTOMATTE_SPLIT_INDIRECT = 0x192 ,
+FOG_DIRECTION = 0x193 ,
+RANDOM_SEED = 0x1000 ,
+IBL_DISPLAY = 0x195 ,
+FRAMEBUFFER_SAVE_FLOAT32 = 0x196 ,
+UPDATE_TIME_CALLBACK_FUNC = 0x197 ,
+UPDATE_TIME_CALLBACK_DATA = 0x198 ,
+RENDER_TIME_CALLBACK_FUNC = 0x199 ,
+RENDER_TIME_CALLBACK_DATA = 0x19A ,
+FIRST_ITERATION_TIME_CALLBACK_FUNC = 0x19B ,
+FIRST_ITERATION_TIME_CALLBACK_DATA = 0x19C ,
+IMAGE_FILTER_RADIUS = 0x19D ,
+PRECOMPILED_BINARY_PATH = 0x19E ,
+REFLECTION_ENERGY_COMPENSATION_ENABLED = 0x19F ,
+NORMALIZE_LIGHT_INTENSITY_ENABLED = 0x1A0 ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -368,6 +392,8 @@ LINEAR_MOTION = 0x215 ,
 ANGULAR_MOTION = 0x216 ,
 MOTION_TRANSFORMS_COUNT = 0x217 ,
 MOTION_TRANSFORMS = 0x218 ,
+POST_SCALE = 0x219 ,
+UV_DISTORTION = 0x21A ,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -446,6 +472,9 @@ MOTION_TRANSFORMS = 0x42C ,
 CONTOUR_IGNORE = 0x42D ,
 RENDER_LAYER_LIST = 0x42E ,
 SHADOW_COLOR = 0x42F ,
+VISIBILITY_RECEIVE_SHADOW = 0x430 ,
+PRIMVARS = 0x431,
+ENVIRONMENT_LIGHT = 0x432,
 NAME = 0x777777 ,
 UNIQUE_ID = 0x777778 ,
 CUSTOM_PTR = 0x777779 ,
@@ -512,6 +541,7 @@ LIGHT_TYPE = 0x801 ,
 LIGHT_TRANSFORM = 0x803 ,
 LIGHT_GROUP_ID = 0x805 ,
 LIGHT_RENDER_LAYER_LIST = 0x806 ,
+LIGHT_VISIBILITY_LIGHT = 0x807 ,
 LIGHT_NAME = 0x777777 ,
 LIGHT_UNIQUE_ID = 0x777778 ,
 LIGHT_CUSTOM_PTR = 0x777779 ,
@@ -583,6 +613,7 @@ FLOAT16 = 0x2,
 FLOAT32 = 0x3,
 UNKNOWN = 0x4,
 DEEP = 0x5,
+UINT32 = 0x6,
 }
 /*rpr_buffer_element_type*/
 public enum BufferElementType : int
@@ -710,6 +741,9 @@ TOON_RAMP = 0x31,
 VORONOI_TEXTURE = 0x32 ,
 GRID_SAMPLER = 0x33 ,
 BLACKBODY = 0x34 ,
+RAMP = 0x35 ,
+PRIMVAR_LOOKUP = 0x36 ,
+ROUNDED_CORNER = 0x37 ,
 
 	// MaterialX materials
 MATX_DIFFUSE_BRDF = 0x1000,
@@ -786,6 +820,7 @@ MATX_COMBINE2 = 0x1046,
 MATX_COMBINE3 = 0x1047,
 MATX_COMBINE4 = 0x1048,
 MATX_TRIPLANARPROJECTION = 0x1049,
+MATX_MULTIPLY = 0x104A,
 }
 /*rpr_material_node_input*/
 public enum MaterialInput : int
@@ -899,6 +934,10 @@ X = 0x69 ,
 Y = 0x6a ,
 Z = 0x6b ,
 W = 0x6c ,
+LIGHT = 0x6d ,
+MID_IS_ALBEDO = 0x6e ,
+SAMPLES = 0x6f ,
+BASE_NORMAL = 0x70 ,
 UBER_DIFFUSE_COLOR = 0x910,
 UBER_DIFFUSE_WEIGHT = 0x927,
 UBER_DIFFUSE_ROUGHNESS = 0x911,
@@ -970,6 +1009,11 @@ public enum InterpolationMode : int
 {
 NONE = 0x0,
 LINEAR = 0x1,
+EXPONENTIAL_UP = 0x2,
+EXPONENTIAL_DOWN = 0x3,
+SMOOTH = 0x4,
+BUMP = 0x5,
+SPIKE = 0x6,
 }
 /*rpr_ubermaterial_ior_mode*/
 public enum UberMaterialMode : int
@@ -1028,6 +1072,15 @@ NOT_EQUAL = 0x26 ,
 AND = 0x27 ,
 OR = 0x28 ,
 TERNARY = 0x29 ,
+EXP = 0x2a ,
+ROTATE2D = 0x2b ,
+ROTATE3D = 0x2c ,
+NOP = 0x2d ,
+CEIL = 0x102a ,
+ROUND = 0x102b ,
+SIGN = 0x102c ,
+SQRT = 0x102f ,
+CLAMP = 0x1035 ,
 }
 /*rpr_material_node_lookup_value*/
 public enum MaterialNodeLookup : int
@@ -1046,6 +1099,17 @@ VERTEX_VALUE3 = 0xa ,
 SHAPE_RANDOM_COLOR = 0xb ,
 OBJECT_ID = 0xc ,
 PRIMITIVE_RANDOM_COLOR = 0xd ,
+}
+/*rpr_material_gradient_procedural_type*/
+public enum MaterialGradientProceduralType : int
+{
+LINEAR = 0x1 ,
+QUADRATIC = 0x2 ,
+EASING = 0x3 ,
+DIAGONAL = 0x4 ,
+SPHERICAL = 0x5 ,
+QUAD_SPHERE = 0x6 ,
+RADIAL = 0x7 ,
 }
 /*rpr_material_node_uvtype_value*/
 public enum MaterialNodeUvtype : int
@@ -1121,12 +1185,20 @@ LPE_6 = 0x26 ,
 LPE_7 = 0x27 ,
 LPE_8 = 0x28 ,
 CAMERA_NORMAL = 0x29 ,
+MATTE_PASS = 0x2a ,
+SSS = 0x2b ,
 CRYPTOMATTE_MAT0 = 0x30,
 CRYPTOMATTE_MAT1 = 0x31,
 CRYPTOMATTE_MAT2 = 0x32,
+CRYPTOMATTE_MAT3 = 0x33,
+CRYPTOMATTE_MAT4 = 0x34,
+CRYPTOMATTE_MAT5 = 0x35,
 CRYPTOMATTE_OBJ0 = 0x38,
 CRYPTOMATTE_OBJ1 = 0x39,
 CRYPTOMATTE_OBJ2 = 0x3a,
+CRYPTOMATTE_OBJ3 = 0x3b,
+CRYPTOMATTE_OBJ4 = 0x3c,
+CRYPTOMATTE_OBJ5 = 0x3d,
 DEEP_COLOR = 0x40,
 LIGHT_GROUP4 = 0x50 ,
 LIGHT_GROUP5 = 0x51 ,
@@ -1140,6 +1212,7 @@ LIGHT_GROUP12 = 0x58 ,
 LIGHT_GROUP13 = 0x59 ,
 LIGHT_GROUP14 = 0x5a ,
 LIGHT_GROUP15 = 0x5b ,
+MESH_ID = 0x60 ,
 }
 /*rpr_post_effect_type*/
 public enum PostEffectType : int
@@ -1169,6 +1242,8 @@ NODE = 0x3 ,
 IMAGE = 0x4 ,
 BUFFER = 0x5 ,
 GRID = 0x6 ,
+DATA = 0x7 ,
+LIGHT = 0x8 ,
 }
 /*rpr_subdiv_boundary_interfop_type*/
 public enum SubdivBoundaryInteropType : int
@@ -1307,12 +1382,13 @@ VISIBILITY_DIFFUSE = 0x41E ,
 VISIBILITY_GLOSSY_REFLECTION = 0x41F ,
 VISIBILITY_GLOSSY_REFRACTION = 0x420 ,
 VISIBILITY_LIGHT = 0x421 ,
+VISIBILITY_RECEIVE_SHADOW = 0x430 ,
 }
-public const uint RPR_VERSION_MAJOR = 2 ;
-public const uint RPR_VERSION_MINOR = 2 ;
-public const uint RPR_VERSION_REVISION = 10 ;
-public const uint RPR_VERSION_BUILD = 0xe46836cc ;
-public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00200210 ;
+public const uint RPR_VERSION_MAJOR = 3 ;
+public const uint RPR_VERSION_MINOR = 1 ;
+public const uint RPR_VERSION_REVISION = 6 ;
+public const uint RPR_VERSION_BUILD = 0x1f29f423 ;
+public const uint RPR_VERSION_MAJOR_MINOR_REVISION = 0x00300106 ;
 // Deprecated version naming - will be removed in the future :
 
 public const uint RPR_API_VERSION = RPR_VERSION_MAJOR_MINOR_REVISION ;
@@ -2071,28 +2147,6 @@ public static Status CameraSetFocalLength(IntPtr camera, float flength)
 return rprCameraSetFocalLength(camera, flength);
 }
 
-    /* 
-    *  DEPRECATED in Northstar - will be removed in the future - please use rprCameraSetMotionTransform and rprCameraSetMotionTransformCount instead.
-    *  RPR_CAMERA_LINEAR_MOTION , RPR_CAMERA_ANGULAR_MOTION are also DEPRECATED
-    */
-  
-[DllImport(dllName)] static extern Status rprCameraSetLinearMotion(IntPtr camera, float x, float y, float z);
-public static Status CameraSetLinearMotion(IntPtr camera, float x, float y, float z)
-{
-return rprCameraSetLinearMotion(camera, x, y, z);
-}
-
-    /* 
-    *  DEPRECATED in Northstar - will be removed in the future - please use rprCameraSetMotionTransform and rprCameraSetMotionTransformCount instead.
-    *  RPR_CAMERA_LINEAR_MOTION , RPR_CAMERA_ANGULAR_MOTION are also DEPRECATED
-    */
-  
-[DllImport(dllName)] static extern Status rprCameraSetAngularMotion(IntPtr camera, float x, float y, float z, float w);
-public static Status CameraSetAngularMotion(IntPtr camera, float x, float y, float z, float w)
-{
-return rprCameraSetAngularMotion(camera, x, y, z, w);
-}
-
     /* Number of motion matrices (set with rprCameraSetMotionTransform) to use.
     *  Set  transformCount=0  if you don't use Motion.
     *  For the moment, if you use motion in Northstar, only transformCount=1 is supported.
@@ -2220,9 +2274,7 @@ return rprCameraSetApertureBlades(camera, num_blades);
     *      RPR_ERROR_INVALID_PARAMETER
     *
     *  @param  camera    The camera to set aperture blades for
-    *  @param  exposure  Represents a time length in the same time scale than rprShapeSetLinearMotion,rprCameraSetAngularMotion...
-    *                    example: rprShapeSetLinearMotion(shapeA,3,0,0) means in 1 time unit, shapeA translates of +3 spatial unit.
-    *                             rprCameraSetExposure(cam,2) means the rendering will represent shapeA moving along +6 spatial units.
+    *  @param  exposure  Represents a time length in the same time scale than rprShapeSetMotionTransform,rprCameraSetMotionTransform...
     *  @return           RPR_SUCCESS in case of success, error code otherwise
     */
   
@@ -2300,7 +2352,7 @@ public static Status CameraSetOrthoHeight(IntPtr camera, float height)
 return rprCameraSetOrthoHeight(camera, height);
 }
 
-    /** @brief Set near plane of a camear
+    /** @brief Set near plane of a camera
     *
     *  @param  camera  The camera to set near plane for
     *  @param  near   Near plane distance in meters, default is 0.01f
@@ -2313,7 +2365,20 @@ public static Status CameraSetNearPlane(IntPtr camera, float near)
 return rprCameraSetNearPlane(camera, near);
 }
 
-    /** @brief Set far plane of a camear
+    /** @brief Set the post scale of camera ( 2D camera zoom )
+    *
+    *  @param  camera  The camera to set
+    *  @param  scale   post scale value.
+    *  @return         RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprCameraSetPostScale(IntPtr camera, float scale);
+public static Status CameraSetPostScale(IntPtr camera, float scale)
+{
+return rprCameraSetPostScale(camera, scale);
+}
+
+    /** @brief Set far plane of a camera
     *
     *  @param  camera  The camera to set far plane for
     *  @param  far   Far plane distance in meters, default is 100000000.f
@@ -2324,6 +2389,19 @@ return rprCameraSetNearPlane(camera, near);
 public static Status CameraSetFarPlane(IntPtr camera, float far)
 {
 return rprCameraSetFarPlane(camera, far);
+}
+
+    /** @brief Set distorion image for camera
+    *
+    *  @param  camera          The camera to set UV Distortion for
+    *  @param  distortionMap   distorion image
+    *  @return                 RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprCameraSetUVDistortion(IntPtr camera, IntPtr distortionMap);
+public static Status CameraSetUVDistortion(IntPtr camera, IntPtr distortionMap)
+{
+return rprCameraSetUVDistortion(camera, distortionMap);
 }
 /* rpr_image*/
 
@@ -2472,6 +2550,23 @@ return rprShapeSetTransform(shape, transpose, transform);
 public static Status ShapeSetVertexValue(IntPtr in_shape, int setIndex, IntPtr indices, IntPtr values, int indicesCount)
 {
 return rprShapeSetVertexValue(in_shape, setIndex, indices, values, indicesCount);
+}
+
+    /* @brief set primvars data for a specific 'key'
+    * 
+    * A shape can have several primvars data. Each primvar of the shape is identified with a 'key'
+    * 'data' is a list of float
+    * 'floatCount' is a number of float in the 'data' buffer
+    * 'componentCount' specifies the number of float(s) per component.  For example if you want to attach an RGB color to vertices, you need 'componentCount'=3  and  'floatCount' = 3 * 'number of vertices'
+    * 'interop' defines how the data is interpolated.
+    * 
+    * @return             RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprShapeSetPrimvar(IntPtr in_shape, uint key, IntPtr data, uint floatCount, uint componentCount, PrimvarInterpolationType interop);
+public static Status ShapeSetPrimvar(IntPtr in_shape, uint key, IntPtr data, uint floatCount, uint componentCount, PrimvarInterpolationType interop)
+{
+return rprShapeSetPrimvar(in_shape, key, data, floatCount, componentCount, interop);
 }
 
     /** @brief Set shape subdivision
@@ -2729,36 +2824,6 @@ public static Status ShapeSetVolumeMaterial(IntPtr shape, IntPtr node)
 return rprShapeSetVolumeMaterial(shape, node);
 }
 
-    /* DEPRECATED - will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
-    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
-    */
-  
-[DllImport(dllName)] static extern Status rprShapeSetLinearMotion(IntPtr shape, float x, float y, float z);
-public static Status ShapeSetLinearMotion(IntPtr shape, float x, float y, float z)
-{
-return rprShapeSetLinearMotion(shape, x, y, z);
-}
-
-    /* DEPRECATED, will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
-    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
-    */
-  
-[DllImport(dllName)] static extern Status rprShapeSetAngularMotion(IntPtr shape, float x, float y, float z, float w);
-public static Status ShapeSetAngularMotion(IntPtr shape, float x, float y, float z, float w)
-{
-return rprShapeSetAngularMotion(shape, x, y, z, w);
-}
-
-    /* DEPRECATED, will be removed in the future - please use rprShapeSetMotionTransformCount and rprShapeSetMotionTransform instead.
-    *  RPR_SHAPE_LINEAR_MOTION , RPR_SHAPE_ANGULAR_MOTION , RPR_SHAPE_SCALE_MOTION are also DEPRECATED
-    */
-  
-[DllImport(dllName)] static extern Status rprShapeSetScaleMotion(IntPtr shape, float x, float y, float z);
-public static Status ShapeSetScaleMotion(IntPtr shape, float x, float y, float z)
-{
-return rprShapeSetScaleMotion(shape, x, y, z);
-}
-
     /* Number of motion matrices (set with rprShapeSetMotionTransform) to use.
     *  Set  transformCount=0  if you don't use Motion.
     *  For the moment, if you use motion in Northstar, only transformCount=1 is supported.
@@ -2800,6 +2865,7 @@ return rprShapeSetMotionTransform(shape, transpose, transform, timeIndex);
     *                             RPR_SHAPE_VISIBILITY_GLOSSY_REFLECTION
     *                             RPR_SHAPE_VISIBILITY_GLOSSY_REFRACTION
     *                             RPR_SHAPE_VISIBILITY_LIGHT
+    *                             RPR_SHAPE_VISIBILITY_RECEIVE_SHADOW
     *  @param  visible          set the flag to TRUE or FALSE
     *  @return                  RPR_SUCCESS in case of success, error code otherwise
     */
@@ -2823,6 +2889,7 @@ return rprShapeSetVisibilityFlag(shape, visibilityFlag, visible);
     *                             RPR_CURVE_VISIBILITY_GLOSSY_REFLECTION
     *                             RPR_CURVE_VISIBILITY_GLOSSY_REFRACTION
     *                             RPR_CURVE_VISIBILITY_LIGHT
+    *                             RPR_CURVE_VISIBILITY_RECEIVE_SHADOW
     *  @param  visible          set the flag to TRUE or FALSE
     *  @return                  RPR_SUCCESS in case of success, error code otherwise
     */
@@ -2835,6 +2902,9 @@ return rprCurveSetVisibilityFlag(curve, visibilityFlag, visible);
 
     /** @brief Set visibility flag
     *
+    * This function sets all RPR_SHAPE_VISIBILITY_* flags to the 'visible' argument value
+    * Calling rprShapeSetVisibilityFlag(xxx,visible); on each flags would lead to the same result.
+    *
     *  @param  shape       The shape to set visibility for
     *  @param  visible     Determines if the shape is visible or not
     *  @return             RPR_SUCCESS in case of success, error code otherwise
@@ -2846,7 +2916,25 @@ public static Status ShapeSetVisibility(IntPtr shape, bool visible)
 return rprShapeSetVisibility(shape, visible);
 }
 
+    /** @brief Set visibility flag for Light
+    *
+    *  @param  light           The light to set visibility for
+    *  @param  visibilityFlag     one of the visibility flags :
+    *                            - RPR_LIGHT_VISIBILITY_LIGHT
+    *  @param  visible          set the flag to TRUE or FALSE
+    *  @return                  RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprLightSetVisibilityFlag(IntPtr light, Light visibilityFlag, bool visible);
+public static Status LightSetVisibilityFlag(IntPtr light, Light visibilityFlag, bool visible)
+{
+return rprLightSetVisibilityFlag(light, visibilityFlag, visible);
+}
+
     /** @brief Set visibility flag
+    *
+    * This function sets all RPR_CURVE_VISIBILITY_* flags to the 'visible' argument value
+    * Calling rprCurveSetVisibilityFlag(xxx,visible); on each flags would lead to the same result.
     *
     *  @param  curve       The curve to set visibility for
     *  @param  visible     Determines if the curve is visible or not
@@ -2860,6 +2948,9 @@ return rprCurveSetVisibility(curve, visible);
 }
 
     /** @brief Set visibility flag for specular refleacted\refracted rays
+    *
+    * This function sets both RPR_SHAPE_VISIBILITY_REFLECTION and RPR_SHAPE_VISIBILITY_REFRACTION flags to the 'visible' argument value
+    * Calling rprShapeSetVisibilityFlag(xxx,visible); on those 2 flags would lead to the same result.
     *
     *  @param  shape       The shape to set visibility for
     *  @param  visible     Determines if the shape is visible or not
@@ -2925,6 +3016,19 @@ return rprShapeSetReflectionCatcher(shape, reflectionCatcher);
 public static Status ShapeSetContourIgnore(IntPtr shape, bool ignoreInContour)
 {
 return rprShapeSetContourIgnore(shape, ignoreInContour);
+}
+
+    /** @brief Set 1 if the shape should be treated as an environment light (finite sphere environment light).
+    *
+    *  @param  shape             The shape to set
+    *  @param  envLight   0 or 1.
+    *  @return                   RPR_SUCCESS in case of success, error code otherwise
+    */
+  
+[DllImport(dllName)] static extern Status rprShapeSetEnvironmentLight(IntPtr shape, bool envLight);
+public static Status ShapeSetEnvironmentLight(IntPtr shape, bool envLight)
+{
+return rprShapeSetEnvironmentLight(shape, envLight);
 }
 
       /**
@@ -3209,14 +3313,14 @@ return rprSphereLightSetRadiantPower3f(light, r, g, b);
     /** @brief Set Radius for Sphere Light
     *
     *
-    *  @param angle  Outer angle in radians
+    *  @param radius  Radius to set
     *  @return status RPR_SUCCESS in case of success, error code otherwise
     */
   
-[DllImport(dllName)] static extern Status rprSphereLightSetRadius(IntPtr light, float angle);
-public static Status SphereLightSetRadius(IntPtr light, float angle)
+[DllImport(dllName)] static extern Status rprSphereLightSetRadius(IntPtr light, float radius);
+public static Status SphereLightSetRadius(IntPtr light, float radius)
 {
-return rprSphereLightSetRadius(light, angle);
+return rprSphereLightSetRadius(light, radius);
 }
 
     /** @brief Set Power for Disk Light
@@ -3984,7 +4088,8 @@ public static Status FrameBufferFillWithColor(IntPtr frame_buffer, float r, floa
 return rprFrameBufferFillWithColor(frame_buffer, r, g, b, a);
 }
 
-    /** @brief Save frame buffer to file
+    /** @brief Save frame buffer to file. In case the file format is .bin, the header of the saved file contains
+    * rpr_framebuffer_desc and rpr_framebuffer_format at very begining. The remaining data is raw data of saved framebuffer.
     *
     *   Possible error codes:
     *      RPR_ERROR_OUT_OF_SYSTEM_MEMORY
@@ -4022,24 +4127,24 @@ return rprFrameBufferSaveToFileEx(framebufferList, framebufferCount, filePath, e
 
     /** @brief Resolve framebuffer
     *
-    *   Resolve applies AA filters and tonemapping operators to the framebuffer data
+    * Convert the input Renderer's native raw format 'src_frame_buffer' into an output 'dst_frame_buffer' that can be used for final rendering.
     *
-    *   Possible error codes:
-    *      RPR_ERROR_OUT_OF_SYSTEM_MEMORY
-    *      RPR_ERROR_OUT_OF_VIDEO_MEMORY
+    * src_frame_buffer and dst_frame_buffer should usually have the same dimension/format.
+    * src_frame_buffer is the result of a rprContextRender and should be attached to an AOV with rprContextSetAOV before the rprContextRender call.
+    * dst_frame_buffer should not be attached to any AOV.
     *
-    * if normalizeOnly is TRUE : it only normalizes src_frame_buffer, and write the result in dst_frame_buffer.
-    * if normalizeOnly is FALSE : it applies all the rpr_post_process attached to the context with rprContextAttachPostEffect
+    * The post process that is applied to src_frame_buffer depends on the AOV it's attached to. So it's important to not modify its AOV ( with rprContextSetAOV )
+    * between the rprContextRender and rprContextResolveFrameBuffer calls.
     *
-    * Note: in RPR API 1.310, the default value of normalizeOnly has been removed.
-    *       Set it to FALSE, if you don't use this argument.
+    * If noDisplayGamma=FALSE, then RPR_CONTEXT_DISPLAY_GAMMA is applied to the dst_frame_buffer otherwise, display gamma is not used.
+    * It's recommended to set it to FALSE for AOVs representing colors ( like RPR_AOV_COLOR ) and use TRUE for other AOVs.
     *
     */
   
-[DllImport(dllName)] static extern Status rprContextResolveFrameBuffer(IntPtr context, IntPtr src_frame_buffer, IntPtr dst_frame_buffer, bool normalizeOnly);
-public static Status ContextResolveFrameBuffer(IntPtr context, IntPtr src_frame_buffer, IntPtr dst_frame_buffer, bool normalizeOnly)
+[DllImport(dllName)] static extern Status rprContextResolveFrameBuffer(IntPtr context, IntPtr src_frame_buffer, IntPtr dst_frame_buffer, bool noDisplayGamma);
+public static Status ContextResolveFrameBuffer(IntPtr context, IntPtr src_frame_buffer, IntPtr dst_frame_buffer, bool noDisplayGamma)
 {
-return rprContextResolveFrameBuffer(context, src_frame_buffer, dst_frame_buffer, normalizeOnly);
+return rprContextResolveFrameBuffer(context, src_frame_buffer, dst_frame_buffer, noDisplayGamma);
 }
 
     /** @brief Create material system
@@ -4136,6 +4241,18 @@ public static Status MaterialNodeSetInputFByKey(IntPtr in_node, MaterialInput in
 return rprMaterialNodeSetInputFByKey(in_node, in_input, in_value_x, in_value_y, in_value_z, in_value_w);
 }
 
+    /** @brief Set generic data input value: Some complex materials inputs may need more than 4-floats or int.
+    *  This API can be used to set any generic input data.
+    *  Use it only when documentation requests to do it for specific material inputs.
+    *
+    */
+  
+[DllImport(dllName)] static extern Status rprMaterialNodeSetInputDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr data, long dataSizeByte);
+public static Status MaterialNodeSetInputDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr data, long dataSizeByte)
+{
+return rprMaterialNodeSetInputDataByKey(in_node, in_input, data, dataSizeByte);
+}
+
     /** @brief Set uint input value
     *
     *   Possible error codes:
@@ -4163,11 +4280,31 @@ public static Status MaterialNodeSetInputImageDataByKey(IntPtr in_node, Material
 {
 return rprMaterialNodeSetInputImageDataByKey(in_node, in_input, image);
 }
+
+    /** @brief Set light input value
+    *
+    */
+  
+[DllImport(dllName)] static extern Status rprMaterialNodeSetInputLightDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr light);
+public static Status MaterialNodeSetInputLightDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr light)
+{
+return rprMaterialNodeSetInputLightDataByKey(in_node, in_input, light);
+}
+
+    /** @brief Set Buffer input value
+    *
+    */
+  
 [DllImport(dllName)] static extern Status rprMaterialNodeSetInputBufferDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr buffer);
 public static Status MaterialNodeSetInputBufferDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr buffer)
 {
 return rprMaterialNodeSetInputBufferDataByKey(in_node, in_input, buffer);
 }
+
+    /** @brief Set Grid input value
+    *
+    */
+  
 [DllImport(dllName)] static extern Status rprMaterialNodeSetInputGridDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr grid);
 public static Status MaterialNodeSetInputGridDataByKey(IntPtr in_node, MaterialInput in_input, IntPtr grid)
 {

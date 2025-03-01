@@ -1,5 +1,5 @@
 
-Copyright(C) 2019-2021 Advanced Micro Devices, Inc. All rights reserved.
+Copyright(C) 2019-2023 Advanced Micro Devices, Inc. All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -25,4 +25,5 @@ picoJson - JSON parser - 2-clause BSD license - https://github.com/kazuho/picojs
 tinyObjLoader - OBJ parser - MIT License - https://github.com/tinyobjloader/tinyobjloader
 Premake - https://github.com/premake/premake-core - BSD 3-Clause "New" or "Revised" License - https://github.com/premake/premake-core/blob/master/LICENSE.txt
 turning_area_4k.hdr image - https://polyhaven.com/a/turning_area - License: CC0 (public domain)
-
+Simple Random Number Generation - 2 clause BSD license - https://www.codeproject.com/Articles/25172/Simple-Random-Number-Generation
+Nanobind - 3 clause BSD license - https://github.com/wjakob/nanobind

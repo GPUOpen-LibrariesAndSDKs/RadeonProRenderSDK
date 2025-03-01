@@ -10,11 +10,19 @@ project "60_mesh_export"
 
     includedirs{ "../../RadeonProRender/inc" } 
     
-    buildoptions "-std=c++11"
+    buildoptions "-std=c++14"
 
-	configuration {"x64"}
-	links {"RadeonProRender64", "RprLoadStore64", "ProRenderGLTF"}
-	
+    configuration {"x64"}
+    links {"RadeonProRender64", "RprLoadStore64", "ProRenderGLTF"}
+
+    if os.istarget("linux") then
+        linkoptions "-fopenmp"
+		links {"pthread"}
+    end
+
+
+
+
     configuration {"x64", "Debug"}
         targetdir "../Bin"
     configuration {"x64", "Release"}
