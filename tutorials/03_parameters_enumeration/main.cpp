@@ -12,6 +12,7 @@
 #include "RadeonProRender.h"
 
 #include "../common/common.h"
+#include <cstdint>
 #include <iostream>
 #include <vector>
 #include <string>

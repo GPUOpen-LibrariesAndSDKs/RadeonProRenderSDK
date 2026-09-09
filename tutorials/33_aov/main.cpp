@@ -12,6 +12,7 @@
 #include "Math/mathutils.h"
 #include "../common/common.h"
 
+#include <cstdint>
 #include <cassert>
 #include <iostream>
 

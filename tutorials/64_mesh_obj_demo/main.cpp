@@ -26,6 +26,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "../common/tiny_obj_loader.h"
 
+#include <cstdint>
 #include <cassert>
 #include <iostream>
 #include <map>
