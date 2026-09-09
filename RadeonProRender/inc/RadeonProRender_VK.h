@@ -12,6 +12,7 @@
 #define __RADEONPRORENDER_VK_H
 
 #include "RadeonProRender.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -72,10 +73,6 @@ extern "C" {
 #define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_ATTRIBUTE3_OFFSET 0x5510 // Offset of fourth attribute relative to the beginning of the buffer (in bytes)
 #define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_ATTRIBUTE_STRIDE 0x5511 // Stride of the attributes (in bytes)
 
-typedef rpr_int(*rprVkDynamicMeshModified_func)(rpr_shape mesh, size_t num_vertices, size_t num_indices); // Notify rpr that dynamic vertex buffer was modifed.
-                                                                                                          // Semaphore with appropriate index must be signaled before this call
-#define RPR_MESH_VK_DYNAMIC_MESH_BUFFER_MODIFED_FUNC_NAME "rprVkDynamicMeshModified"
-
 
 /* rpr_context_properties names */
 #define RPR_CONTEXT_CREATEPROP_VK_INTEROP_INFO 0x5601
@@ -112,7 +109,7 @@ struct BufferInfo
 {
     void* buffer_handle;
     size_t region_offset;
-    size_t region_size;
+    uint32_t stride;
     size_t size; // the full size of the underlying buffer.
 };
 
