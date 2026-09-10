@@ -21,6 +21,7 @@ NB_MODULE(rprs, m) {
 	m.attr("RPRLOADSTORE_EXPORTFLAG_EMBED_FILE_IMAGES_USING_OBJECTNAME") = (1 << 5) ;
 	m.attr("RPRLOADSTORE_EXPORTFLAG_USE_IMAGE_CACHE") = (1 << 6) ;
 	m.attr("RPRLOADSTORE_EXPORTFLAG_ONLY_EXPORT_ATTACHED_RENDER_LAYERS") = (1 << 7) ;
+	m.attr("RPRLOADSTORE_EXPORTFLAG_FORCERENDER") = (1 << 8) ;
 	m.def("Export", []( std::string rprsFileName,  PyRprContext* context,  PyRprScene* scene,  int extraCustomParam_int_number,  std::vector<std::string> extraCustomParam_int_names,  nb::ndarray<int32_t, nb::shape<nb::any>, nb::c_contig, nb::device::cpu> extraCustomParam_int_values,  int extraCustomParam_float_number,  std::vector<std::string> extraCustomParam_float_names,  nb::ndarray<float_t, nb::shape<nb::any>, nb::c_contig, nb::device::cpu> extraCustomParam_float_values,  rpr_uint exportFlags,  PyRprsContext* rprsCtx )
 	{
 
